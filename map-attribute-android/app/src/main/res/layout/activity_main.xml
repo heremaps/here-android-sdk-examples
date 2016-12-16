@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <FrameLayout
+        android:id="@+id/mainFrame"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Map Fragment embedded with the map object -->
+        <fragment
+            android:id="@+id/mapfragment"
+            class="com.here.android.mpa.mapping.MapFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+
+        <LinearLayout
+            android:id="@+id/settingsPanelLayout"
+            android:layout_width="380dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@color/dim_foreground_disabled_material_light"
+            android:orientation="vertical"
+            android:paddingLeft="15dp"
+            android:paddingRight="15dp"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/schemes"
+                android:layout_width="fill_parent"
+                android:layout_height="35dp"
+                android:paddingTop="@dimen/abc_action_bar_subtitle_bottom_margin_material"
+                android:text="MAP SCHEMES"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#fffcfc"/>
+
+            <RadioGroup
+                android:id="@+id/mapModeRadioGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                android:orientation="horizontal"
+                android:paddingTop="1dp">
+
+                <RadioButton
+                    android:id="@+id/mapModeBtn"
+                    android:layout_width="fill_parent"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/generic_button_bar_i"
+                    android:button="@null"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:text="@string/NormalMode"/>
+
+                <RadioButton
+                    android:id="@+id/hybridModeBtn"
+                    android:layout_width="fill_parent"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/generic_button_bar_i"
+                    android:button="@null"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:text="@string/HybridMode"/>
+
+                <RadioButton
+                    android:id="@+id/terrainModeBtn"
+                    android:layout_width="fill_parent"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/generic_button_bar_i"
+                    android:button="@null"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:text="@string/TerrainMode"/>
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/transit"
+                android:layout_width="fill_parent"
+                android:layout_height="35dp"
+                android:paddingTop="@dimen/abc_action_bar_subtitle_bottom_margin_material"
+                android:text="TRANSIT MODE ATTRIBUTES"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#fffcfc"/>
+
+
+            <RadioGroup
+                android:id="@+id/transitGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fitsSystemWindows="true"
+                android:orientation="horizontal"
+                android:paddingTop="1dp">
+
+                <RadioButton
+                    android:id="@+id/nothingTransitbBtn"
+                    android:layout_width="fill_parent"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/generic_button_bar_i"
+                    android:button="@null"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:text="@string/Nothing"/>
+
+                <RadioButton
+                    android:id="@+id/stopTransitBtn"
+                    android:layout_width="fill_parent"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/generic_button_bar_i"
+                    android:button="@null"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:text="@string/Stop"/>
+
+                <RadioButton
+                    android:id="@+id/everythingTransitBtn"
+                    android:layout_width="fill_parent"
+                    android:layout_height="35dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/generic_button_bar_i"
+                    android:button="@null"
+                    android:gravity="center_horizontal|center_vertical"
+                    android:text="@string/Everything"/>
+            </RadioGroup>
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="fill_parent"
+                android:layout_height="35dp"
+                android:paddingTop="@dimen/abc_action_bar_subtitle_bottom_margin_material"
+                android:text="TRAFFIC LAYER ATTRIBUTES"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#fffcfc"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="@dimen/abc_dropdownitem_text_padding_left">
+
+                <Switch
+                    android:id="@+id/flowSwitch"
+                    android:layout_width="fill_parent"
+                    android:layout_height="35dp"
+                    android:text="@string/Flow"
+                    android:textColor="#fffcfc"/>
+
+                <Switch
+                    android:id="@+id/incidentSwitch"
+                    android:layout_width="fill_parent"
+                    android:layout_height="35dp"
+                    android:text="@string/Incident"
+                    android:textColor="#fffcfc"/>
+
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="fill_parent"
+                android:layout_height="35dp"
+                android:paddingTop="@dimen/abc_action_bar_subtitle_bottom_margin_material"
+                android:text="STREE LEVEL COVERAGE"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:textColor="#fffcfc"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="@dimen/abc_dropdownitem_text_padding_left">
+
+                <Switch
+                    android:id="@+id/coverageSwitch"
+                    android:layout_width="fill_parent"
+                    android:layout_height="35dp"
+                    android:text="@string/Coverage"
+                    android:textColor="#fffcfc"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <ImageButton
+            android:id="@+id/settingButton"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="right|bottom"
+            android:layout_margin="20dp"
+            android:background="@drawable/settingbutton"
+            android:gravity="center"
+            android:src="@mipmap/settings"/>
+
+    </FrameLayout>
+
+</RelativeLayout>
