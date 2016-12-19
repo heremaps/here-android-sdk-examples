@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.3"
 
     defaultConfig {
-        applicationId "com.here.android.sampleapp.geocodingRevgeocoding"
+        applicationId "com.here.android.sampleapp.geocoding"
         minSdkVersion 15
         targetSdkVersion 23
         versionCode 1
