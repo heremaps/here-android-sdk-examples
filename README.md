@@ -22,7 +22,6 @@ All of the following projects use **version 3.3** of the Android Premium SDK
 * [Map Downloader](map-downloader-android) - Download offline map data
 * [Map Gestures](map-gestures-android) - Define custom gesture actions
 * [Map Objects](map-objects-android) - Add map objects onto HERE map
-* [Map Raster Tile](map-raster-android) - Add custom raster tiles onto map
 * [Map Rendering](map-rendering-android) - Display the HERE map on a device
 * [Routing](rotuing-android) - Create a route from HERE Burnaby office to Langely BC and display it on the map
 * [Search](search-android) - Send different types of search requests
