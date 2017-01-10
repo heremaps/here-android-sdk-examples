@@ -1,5 +1,21 @@
 # HERE SDK for Android example projects
 
+```
+Copyright © 2011-2016 HERE Europe B.V.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
+
 This repository holds a series of Java-based projects using the **HERE SDK for Android**. More information about the API can be found on [developer.here.com](https://developer.here.com/develop/mobile-sdks) under the *Android & iOS SDKs* section.
 
 This set of self-contained, use-case based projects is designed to be cloned by developers for their own use.
