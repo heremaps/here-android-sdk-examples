@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="40dp"
+    android:layout_height="40dp"
+    android:background="@drawable/floor_item_background" >
+
+    <TextView
+        android:id="@+id/floorName"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:gravity="center"
+        android:layout_marginTop="0dp"
+        android:text="0"
+        android:textColor="@android:color/white"
+        android:textSize="24sp" />
+
+    <View
+        android:id="@+id/floorGroundSep"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white"
+        android:visibility="invisible" />
+
+</RelativeLayout>
