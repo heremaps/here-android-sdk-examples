@@ -7,7 +7,7 @@
  */
 
 
-package com.here.android.tutorial;
+package com.here.android.example.venue;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -71,7 +71,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class Venues3dActivity extends FragmentActivity
+public class Venue3dActivity extends FragmentActivity
         implements VenueListener, OnGestureListener, RoutingControllerListener {
 
     // permissions request code
@@ -286,7 +286,7 @@ public class Venues3dActivity extends FragmentActivity
     private VenueController m_currentVenue;
     private VenueFloorsController m_floorsController = null;
 
-    private Venues3dActivity m_activity = null;
+    private Venue3dActivity m_activity = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
