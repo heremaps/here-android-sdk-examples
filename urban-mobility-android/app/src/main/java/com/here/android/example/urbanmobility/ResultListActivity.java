@@ -19,8 +19,7 @@ public class ResultListActivity extends ListActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.result_list);
         ResultListAdapter listAdapter = new ResultListAdapter(this,
-                android.R.layout.simple_list_item_1,
-                com.here.android.example.urbanmobility.MapFragmentView.s_ResultList);
+                android.R.layout.simple_list_item_1, MapFragmentView.s_ResultList);
         setListAdapter(listAdapter);
     }
 
