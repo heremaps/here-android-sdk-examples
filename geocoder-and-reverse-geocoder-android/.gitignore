@@ -1,3 +1,5 @@
 .gradle/
 build/
 app/libs/
+.idea/
+*.iml
