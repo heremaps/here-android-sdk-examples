@@ -4,8 +4,9 @@ android {
     compileSdkVersion 23
     buildToolsVersion "23.0.3"
     defaultConfig {
-        applicationId "com.here.android.sampleapp.urbanmobility"
-        minSdkVersion 16
+        applicationId 'com.here.android.example.urbanmobility'
+        minSdkVersion 15
+
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
