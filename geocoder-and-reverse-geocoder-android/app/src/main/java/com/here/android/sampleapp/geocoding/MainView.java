@@ -1,4 +1,4 @@
-package com.here.android.sampleapp.geocodingRevgeocoding;
+package com.here.android.sampleapp.geocoding;
 
 import java.util.List;
 
