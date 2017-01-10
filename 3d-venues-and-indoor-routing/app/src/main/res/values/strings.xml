@@ -1,6 +1,0 @@
-<resources>
-    <string name="app_name">Venues3DTutorial</string>
-    <string name="action_settings">Settings</string>
-    <string name="tap_start_point">tap start point</string>
-    <string name="tap_end_point">tap end point</string>
-</resources>
