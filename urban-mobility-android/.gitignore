@@ -3,3 +3,4 @@ build/
 app/libs/
 .idea/
 *.iml
+local.properties
