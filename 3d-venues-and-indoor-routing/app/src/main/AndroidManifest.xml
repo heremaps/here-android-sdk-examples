@@ -27,7 +27,6 @@
             android:name="com.here.android.maps.license.key"
             android:value="{YOUR_LICENSE_KEY}" />
 
-
         <activity
             android:label="@string/app_name"
             android:name=".Venue3dActivity">
