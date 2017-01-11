@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:state_activated="true">
+        <shape  >
+            <solid android:color="#00ADEF" />
+        </shape>
+    </item>
+    <item android:state_pressed="true" android:drawable="@android:color/black"></item>
+    <item android:state_selected="false">
+        <shape  >
+            <solid android:color="#404042" />
+        </shape>
+    </item>   <!-- for other state -->
+</selector>
