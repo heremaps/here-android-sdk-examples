@@ -6,11 +6,9 @@ This repository holds a series of Java-based projects using the **HERE SDK for A
 
 This set of self-contained, use-case based projects is designed to be cloned by developers for their own use.
 
-> **Note:** In order to get the sample code to work, you **must** replace all instances of `{YOUR_APP_ID}`, `{YOUR_APP_CODE}` and `{YOUR_LICENSE_KEY}` within the code and use your own **HERE** credentials.
-
-> **NOTE:** In order to register for a license key, the application namespace package must match the sample you are using. For example the [map-rendering-android](https://github.com/heremaps/here-android-sdk-examples/tree/master/map-rendering-android) sample please use the values from the [AndroidManifest.xml](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering-android/app/src/main/AndroidManifest.xml) file. Package name would be: "com.here.android.example.map.basic". After obtaining the application id, application token, and license key. Place the values into the [AndroidManifest.xml](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering-android/app/src/main/AndroidManifest.xml) and recompile.
-
-> You can obtain a set of credentials from the [Contact Us](https://developer.here.com/contact-us) page or click on the 90 day Free Trial button on developer.here.com.
+> **Note:** In order to get the example code to work, you **must** replace all instances of `{YOUR_APP_ID}`, `{YOUR_APP_CODE}` and `{YOUR_LICENSE_KEY}` within the code and use your own HERE credentials.
+> You can obtain a set of HERE credentials from the [Contact Us](https://developer.here.com/contact-us) page or by clicking on the *90-day Free Trial* button at [developer.here.com](https://developer.here.com).
+> In order to register for a license key, the provided package name must match the one from the example you are using. E.g. for the [map-rendering-android](https://github.com/heremaps/here-android-sdk-examples/tree/master/map-rendering-android) example, the package name would be "com.here.android.example.map.basic" as specified in the [AndroidManifest.xml](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering-android/app/src/main/AndroidManifest.xml#L3) file. After obtaining the application id, application token, and license key, insert the values [here](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering-android/app/src/main/AndroidManifest.xml#L29), [here](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering-android/app/src/main/AndroidManifest.xml#L32) and [here](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering-android/app/src/main/AndroidManifest.xml#L35), respectively, and recompile.
 
 ## License
 
