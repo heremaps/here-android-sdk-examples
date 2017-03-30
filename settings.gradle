@@ -1,0 +1,10 @@
+rootProject.name = 'Android SDK Examples'
+
+// Use Gradle's incubating "composite builds" to conveniently be able to
+// build otherwise independent projects in a single blow. For details see
+// https://docs.gradle.org/current/userguide/composite_builds.html
+rootDir.eachDir {
+    if (new File(it, 'build.gradle').file) {
+        includeBuild it.name
+    }
+}
