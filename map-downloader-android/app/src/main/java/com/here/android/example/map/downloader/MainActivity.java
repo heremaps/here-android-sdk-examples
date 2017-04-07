@@ -16,11 +16,6 @@
 
 package com.here.android.example.map.downloader;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.here.android.mpa.odml.MapLoader;
-
 import android.Manifest;
 import android.app.ListActivity;
 import android.content.pm.PackageManager;
@@ -31,16 +26,17 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Main activity which launches the map list view and handles Android run-time requesting
  * permission.
  */
 
 public class MainActivity extends ListActivity {
-
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
     private MapListView m_mapListView;
-    private MapLoader m_mapLoader;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,8 +50,7 @@ public class MainActivity extends ListActivity {
      * needs when the app is running.
      */
     private void requestPermissions() {
-
-        final List<String> requiredSDKPermissions = new ArrayList<String>();
+        final List<String> requiredSDKPermissions = new ArrayList<>();
         requiredSDKPermissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
         requiredSDKPermissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
         requiredSDKPermissions.add(Manifest.permission.INTERNET);
@@ -75,7 +70,7 @@ public class MainActivity extends ListActivity {
                 for (int index = 0; index < permissions.length; index++) {
                     if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
 
-                        /**
+                        /*
                          * If the user turned down the permission request in the past and chose the
                          * Don't ask again option in the permission request system dialog.
                          */
@@ -93,7 +88,7 @@ public class MainActivity extends ListActivity {
                     }
                 }
 
-                /**
+                /*
                  * All permission requests are being handled.Create map fragment view.Please note
                  * the HERE SDK requires all permissions defined above to operate properly.
                  */
