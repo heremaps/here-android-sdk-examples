@@ -157,6 +157,9 @@ class MapListView {
             if (resultCode == MapLoader.ResultCode.OPERATION_SUCCESSFUL) {
                 List<MapPackage> children = rootMapPackage.getChildren();
                 refreshListView(new ArrayList<>(children));
+            } else if (resultCode == MapLoader.ResultCode.OPERATION_BUSY) {
+                // The map loader is still busy, just try again.
+                m_mapLoader.getMapPackages();
             }
         }
 
@@ -178,6 +181,9 @@ class MapListView {
                     Toast.makeText(m_activity, "Current map version: " + current + " is the latest",
                             Toast.LENGTH_SHORT).show();
                 }
+            } else if (resultCode == MapLoader.ResultCode.OPERATION_BUSY) {
+                // The map loader is still busy, just try again.
+                m_mapLoader.checkForMapDataUpdate();
             }
         }
 
