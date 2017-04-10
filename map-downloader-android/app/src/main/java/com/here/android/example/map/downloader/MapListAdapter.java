@@ -16,10 +16,6 @@
 
 package com.here.android.example.map.downloader;
 
-import java.util.List;
-
-import com.here.android.mpa.odml.MapPackage;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,10 +23,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
-public class MapListAdapter extends ArrayAdapter<MapPackage> {
+import com.here.android.mpa.odml.MapPackage;
+
+import java.util.List;
+
+class MapListAdapter extends ArrayAdapter<MapPackage> {
     private List<MapPackage> m_list;
 
-    public MapListAdapter(Context context, int resource, List<MapPackage> results) {
+    MapListAdapter(Context context, int resource, List<MapPackage> results) {
         super(context, resource, results);
         m_list = results;
     }
@@ -68,5 +68,4 @@ public class MapListAdapter extends ArrayAdapter<MapPackage> {
         tv.setText(String.valueOf(mapPackage.getSize()) + "KB");
         return convertView;
     }
-
 }

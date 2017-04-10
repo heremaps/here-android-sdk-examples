@@ -16,14 +16,6 @@
 
 package com.here.android.example.map.downloader;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import com.here.android.mpa.common.MapEngine;
-import com.here.android.mpa.common.OnEngineInitListener;
-import com.here.android.mpa.odml.MapLoader;
-import com.here.android.mpa.odml.MapPackage;
-
 import android.app.ListActivity;
 import android.view.View;
 import android.widget.Button;
@@ -31,10 +23,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MapListView {
+import com.here.android.mpa.common.MapEngine;
+import com.here.android.mpa.common.OnEngineInitListener;
+import com.here.android.mpa.odml.MapLoader;
+import com.here.android.mpa.odml.MapPackage;
+
+import java.util.ArrayList;
+import java.util.List;
+
+class MapListView {
     private ListActivity m_activity;
-    private Button m_cancelButton;
-    private Button m_mapUpdateButton;
     private TextView m_progressTextView;
     private MapLoader m_mapLoader;
     private MapListAdapter m_listAdapter;
@@ -42,7 +40,7 @@ public class MapListView {
                                                      // package list currently being displayed on
                                                      // screen
 
-    public MapListView(ListActivity activity) {
+    MapListView(ListActivity activity) {
         m_activity = activity;
         initMapEngine();
     }
@@ -63,16 +61,16 @@ public class MapListView {
     }
 
     private void initUIElements() {
-        m_cancelButton = (Button) m_activity.findViewById(R.id.cancelBtn);
-        m_cancelButton.setOnClickListener(new View.OnClickListener() {
+        Button cancelButton = (Button) m_activity.findViewById(R.id.cancelBtn);
+        cancelButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 m_mapLoader.cancelCurrentOperation();
             }
         });
         m_progressTextView = (TextView) m_activity.findViewById(R.id.progressTextView);
-        m_mapUpdateButton = (Button) m_activity.findViewById(R.id.mapUpdateBtn);
-        m_mapUpdateButton.setOnClickListener(new View.OnClickListener() {
+        Button mapUpdateButton = (Button) m_activity.findViewById(R.id.mapUpdateBtn);
+        mapUpdateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 /*
@@ -98,7 +96,7 @@ public class MapListView {
     }
 
     // Handles the click action on map list item.
-    public void onListItemClicked(ListView l, View v, int position, long id) {
+    void onListItemClicked(ListView l, View v, int position, long id) {
         MapPackage clickedMapPackage = m_currentMapPackageList.get(position);
         List<MapPackage> children = clickedMapPackage.getChildren();
         if (children.size() > 0) {
@@ -146,13 +144,11 @@ public class MapListView {
 
         @Override
         public void onInstallationSize(long l, long l1) {
-
         }
 
         @Override
         public void onGetMapPackagesComplete(MapPackage rootMapPackage,
                 MapLoader.ResultCode resultCode) {
-
             /*
              * Please note that to get the latest MapPackage status, the application should always
              * use the rootMapPackage that being returned here. The same applies to other listener
@@ -161,6 +157,9 @@ public class MapListView {
             if (resultCode == MapLoader.ResultCode.OPERATION_SUCCESSFUL) {
                 List<MapPackage> children = rootMapPackage.getChildren();
                 refreshListView(new ArrayList<>(children));
+            } else if (resultCode == MapLoader.ResultCode.OPERATION_BUSY) {
+                // The map loader is still busy, just try again.
+                m_mapLoader.getMapPackages();
             }
         }
 
@@ -182,6 +181,9 @@ public class MapListView {
                     Toast.makeText(m_activity, "Current map version: " + current + " is the latest",
                             Toast.LENGTH_SHORT).show();
                 }
+            } else if (resultCode == MapLoader.ResultCode.OPERATION_BUSY) {
+                // The map loader is still busy, just try again.
+                m_mapLoader.checkForMapDataUpdate();
             }
         }
 
@@ -190,9 +192,8 @@ public class MapListView {
                 MapLoader.ResultCode resultCode) {
             if (resultCode == MapLoader.ResultCode.OPERATION_SUCCESSFUL) {
                 Toast.makeText(m_activity, "Map update is completed", Toast.LENGTH_SHORT).show();
-                refreshListView(new ArrayList<MapPackage>(rootMapPackage.getChildren()));
+                refreshListView(new ArrayList<>(rootMapPackage.getChildren()));
             }
-
         }
 
         @Override
