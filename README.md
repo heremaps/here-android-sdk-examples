@@ -9,13 +9,13 @@ This set of individual, use-case based projects is designed to be cloned by deve
 **Note:** In order to be able to build the examples, you have to [sign up](https://developer.here.com/develop/mobile-sdks?create=Evaluation&keepState=true&step=account) for a *90-day Free Trial*. After signing in with a *HERE account*, follow these steps to download the *Premium SDK*:
 
 1. Choose to *Generate App ID and App Code* for use with the *Android SDK*:
-![Generate App ID and App Code](/screenshots/Premium%20SDK%20-%20Generate%20App%20ID%20and%20App%20Code.png?raw=true)
+![Generate App ID and App Code](/.screenshots/Premium%20SDK%20-%20Generate%20App%20ID%20and%20App%20Code.png?raw=true)
 
 2. Enter the package name of the example you want to build, e.g. [com.here.android.example.map.basic](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering-android/app/src/main/AndroidManifest.xml#L3):
-![Enter package name](/screenshots/Premium%20SDK%20-%20Enter%20package%20name.png?raw=true)
+![Enter package name](/.screenshots/Premium%20SDK%20-%20Enter%20package%20name.png?raw=true)
 
 3. Click on *GENERATE* to obtain the App ID, App Code, and License Key:
-![Enter package name](/screenshots/Premium%20SDK%20-%20Generated%20license.png?raw=true)
+![Enter package name](/.screenshots/Premium%20SDK%20-%20Generated%20license.png?raw=true)
 
 4. CLick on *Download SDK* to get a files named like `HERE_Android_SDK_Premium_v3.3.1_205.zip` (your version number might differ).
 
