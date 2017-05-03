@@ -6,7 +6,7 @@ set PWD=%cd%
 
 for /d %%d in (%PWD%\*) do (
     if exist "%%d\gradlew.bat" (
-        cd /d %%d
+        cd /d "%%d"
         call gradlew.bat build
         set ERRORCODE=!ERRORLEVEL!
         if !ERRORCODE! neq 0 (
@@ -17,6 +17,6 @@ for /d %%d in (%PWD%\*) do (
 
 :QUIT
 
-cd /d %PWD%
+cd /d "%PWD%"
 
 exit /b !ERRORCODE!

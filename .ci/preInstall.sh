@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# download the HERE SDK
+# Download and extract the HERE SDK.
 wget "$HERE_SDK_URL" -q -O 'HERE_SDK.zip'
 unzip -j -d 'HERE_SDK' -o 'HERE_SDK.zip'
 unzip -j 'HERE_SDK/HERE-sdk.zip' 'HERE-sdk/HERE-sdk/libs/HERE-sdk.aar' -d 'HERE_SDK'
