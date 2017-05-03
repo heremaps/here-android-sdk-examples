@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Find paths that contain the Gradle wrapper executable.
-APP_PROJECTS=$(find $PWD -maxdepth 1 -type d -exec [ -x {}/gradlew ] \; -print -prune)
+APP_PROJECTS=$(find "$PWD" -maxdepth 1 -type d -exec [ -x {}/gradlew ] \; -print -prune)
 
 ORIG_PWD="$PWD"
 
