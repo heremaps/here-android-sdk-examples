@@ -30,7 +30,7 @@ install:
   - cat $ANDROID_HOME/licenses/android-sdk-license
 
 before_script:
-  - .ci/preInstall.sh
+  - travis_wait .ci/preInstall.sh
 
 script:
   - .ci/buildAll.sh
