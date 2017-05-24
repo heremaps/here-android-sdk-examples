@@ -43,9 +43,9 @@ import android.widget.Toast;
 
 /**
  * This class encapsulates the properties and functionality of the Map view.It also triggers a
- * turn-by-turn navigation from HERE Burnaby office to Langley BC.The Evaluation SDK doesn't support
- * downloading current voice skins from the HERE server, however there is a sample voice skin
- * bundled within the SDK package, please refer to the Developer's guide for the usage.
+ * turn-by-turn navigation from HERE Burnaby office to Langley BC.There is a sample voice skin
+ * bundled within the SDK package to be used out-of-box, please refer to the Developer's guide for
+ * the usage.
  */
 public class MapFragmentView {
     private MapFragment m_mapFragment;
