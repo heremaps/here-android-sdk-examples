@@ -18,6 +18,7 @@ package com.here.android.example.geocoding;
 
 import java.util.List;
 
+import com.here.android.mpa.common.ApplicationContext;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.MapEngine;
 import com.here.android.mpa.common.OnEngineInitListener;
@@ -52,7 +53,8 @@ public class MainView {
          * services that HERE Android SDK provides, the MapEngine must be initialized as the
          * prerequisite.
          */
-        MapEngine.getInstance().init(m_activity, new OnEngineInitListener() {
+        ApplicationContext context = new ApplicationContext(m_activity);
+        MapEngine.getInstance().init(context, new OnEngineInitListener() {
             @Override
             public void onEngineInitializationCompleted(Error error) {
                 Toast.makeText(m_activity, "Map Engine initialized with error code:" + error,
