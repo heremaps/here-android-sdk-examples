@@ -23,7 +23,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.here.android.mpa.common.ApplicationContext;
 import com.here.android.mpa.common.MapEngine;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.odml.MapLoader;
@@ -47,8 +46,7 @@ class MapListView {
     }
 
     private void initMapEngine() {
-        ApplicationContext context = new ApplicationContext(m_activity);
-        MapEngine.getInstance().init(context, new OnEngineInitListener() {
+        MapEngine.getInstance().init(m_activity, new OnEngineInitListener() {
             @Override
             public void onEngineInitializationCompleted(Error error) {
                 if (error == Error.NONE) {
