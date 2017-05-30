@@ -36,10 +36,10 @@
         <service
             android:name="com.here.android.mpa.service.MapService"
             android:label="HereMapService"
-            android:process="global.Here.Map.Service.v2"
-            android:exported="true">
+            android:process="global.Here.Map.Service.v2">
             <intent-filter>
-                <action android:name="com.here.android.mpa.service.MapService"></action>
+                <!-- When using MapSettings.setIsolatedDiskCacheRootPath(...) make sure to use this value: -->
+                <action android:name="com.here.android.example.geocoding.MapService" />
             </intent-filter>
         </service>
     </application>
