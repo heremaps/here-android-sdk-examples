@@ -17,6 +17,7 @@
 package com.here.android.example.map.downloader;
 
 import android.app.ListActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -32,6 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 class MapListView {
+    private static final String TAG = MapListView.class.getSimpleName();
+
     private ListActivity m_activity;
     private TextView m_progressTextView;
     private MapLoader m_mapLoader;
@@ -55,6 +58,8 @@ class MapListView {
                      * instantiated after the MapEngine has been initialized successfully.
                      */
                     getMapPackages();
+                } else {
+                    Log.e(TAG, "Failed to initialize MapEngine: " + error);
                 }
             }
         });
@@ -88,6 +93,7 @@ class MapListView {
     }
 
     private void getMapPackages() {
+        Log.d(TAG, "getMapPackages()");
         m_mapLoader = MapLoader.getInstance();
         // Add a MapLoader listener to monitor its status
         m_mapLoader.addListener(m_listener);
@@ -140,6 +146,7 @@ class MapListView {
             } else {
                 m_progressTextView.setText("Installing...");
             }
+            Log.d(TAG, "onProgress()");
         }
 
         @Override
@@ -149,6 +156,7 @@ class MapListView {
         @Override
         public void onGetMapPackagesComplete(MapPackage rootMapPackage,
                 MapLoader.ResultCode resultCode) {
+            Log.d(TAG, "onGetMapPackagesComplete()");
             /*
              * Please note that to get the latest MapPackage status, the application should always
              * use the rootMapPackage that being returned here. The same applies to other listener
@@ -166,6 +174,7 @@ class MapListView {
         @Override
         public void onCheckForUpdateComplete(boolean updateAvailable, String current, String update,
                 MapLoader.ResultCode resultCode) {
+            Log.d(TAG, "onCheckForUpdateComplete()");
             if (resultCode == MapLoader.ResultCode.OPERATION_SUCCESSFUL) {
                 if (updateAvailable) {
                     // Update the map if there is a new version available
@@ -190,6 +199,7 @@ class MapListView {
         @Override
         public void onPerformMapDataUpdateComplete(MapPackage rootMapPackage,
                 MapLoader.ResultCode resultCode) {
+            Log.d(TAG, "onPerformMapDataUpdateComplete()");
             if (resultCode == MapLoader.ResultCode.OPERATION_SUCCESSFUL) {
                 Toast.makeText(m_activity, "Map update is completed", Toast.LENGTH_SHORT).show();
                 refreshListView(new ArrayList<>(rootMapPackage.getChildren()));
