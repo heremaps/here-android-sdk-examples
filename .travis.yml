@@ -19,10 +19,6 @@ cache:
     - $HOME/.gradle/wrapper/
     - $HOME/.android/build-cache
 
-env:
-  global:
-  - secure: "Mcj+GC/b/FxV4Msmbr3UgodSj1ZGBpRCw+Iqb2YaYV52PPUCtx9AeLCkZPJo677+9xqQ9zromBvBttD47IJHG1UT9MS3lI1e3XnjwSHiG0OHwcaPXItYXsDmJslBZW52T2g2yQ1ENpgXL3tLS5RqJi1gaKq1/HbxzsLRWolmwm3TlgqHc4is7yPRI/Szh/utm2RLg6yHwZPHcXe7y5yioYODzarB//7l9Q6af9DnsIbNF3z/KVTGx6HbaAZ/9GNPUdUBCmi/vl2DmEfZBN8WiBr2CSn/Z/ogTD8w1mNKmMKxZSzJsAgw4OhrjHnLdk5OraBXsq5cLCsJg8btGE2xp2qPVqbSyzkTFTHQYeFrHMrZnQ+pc0EIFzEkUVsdk1ptCrxov2TfbFLpBk7xP6VSDNM+A5+MmBDqooU4AJ4KRzd7WgpJxFff0XLLDiDzJMWqr8s+KHMktrOmY9DlFJsuSkPgIdqWiZVf3LjJjjCRxG0oW0D9aOPfGABPlsmK29shO/EVQvXnUBgYnt7zxEpK7oBBNO/2/1ZTci2AEh870Rh3zpjQwrApg1HKGDmDD2/c/4O1YDz41mdmUlyDhTCBBPoiuahnQ7uFUyhBprZVI83H6qRPoPAHupPixSA1x43kEcM6ETZOtBIPXdg/67lhmYvp8fB11aFaCkjMifslx28="
-
 install:
   - echo $ANDROID_HOME
   - mkdir -p $ANDROID_HOME/licenses
@@ -31,6 +27,15 @@ install:
 
 before_script:
   - travis_wait .ci/preInstall.sh
+  - .ci/setCredentials.sh
 
 script:
   - .ci/buildAll.sh
+
+after_success:
+  - .ci/collectApk.sh
+
+addons:
+  artifacts: 
+    target_paths: /
+

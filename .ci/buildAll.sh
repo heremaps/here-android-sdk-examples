@@ -7,7 +7,7 @@ ORIG_PWD="$PWD"
 
 for APP_PATH in $APP_PROJECTS; do
     cd $APP_PATH
-    ./gradlew build
+    ./gradlew assembleDebug
     ERROR=$?
     if [ $ERROR -ne 0 ]; then
         break
