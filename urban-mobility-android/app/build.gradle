@@ -4,7 +4,7 @@ android {
     compileSdkVersion 23
     buildToolsVersion "25.0.2"
     defaultConfig {
-        applicationId 'com.here.android.example.urbanmobility'
+        applicationId 'com.here.tcsdemo'
         minSdkVersion 15
 
         targetSdkVersion 23
