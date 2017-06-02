@@ -23,7 +23,8 @@
             </intent-filter>
         </activity>
 
-        <!--Developers should put application credentials here.To obtain them, please register the application at developer.here.com-->
+        <!--Developers should put application credentials here.To obtain them, please register the application
+        at https://developer.here.com/develop/mobile-sdks-->
         <meta-data
             android:name="com.here.android.maps.appid"
             android:value="{YOUR_APP_ID}" />
