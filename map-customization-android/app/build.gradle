@@ -5,7 +5,7 @@ android {
     buildToolsVersion "25.0.2"
 
     defaultConfig {
-        applicationId 'com.here.android.example.map.customization'
+        applicationId 'com.here.tcsdemo'
         minSdkVersion 23
 
         targetSdkVersion 23

@@ -27,6 +27,15 @@ install:
 
 before_script:
   - travis_wait .ci/preInstall.sh
+  - .ci/setCredentials.sh
 
 script:
   - .ci/buildAll.sh
+
+after_success:
+  - .ci/collectApk.sh
+
+addons:
+  artifacts: 
+    target_paths: /
+
