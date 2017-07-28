@@ -20,14 +20,6 @@
             android:layout_weight="1" />
 
         <Button
-            android:text="Departure"
-            android:textSize="12sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/departureBoardRequestBtn"
-            android:layout_weight="1" />
-
-        <Button
             android:text="City"
             android:textSize="12sp"
             android:layout_width="wrap_content"

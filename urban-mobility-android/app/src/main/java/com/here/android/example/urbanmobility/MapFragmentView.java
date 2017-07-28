@@ -208,64 +208,6 @@ public class MapFragmentView {
             }
         });
 
-        Button departureBoardRequestButton = (Button) m_activity
-                .findViewById(R.id.departureBoardRequestBtn);
-        departureBoardRequestButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                cleanMap();
-
-                /* Setup DepartureBoardRequest listener */
-                ResponseListener<DepartureBoard> departureBoardListener = new ResponseListener<DepartureBoard>() {
-                    @Override
-                    public void onError(ErrorCode errorCode, String errorMessage) {
-                        Toast.makeText(m_activity,
-                                "ERROR: departureBoardRequest returned error code: " + errorCode,
-                                Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onSuccess(DepartureBoard result) {
-                        s_ResultList = result.getDepartures();
-                        if (s_ResultList.size() > 0) {
-                            GeoCoordinate stationCoordinate = new GeoCoordinate(
-                                    s_ResultList.get(0).getStation().getAddress().getCoordinate());
-                            /* Add map marker to the station of the departures */
-                            addMarkerAtResult(stationCoordinate);
-                            /* Set map center to the station of the departures */
-                            m_map.setCenter(stationCoordinate, Map.Animation.NONE);
-                            m_map.setZoomLevel(16.7);
-                            /*
-                             * Enable the button to open the resultListView to present the departure
-                             * results
-                             */
-                            m_detailButton.setVisibility(View.VISIBLE);
-                        } else {
-                            Toast.makeText(m_activity, "No departure information yet",
-                                    Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                };
-
-                /*
-                 * DepartureBoardRequest discovers departure information by searching around a given
-                 * location, filtered by station Ids, date and time, maximum results, and so on
-                 */
-                GeoCoordinate searchCoordinate = new GeoCoordinate(49.2852595, -123.1132904);
-                /* Waterfront Station Canada Line, Canada Line TO YVR */
-                String stationId = "414508979";
-                DepartureBoardRequest departureBoardRequest = new RequestManager()
-                        .createDepartureBoardRequest(searchCoordinate, stationId,
-                                departureBoardListener);
-                Date currentTime = new Date();
-                departureBoardRequest.setTime(currentTime);
-                departureBoardRequest.setMaximumResults(10);
-                departureBoardRequest.setRequestRealTimeInfoEnabled(true);
-                departureBoardRequest.execute();
-            }
-        });
-
         Button citySearchRequestButton = (Button) m_activity.findViewById(R.id.cityRequestBtn);
         citySearchRequestButton.setOnClickListener(new View.OnClickListener() {
             @Override
