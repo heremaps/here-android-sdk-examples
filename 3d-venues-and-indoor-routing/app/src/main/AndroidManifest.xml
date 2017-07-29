@@ -39,11 +39,13 @@
         </activity>
 
         <service
-            android:label="HereMapService"
             android:name="com.here.android.mpa.service.MapService"
-            android:process="global.Here.Map.Service.v2">
+            android:label="HereMapService"
+            android:process="global.Here.Map.Service.v3"
+            android:exported="true">
             <intent-filter>
-                <action android:name="com.here.android.mpa.service.MapService"></action>
+                <action android:name="com.here.android.mpa.service.MapService.v3">
+                </action>
             </intent-filter>
         </service>
     </application>
