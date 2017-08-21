@@ -37,7 +37,7 @@ Unless otherwise noted in `LICENSE` files for specific files or directories, the
 
 ## Android Premium SDK
 
-All of the following projects use **version 3.3** of the Android Premium SDK
+All of the following projects use **version 3.4** of the Android Premium SDK
 
 * [3D Venues](3d-venues-and-indoor-routing) - Show venues in 3D mode
 * [Geocoding and Reverse Gecoding](geocoder-and-reverse-geocoder-android) - Trigger a Geocode and Reverse Geocode request in HERE SDK
