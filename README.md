@@ -47,7 +47,7 @@ All of the following projects use **version 3.4** of the Android Premium SDK
 * [Map Gestures](map-gestures-android) - Define custom gesture actions
 * [Map Objects](map-objects-android) - Add map objects onto HERE map
 * [Map Rendering](map-rendering-android) - Display the HERE map on a device
-* [Routing](rotuing-android) - Create a route from HERE Burnaby office to Langely BC and display it on the map
+* [Routing](routing-android) - Create a route from HERE Burnaby office to Langely BC and display it on the map
 * [Search](search-android) - Send different types of search requests
 * [Turn-by-Turn Navigation](turn-by-turn-navigation-android) - Trigger a turn-by-turn navigation from HERE Burnaby office to Langley BC
 * [Urban Mobility](urban-mobility-android) - Send different types of Urban Mobility requests
