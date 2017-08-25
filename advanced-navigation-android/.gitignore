@@ -1,7 +1,7 @@
 .gradle/
 build/
 app/libs/
-！app/libs/README.md
+!app/libs/README.md
 .idea/
 *.iml
 local.properties
