@@ -37,7 +37,7 @@ Unless otherwise noted in `LICENSE` files for specific files or directories, the
 
 ## Android Premium SDK
 
-All of the following projects use **version 3.4** of the Android Premium SDK
+All of the following projects use **version 3.5** of the Android Premium SDK
 
 * [3D Venues](3d-venues-and-indoor-routing) - Show venues in 3D mode
 * [Advanced Navigation](advanced-navigation-android) - Handle user interactions and position updates during navigation
