@@ -1,0 +1,5 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".BasicPositioningActivity">
+    <item android:id="@+id/action_set_location_method" android:title="@string/action_set_location_method" />
+    <item android:id="@+id/action_set_indoor_mode" android:title="@string/action_set_indoor_mode" />
+</menu>
