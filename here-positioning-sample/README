@@ -1,0 +1,8 @@
+This tutorial application does not define HERE credentials for following items:
+
+- App_id ("com.here.android.maps.appid"),
+- App_code ("com.here.android.maps.apptoken"),
+- License key ("com.here.android.maps.license.key"), and
+- Replace applicationId in app/build.gradle inside defaultConfig section with your own package name.
+
+Please replace following with your own application's credentials.
