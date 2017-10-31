@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "25.0.2"
+
     defaultConfig {
         applicationId 'com.here.android.example.map.downloader'
         minSdkVersion 16
@@ -12,6 +12,7 @@ android {
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -27,7 +28,7 @@ repositories {
 }
 
 dependencies {
-    compile(name: 'HERE-sdk', ext: 'aar')
-    compile 'com.google.code.gson:gson:2.2.4'
-    compile 'com.android.support:appcompat-v7:23.4.0'
+    implementation(name: 'HERE-sdk', ext: 'aar')
+    implementation 'com.google.code.gson:gson:2.2.4'
+    implementation 'com.android.support:appcompat-v7:23.4.0'
 }

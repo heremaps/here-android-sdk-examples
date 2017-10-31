@@ -2,7 +2,6 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "25.0.2"
 
     defaultConfig {
         // Developers must replace this with their own application's package name, which matches
@@ -13,6 +12,7 @@ android {
         versionCode 1
         versionName "1.0"
     }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -28,6 +28,6 @@ repositories {
 }
 
 dependencies {
-    compile(name: 'HERE-sdk', ext: 'aar')
-    compile 'com.android.support:appcompat-v7:23.4.0'
+    implementation(name: 'HERE-sdk', ext: 'aar')
+    implementation 'com.android.support:appcompat-v7:23.4.0'
 }
