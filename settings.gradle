@@ -1,4 +1,4 @@
-rootProject.name = 'Android SDK Examples'
+rootProject.name = 'here-android-sdk-examples'
 
 // Use Gradle's incubating "composite builds" to conveniently be able to
 // build otherwise independent projects in a single blow. For details see
