@@ -1,0 +1,44 @@
+<resources>
+    <string name="app_name">BasicPositioningSolution</string>
+
+    <string name="action_set_location_method">Set location method</string>
+    <string name="title_select_location_method">Select location method</string>
+
+    <!-- Location method names shown on dialog. -->
+    <string-array name="locationMethodNames">
+        <item name="locationMethodGps">GPS</item>
+        <item name="locationMethodNetwork">Network</item>
+        <item name="locationMethodGpsNetwork">Gps and Network</item>
+        <item name="locationMethodGpsNetworkIndoor">GPS, Network and Indoor</item>
+        <item name="locationMethodIndoor">Indoor</item>
+    </string-array>
+
+    <!-- Location method enumeration names. -->
+    <string-array name="locationMethodValues">
+        <item name="locationMethodGps">GPS</item>
+        <item name="locationMethodNetwork">NETWORK</item>
+        <item name="locationMethodGpsNetwork">GPS_NETWORK</item>
+        <item name="locationMethodGpsNetworkIndoor">GPS_NETWORK_INDOOR</item>
+        <item name="locationMethodIndoor">INDOOR</item>
+    </string-array>
+
+    <string name="action_set_indoor_mode">Set indoor mode</string>
+    <string name="title_select_indoor_mode">Select indoor mode</string>
+
+    <!-- Indoor positioning mode names shown on dialog. -->
+    <string-array name="indoorPositioningModeNames">
+        <item name="indoorPositioningModeAutomatic">Automatic</item>
+        <item name="indoorPositioningModeCommunity">Community</item>
+        <item name="indoorPositioningModePrivate">Private</item>
+        <item name="indoorPositioningModeDraft">Draft</item>
+    </string-array>
+
+    <!-- Indoor positioning mode enumeration names. -->
+    <string-array name="indoorPositioningModeValues">
+        <item name="indoorPositioningModeAutomatic">AUTOMATIC</item>
+        <item name="indoorPositioningModeCommunity">COMMUNITY</item>
+        <item name="indoorPositioningModePrivate">PRIVATE</item>
+        <item name="indoorPositioningModeDraft">DRAFT</item>
+    </string-array>
+
+</resources>
