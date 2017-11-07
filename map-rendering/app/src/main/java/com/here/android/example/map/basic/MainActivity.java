@@ -16,9 +16,6 @@
 
 package com.here.android.example.map.basic;
 
-import java.util.Arrays;
-import java.util.List;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -50,16 +47,16 @@ public class MainActivity extends AppCompatActivity {
      */
     private void requestPermissions() {
 
-        List<String> permissionList = Arrays.asList(
+        String[] RUNTIME_PERMISSIONS = {
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.INTERNET,
                 Manifest.permission.ACCESS_WIFI_STATE,
-                Manifest.permission.ACCESS_NETWORK_STATE);
+                Manifest.permission.ACCESS_NETWORK_STATE};
 
         // check list of permissions
-        Boolean isPermissionsGranted = true;
-        for (String permission : permissionList) {
+        boolean isPermissionsGranted = true;
+        for (String permission : RUNTIME_PERMISSIONS) {
             if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
                 isPermissionsGranted = false;
                 break;
@@ -75,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         // request permissions
         if (android.os.Build.VERSION.SDK_INT >= 23){
             ActivityCompat.requestPermissions(this,
-                    permissionList.toArray(new String[permissionList.size()]),
+                    RUNTIME_PERMISSIONS,
                     REQUEST_CODE_ASK_PERMISSIONS);
 
         }
