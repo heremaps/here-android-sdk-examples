@@ -37,6 +37,8 @@ import com.here.android.mpa.routing.Router;
 import com.here.android.mpa.routing.RoutingError;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -162,7 +164,7 @@ public class MapFragmentView {
                                 m_map.zoomTo(m_geoBoundingBox, Map.Animation.NONE,
                                         Map.MOVE_PRESERVE_ORIENTATION);
 
-                                startNavigation(m_route);
+                                startNavigation();
                             } else {
                                 Toast.makeText(m_activity,
                                         "Error:route results returned is not valid",
@@ -211,7 +213,7 @@ public class MapFragmentView {
         });
     }
 
-    private void startNavigation(Route route) {
+    private void startNavigation() {
         m_naviControlButton.setText(R.string.stop_navi);
         /* Display the position indicator on map */
         m_map.getPositionIndicator().setVisible(true);
@@ -223,7 +225,25 @@ public class MapFragmentView {
          * suitable for walking. Simulation and tracking modes can also be launched at this moment
          * by calling either simulate() or startTracking()
          */
-        m_navigationManager.startNavigation(route);
+
+        /* Choose navigation modes between real time navigation and simulation */
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(m_activity);
+        alertDialogBuilder.setTitle("Navigation");
+        alertDialogBuilder.setMessage("Choose Mode");
+        alertDialogBuilder.setNegativeButton("Navigation",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialoginterface, int i) {
+                m_navigationManager.startNavigation(m_route);
+                m_map.setTilt(60);
+            };
+        });
+        alertDialogBuilder.setPositiveButton("Simulation",new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialoginterface, int i) {
+                m_navigationManager.simulate(m_route,60);//Simualtion speed is set to 60 m/s
+                m_map.setTilt(60);
+            };
+        });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
         /*
          * Set the map update mode to ROADVIEW.This will enable the automatic map movement based on
          * the current location.If user gestures are expected during the navigation, it's
