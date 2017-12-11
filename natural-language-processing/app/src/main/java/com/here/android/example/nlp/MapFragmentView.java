@@ -62,6 +62,8 @@ public class MapFragmentView {
 
     private static volatile boolean m_nlpInitialized = false;
 
+    private MyASR m_myAsr = null;
+
     public MapFragmentView(Activity activity) {
         m_activity = activity;
         /*
@@ -72,12 +74,12 @@ public class MapFragmentView {
     }
 
     private void initMapFragment() {
-        /* Locate the mapFragment UI element */
+        // Locate the mapFragment UI element
         m_mapFragment = (MapFragment) m_activity.getFragmentManager()
                 .findFragmentById(R.id.mapfragment);
 
         if (m_mapFragment != null) {
-            /* Initialize the MapFragment, results will be given via the called back. */
+            // Initialize the MapFragment, results will be given via the called back.
             m_mapFragment.init(new OnEngineInitListener() {
                 @Override
                 public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
@@ -99,7 +101,8 @@ public class MapFragmentView {
                         // Create Map NLP object to control voice operations
                         // Pass Activity as a Context!!!
                         m_nlp = Nlp.getInstance();
-                        m_nlp.init(m_activity, m_mapFragment, null, m_nlpListener);
+                        m_myAsr = new MyASR(m_activity.getApplicationContext());
+                        m_nlp.init(m_activity, m_mapFragment, null, m_myAsr, m_nlpListener);
                     } else {
                         Toast.makeText(m_activity,
                                 "ERROR: Cannot initialize Map with error " + error,
@@ -122,8 +125,7 @@ public class MapFragmentView {
                 // NLP is initialized
                 m_nlpInitialized = true;
 
-                // Install earcons for ASR states indications. MUST
-                m_nlp.setEarcons(R.raw.sk_start, R.raw.sk_stop, R.raw.sk_error);
+                m_myAsr.setNlp(m_nlp);
 
                 // Set speech volume percentage
                 m_nlp.setSpeechVolume(25);

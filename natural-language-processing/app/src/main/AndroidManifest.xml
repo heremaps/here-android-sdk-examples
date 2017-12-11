@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     package="com.here.android.example.nlp">
 
     <uses-sdk
@@ -20,10 +19,6 @@
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.CALL_PHONE" />
-    <!--This permission is included just for demo purpose, preferably to be removed if not needed.-->
-    <uses-permission android:name="android.permission.CALL_PRIVILEGED"
-        tools:ignore="ProtectedPermissions" />
-
 
     <application
         android:icon="@mipmap/ic_launcher"
@@ -39,29 +34,17 @@
                 </intent-filter>
         </activity>
 
-
         <!--Developers should put application credentials here.To obtain them, please register the application
         at https://developer.here.com/develop/mobile-sdks-->
         <meta-data
             android:name="com.here.android.maps.appid"
-            android:value="{YOUR_APP_ID}" />
-        <meta-data
+            android:value="{YOUR_APP_ID}"/>
+        <meta-data 
             android:name="com.here.android.maps.apptoken"
-            android:value="{YOUR_APP_CODE}" />
+            android:value="{YOUR_APP_CODE}"/>
         <meta-data
-             android:name="com.here.android.maps.license.key"
-             android:value="{YOUR_LICENSE_KEY}" />
-
-        <receiver android:name=".RemoteControlReceiver">
-            <intent-filter android:priority="1000000000">
-                <action android:name="android.intent.action.MEDIA_BUTTON" />
-            </intent-filter>
-        </receiver>
-        <receiver android:name="com.nokia.maps.nlp.Sms">
-            <intent-filter android:priority="2147483647">
-                <action android:name="android.provider.Telephony.SMS_RECEIVED" />
-            </intent-filter>
-        </receiver>
+            android:name="com.here.android.maps.license.key"
+            android:value="{YOUR_LICENSE_KEY}" />
 
         <service
             android:name="com.here.android.mpa.service.MapService"
@@ -74,5 +57,4 @@
             </intent-filter>
         </service>
     </application>
-
 </manifest>
