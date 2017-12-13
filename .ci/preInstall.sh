@@ -2,9 +2,12 @@
 
 # Download and extract the HERE SDK.
 curl -s -S -o HERE_SDK.zip "$HERE_SDK_URL"
-unzip -j -d 'HERE_SDK' -o 'HERE_SDK.zip'
-unzip -j 'HERE_SDK/HERE-sdk.zip' 'HERE-sdk/libs/HERE-sdk.aar' -d 'HERE_SDK'
-rm 'HERE_SDK.zip'
+
+# Extract the downloaded outer ZIP file.
+unzip -j -o 'HERE_SDK.zip' -d 'HERE_SDK'
+
+# Extract the contained inner ZIP.
+unzip -j -o 'HERE_SDK/HERE-sdk.zip' 'sdk/HERE-sdk/libs/HERE-sdk.aar' -d 'HERE_SDK'
 
 # Find paths that contain an app module
 APP_PROJECTS=$(find "$PWD" -maxdepth 1 -type d -exec [ -d {}/app/libs ] \; -print -prune)
@@ -14,3 +17,4 @@ for APP_PATH in $APP_PROJECTS; do
 done
 
 rm -rf 'HERE_SDK'
+rm -f 'HERE_SDK.zip'
