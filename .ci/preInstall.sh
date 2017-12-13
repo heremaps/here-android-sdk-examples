@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash -e
 
 # Download and extract the HERE SDK.
 wget "$HERE_SDK_URL" -q -O 'HERE_SDK.zip'
