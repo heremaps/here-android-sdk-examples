@@ -79,6 +79,8 @@ public class MapFragmentView {
                         m_map = m_mapFragment.getMap();
                         m_map.setCenter(new GeoCoordinate(49.259149, -123.008555),
                                 Map.Animation.NONE);
+                        //Put this call in Map.onTransformListener if the animation(Linear/Bow)
+                        //is used in setCenter()
                         m_map.setZoomLevel(13.2);
                         /*
                          * Get the NavigationManager instance.It is responsible for providing voice
