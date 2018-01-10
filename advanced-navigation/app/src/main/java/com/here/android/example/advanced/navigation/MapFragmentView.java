@@ -113,7 +113,7 @@ public class MapFragmentView {
                                         // adjust tilt to show 3D view
                                         m_map.setTilt(80);
 
-                                        // adjust transform center for navigation experience in potrait
+                                        // adjust transform center for navigation experience in portrait
                                         // view
                                         m_mapTransformCenter = new PointF(m_map.getTransformCenter().x, (m_map
                                                 .getTransformCenter().y * 85 / 50));
@@ -122,7 +122,6 @@ public class MapFragmentView {
                                         // create a map marker to show current position
                                         Image icon = new Image();
                                         m_positionIndicatorFixed = new MapMarker();
-
                                         try {
                                             icon.setImageResource(R.drawable.gps_position);
                                             m_positionIndicatorFixed.setIcon(icon);
@@ -246,7 +245,7 @@ public class MapFragmentView {
         m_map.setCenter(PositioningManager.getInstance().getPosition().getCoordinate(), Map
                         .Animation.BOW, m_lastZoomLevelInRoadViewMode, Map.MOVE_PRESERVE_ORIENTATION,
                 80);
-        // do not start RoadView and its listener until the map movment is complete.
+        // do not start RoadView and its listener until the map movement is complete.
         m_returningToRoadViewMode = true;
     }
 
@@ -341,7 +340,7 @@ public class MapFragmentView {
 
         @Override
         public void onMapTransformEnd(MapState mapsState) {
-            // do not start RoadView and it's listener until moving map to current position has
+            // do not start RoadView and its listener until moving map to current position has
             // completed
             if (m_returningToRoadViewMode) {
                 NavigationManager.getInstance().setMapUpdateMode(NavigationManager.MapUpdateMode
@@ -355,6 +354,7 @@ public class MapFragmentView {
     };
 
     public void onDestroy() {
+        m_map.removeMapObject(m_positionIndicatorFixed);
         NavigationManager.getInstance().stop();
         PositioningManager.getInstance().stop();
     }
