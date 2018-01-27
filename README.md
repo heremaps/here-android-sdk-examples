@@ -27,9 +27,11 @@ This set of individual, use-case based projects is designed to be cloned by deve
 
 7. Replace the instances of the `{YOUR_APP_ID}`, `{YOUR_APP_CODE}` and `{YOUR_LICENSE_KEY}` placeholders in the example's `AndroidManifest.xml` with your obtained values. Yet again looking at the *map-rendering* examples, this would be [here](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering/app/src/main/AndroidManifest.xml#L29), [here](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering/app/src/main/AndroidManifest.xml#L32) and [here](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering/app/src/main/AndroidManifest.xml#L35).
 
-8. Launch [Android Studio](https://developer.android.com/studio/) and import the example's `build.gradle` file.
+8. Replace the instances of the `{YOUR_LABEL_NAME}` and `{YOUR_INTENT_NAME}` placeholders in the example's `AndroidManifest.xml` with your own custom values. Do not reuse HERE SDK defaults. 
 
-9. Run the app.
+9. Launch [Android Studio](https://developer.android.com/studio/) and import the example's `build.gradle` file..
+
+10. Run the app.
 
 ## License
 

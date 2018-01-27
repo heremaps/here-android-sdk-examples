@@ -20,11 +20,14 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -41,6 +44,7 @@ import com.here.android.mpa.mapping.MapFragment;
 import com.here.android.mpa.mapping.MapState;
 import com.here.android.positioning.StatusListener;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -209,82 +213,104 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
         mapFragment = (MapFragment)getFragmentManager().findFragmentById(
             R.id.mapfragment);
         mapFragment.setRetainInstance(false);
-        mapFragment.init(new OnEngineInitListener() {
-            @Override
-            public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
-                if (error == OnEngineInitListener.Error.NONE) {
-                    map = mapFragment.getMap();
-                    map.setCenter(new GeoCoordinate(61.497961, 23.763606, 0.0), Map.Animation.NONE);
-                    map.setZoomLevel(map.getMaxZoomLevel() - 1);
-                    map.addTransformListener(BasicPositioningActivity.this);
-                    mPositioningManager = PositioningManager.getInstance();
-                    mHereLocation = LocationDataSourceHERE.getInstance(
-                        new StatusListener() {
-                            @Override
-                            public void onOfflineModeChanged(boolean offline) {
-                                // called when offline mode changes
-                            }
 
-                            @Override
-                            public void onAirplaneModeEnabled() {
-                                // called when airplane mode is enabled
-                            }
+        // Set path of isolated disk cache
+        String diskCacheRoot = Environment.getExternalStorageDirectory().getPath()
+                + File.separator + ".isolated-here-maps";
+        // Retrieve intent name from manifest
+        String intentName = "";
+        try {
+            ApplicationInfo ai = getPackageManager().getApplicationInfo(this.getPackageName(), PackageManager.GET_META_DATA);
+            Bundle bundle = ai.metaData;
+            intentName= bundle.getString("INTENT_NAME");
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(this.getClass().toString(), "Failed to find intent name, NameNotFound: " + e.getMessage());
+        }
 
-                            @Override
-                            public void onWifiScansDisabled() {
-                                // called when Wi-Fi scans are disabled
-                            }
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot, intentName);
+        if (!success){
+            // Setting the isolated disk cache was not successful, please check if the path is valid and
+            // ensure that it does not match the default location
+            // (getExternalStorageDirectory()/.here-maps).
+            // Also, ensure the provided intent name does not match the default intent name.
+        } else {
+            mapFragment.init(new OnEngineInitListener() {
+                @Override
+                public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
+                    if (error == OnEngineInitListener.Error.NONE) {
+                        map = mapFragment.getMap();
+                        map.setCenter(new GeoCoordinate(61.497961, 23.763606, 0.0), Map.Animation.NONE);
+                        map.setZoomLevel(map.getMaxZoomLevel() - 1);
+                        map.addTransformListener(BasicPositioningActivity.this);
+                        mPositioningManager = PositioningManager.getInstance();
+                        mHereLocation = LocationDataSourceHERE.getInstance(
+                                new StatusListener() {
+                                    @Override
+                                    public void onOfflineModeChanged(boolean offline) {
+                                        // called when offline mode changes
+                                    }
 
-                            @Override
-                            public void onBluetoothDisabled() {
-                                // called when Bluetooth is disabled
-                            }
+                                    @Override
+                                    public void onAirplaneModeEnabled() {
+                                        // called when airplane mode is enabled
+                                    }
 
-                            @Override
-                            public void onCellDisabled() {
-                                // called when Cell radios are switch off
-                            }
+                                    @Override
+                                    public void onWifiScansDisabled() {
+                                        // called when Wi-Fi scans are disabled
+                                    }
 
-                            @Override
-                            public void onGnssLocationDisabled() {
-                                // called when GPS positioning is disabled
-                            }
+                                    @Override
+                                    public void onBluetoothDisabled() {
+                                        // called when Bluetooth is disabled
+                                    }
 
-                            @Override
-                            public void onNetworkLocationDisabled() {
-                                // called when network positioning is disabled
-                            }
+                                    @Override
+                                    public void onCellDisabled() {
+                                        // called when Cell radios are switch off
+                                    }
 
-                            @Override
-                            public void onServiceError(ServiceError serviceError) {
-                                // called on HERE service error
-                            }
+                                    @Override
+                                    public void onGnssLocationDisabled() {
+                                        // called when GPS positioning is disabled
+                                    }
 
-                            @Override
-                            public void onPositioningError(PositioningError positioningError) {
-                                // called when positioning fails
-                            }
-                        });
+                                    @Override
+                                    public void onNetworkLocationDisabled() {
+                                        // called when network positioning is disabled
+                                    }
+
+                                    @Override
+                                    public void onServiceError(ServiceError serviceError) {
+                                        // called on HERE service error
+                                    }
+
+                                    @Override
+                                    public void onPositioningError(PositioningError positioningError) {
+                                        // called when positioning fails
+                                    }
+                                });
                         if (mHereLocation == null) {
                             Toast.makeText(BasicPositioningActivity.this, "LocationDataSourceHERE.getInstance(): failed, exiting", Toast.LENGTH_LONG).show();
                             finish();
                         }
                         mPositioningManager.setDataSource(mHereLocation);
                         mPositioningManager.addListener(new WeakReference<PositioningManager.OnPositionChangedListener>(
-                            BasicPositioningActivity.this));
-                    // start position updates, accepting GPS, network or indoor positions
-                    if (mPositioningManager.start(PositioningManager.LocationMethod.GPS_NETWORK_INDOOR)) {
-                        mapFragment.getPositionIndicator().setVisible(true);
+                                BasicPositioningActivity.this));
+                        // start position updates, accepting GPS, network or indoor positions
+                        if (mPositioningManager.start(PositioningManager.LocationMethod.GPS_NETWORK_INDOOR)) {
+                            mapFragment.getPositionIndicator().setVisible(true);
+                        } else {
+                            Toast.makeText(BasicPositioningActivity.this, "PositioningManager.start: failed, exiting", Toast.LENGTH_LONG).show();
+                            finish();
+                        }
                     } else {
-                        Toast.makeText(BasicPositioningActivity.this, "PositioningManager.start: failed, exiting", Toast.LENGTH_LONG).show();
+                        Toast.makeText(BasicPositioningActivity.this, "onEngineInitializationCompleted: error: " + error + ", exiting", Toast.LENGTH_LONG).show();
                         finish();
                     }
-                } else {
-                    Toast.makeText(BasicPositioningActivity.this, "onEngineInitializationCompleted: error: " + error + ", exiting", Toast.LENGTH_LONG).show();
-                    finish();
                 }
-            }
-        });
+            });
+        }
     }
 
     /**

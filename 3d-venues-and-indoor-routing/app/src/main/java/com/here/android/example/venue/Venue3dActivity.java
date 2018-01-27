@@ -18,15 +18,22 @@ package com.here.android.example.venue;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PointF;
+import android.nfc.Tag;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,6 +80,7 @@ import com.here.android.mpa.venues3d.VenueRouteOptions;
 import com.here.android.mpa.venues3d.VenueService.InitStatus;
 import com.here.android.mpa.venues3d.VenueService.VenueServiceListener;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -334,60 +342,81 @@ public class Venue3dActivity extends FragmentActivity
         m_routingOptionType.setSelection(0);
         m_routingOptionMode.setSelection(1);
 
-        // initialise the Map Fragment to have a map created and attached to
-        // the fragment
-        m_mapFragment.init(new OnEngineInitListener() {
-            @Override
-            public void onEngineInitializationCompleted(Error error) {
-                if (error == Error.NONE) {
-                    // retrieve a reference of the map from the map fragment
-                    m_map = m_mapFragment.getMap();
-                    // Set the map center, zoom level, orientation and tilt
-                    m_map.setCenter(new GeoCoordinate(49.196261, -123.004773, 0.0),
-                            Map.Animation.NONE);
-                } else {
-                    System.out.println("ERROR: Cannot initialize Map Fragment" + error.toString());
+        // Set path of isolated disk cache
+        String diskCacheRoot = Environment.getExternalStorageDirectory().getPath()
+                + File.separator + ".isolated-here-maps";
+        // Retrieve intent name from manifest
+        String intentName = "";
+        try {
+            ApplicationInfo ai = getPackageManager().getApplicationInfo(m_activity.getPackageName(), PackageManager.GET_META_DATA);
+            Bundle bundle = ai.metaData;
+            intentName= bundle.getString("INTENT_NAME");
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(this.getClass().toString(), "Failed to find intent name, NameNotFound: " + e.getMessage());
+        }
+
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot, intentName);
+        if (!success){
+            // Setting the isolated disk cache was not successful, please check if the path is valid and
+            // ensure that it does not match the default location
+            // (getExternalStorageDirectory()/.here-maps).
+            // Also, ensure the provided intent name does not match the default intent name.
+        } else {
+            // initialise the Map Fragment to have a map created and attached to
+            // the fragment
+            m_mapFragment.init(new OnEngineInitListener() {
+                @Override
+                public void onEngineInitializationCompleted(Error error) {
+                    if (error == Error.NONE) {
+                        // retrieve a reference of the map from the map fragment
+                        m_map = m_mapFragment.getMap();
+                        // Set the map center, zoom level, orientation and tilt
+                        m_map.setCenter(new GeoCoordinate(49.196261, -123.004773, 0.0),
+                                Map.Animation.NONE);
+                    } else {
+                        System.out.println("ERROR: Cannot initialize Map Fragment" + error.toString());
+                    }
                 }
-            }
-        }, new VenueServiceListener() {
-            @Override
-            public void onInitializationCompleted(InitStatus result) {
-                if (result == InitStatus.ONLINE_SUCCESS || result == InitStatus.OFFLINE_SUCCESS) {
-                    // Register the activity class as VenueMapFragment.VenueListener
-                    m_mapFragment.addListener(m_activity);
-                    // Set animations on for floor change and venue entering
-                    m_mapFragment.setFloorChangingAnimation(true);
-                    m_mapFragment.setVenueEnteringAnimation(true);
-                    // Ask notification when venue visible; this notification is
-                    // part of VenueMapFragment.VenueListener
-                    m_mapFragment.setVenuesInViewportCallback(true);
+            }, new VenueServiceListener() {
+                @Override
+                public void onInitializationCompleted(InitStatus result) {
+                    if (result == InitStatus.ONLINE_SUCCESS || result == InitStatus.OFFLINE_SUCCESS) {
+                        // Register the activity class as VenueMapFragment.VenueListener
+                        m_mapFragment.addListener(m_activity);
+                        // Set animations on for floor change and venue entering
+                        m_mapFragment.setFloorChangingAnimation(true);
+                        m_mapFragment.setVenueEnteringAnimation(true);
+                        // Ask notification when venue visible; this notification is
+                        // part of VenueMapFragment.VenueListener
+                        m_mapFragment.setVenuesInViewportCallback(true);
 
-                    // Add listener for onCombinedRouteCompleted.
-                    m_mapFragment.getRoutingController().addListener(m_activity);
+                        // Add listener for onCombinedRouteCompleted.
+                        m_mapFragment.getRoutingController().addListener(m_activity);
 
-                    // Add listener for map gesture.
-                    m_mapFragment.getMapGesture().addOnGestureListener(m_activity);
+                        // Add listener for map gesture.
+                        m_mapFragment.getMapGesture().addOnGestureListener(m_activity);
 
-                    // Create floor change widget
-                    m_floorsController = new VenueFloorsController(m_activity, m_mapFragment,
-                            (ListView) findViewById(R.id.floorListView), R.layout.floor_item,
-                            R.id.floorName, R.id.floorGroundSep);
-                    m_initCompleted.set(true);
+                        // Create floor change widget
+                        m_floorsController = new VenueFloorsController(m_activity, m_mapFragment,
+                                (ListView) findViewById(R.id.floorListView), R.layout.floor_item,
+                                R.id.floorName, R.id.floorGroundSep);
+                        m_initCompleted.set(true);
 
-                    // Start position tracking
-                    PositioningManager positioningManager = PositioningManager.getInstance();
-                    positioningManager.start(PositioningManager.LocationMethod.GPS_NETWORK_INDOOR);
+                        // Start position tracking
+                        PositioningManager positioningManager = PositioningManager.getInstance();
+                        positioningManager.start(PositioningManager.LocationMethod.GPS_NETWORK_INDOOR);
 
-                    // Set positioning indicator visible
-                    PositionIndicator positionIndicator = m_mapFragment.getPositionIndicator();
-                    positionIndicator.setVisible(true);
+                        // Set positioning indicator visible
+                        PositionIndicator positionIndicator = m_mapFragment.getPositionIndicator();
+                        positionIndicator.setVisible(true);
+                    }
                 }
-            }
 
-            @Override
-            public void onGetVenueCompleted(Venue venue) {
-            }
-        });
+                @Override
+                public void onGetVenueCompleted(Venue venue) {
+                }
+            });
+        }
     }
 
     /**
