@@ -2,8 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.here.android.example.nlp">
 
-    <uses-sdk
-        android:minSdkVersion="16" />
+    <uses-sdk android:minSdkVersion="16" />
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -21,17 +20,17 @@
     <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <application
-        android:icon="@mipmap/ic_launcher"
-        android:hardwareAccelerated="true"
         android:configChanges="orientation|screenSize"
+        android:hardwareAccelerated="true"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name">
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-                </intent-filter>
+            </intent-filter>
         </activity>
 
         <!--Developers should put application credentials here.To obtain them, please register the application
@@ -46,17 +45,17 @@
             android:name="com.here.android.maps.license.key"
             android:value="{YOUR_LICENSE_KEY}" />
 
-        <!--Developers should always provide custom values for each of {YOUR_LABEL_NAME} and {YOUR_INTENT_NAME}. Do not reuse HERE SDK defaults.-->
+        <!--Developers should always provide custom values for each of {YOUR_LABEL_NAME} and {YOUR_INTENT_NAME}.
+         Do not reuse HERE SDK defaults.-->
         <meta-data
             android:name="INTENT_NAME"
             android:value="{YOUR_INTENT_NAME}" />
         <service
             android:name="com.here.android.mpa.service.MapService"
-            android:label="{YOUR_LABEL_NAME}"
-            android:exported="false" >
+            android:exported="false"
+            android:label="{YOUR_LABEL_NAME}">
             <intent-filter>
-                <action android:name="{YOUR_INTENT_NAME}" >
-                </action>
+                <action android:name="{YOUR_INTENT_NAME}"></action>
             </intent-filter>
         </service>
     </application>

@@ -45,8 +45,8 @@ class MapListView {
     private MapLoader m_mapLoader;
     private MapListAdapter m_listAdapter;
     private List<MapPackage> m_currentMapPackageList;// Global variable to keep track of the map
-                                                     // package list currently being displayed on
-                                                     // screen
+    // package list currently being displayed on
+    // screen
 
     MapListView(ListActivity activity) {
         m_activity = activity;
@@ -60,15 +60,17 @@ class MapListView {
         // Retrieve intent name from manifest
         String intentName = "";
         try {
-            ApplicationInfo ai = m_activity.getPackageManager().getApplicationInfo(m_activity.getPackageName(), PackageManager.GET_META_DATA);
+            ApplicationInfo ai = m_activity.getPackageManager().getApplicationInfo(m_activity.getPackageName(),
+                    PackageManager.GET_META_DATA);
             Bundle bundle = ai.metaData;
-            intentName= bundle.getString("INTENT_NAME");
+            intentName = bundle.getString("INTENT_NAME");
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(this.getClass().toString(), "Failed to find intent name, NameNotFound: " + e.getMessage());
         }
 
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot, intentName);
-        if (!success){
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot,
+                intentName);
+        if (!success) {
             // Setting the isolated disk cache was not successful, please check if the path is valid and
             // ensure that it does not match the default location
             // (getExternalStorageDirectory()/.here-maps).

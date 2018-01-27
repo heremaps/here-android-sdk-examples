@@ -51,7 +51,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-public class BasicPositioningActivity extends Activity implements PositioningManager.OnPositionChangedListener, Map.OnTransformListener {
+public class BasicPositioningActivity extends Activity
+        implements PositioningManager.OnPositionChangedListener, Map.OnTransformListener {
 
     // permissions request code
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
@@ -79,8 +80,8 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
 
     // permissions that need to be explicitly requested from end user.
     private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
     @Override
@@ -119,19 +120,20 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
         }
         // Handle item selection
         switch (item.getItemId()) {
-        case R.id.action_set_location_method:
-            setLocationMethod();
-            return true;
-        case R.id.action_set_indoor_mode:
-            setIndoorMode();
-            return true;
-        default:
-            return super.onOptionsItemSelected(item);
+            case R.id.action_set_location_method:
+                setLocationMethod();
+                return true;
+            case R.id.action_set_indoor_mode:
+                setIndoorMode();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
     }
 
     @Override
-    public void onPositionUpdated(final PositioningManager.LocationMethod locationMethod, final GeoPosition geoPosition, final boolean mapMatched) {
+    public void onPositionUpdated(final PositioningManager.LocationMethod locationMethod, final GeoPosition geoPosition,
+            final boolean mapMatched) {
         final GeoCoordinate coordinate = geoPosition.getCoordinate();
         if (mTransforming) {
             mPendingUpdate = new Runnable() {
@@ -147,7 +149,8 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
     }
 
     @Override
-    public void onPositionFixChanged(PositioningManager.LocationMethod locationMethod, PositioningManager.LocationStatus locationStatus) {
+    public void onPositionFixChanged(PositioningManager.LocationMethod locationMethod,
+            PositioningManager.LocationStatus locationStatus) {
         // ignored
     }
 
@@ -166,18 +169,21 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+            @NonNull int[] grantResults) {
         switch (requestCode) {
-        case REQUEST_CODE_ASK_PERMISSIONS:
-            for (int index = permissions.length - 1; index >= 0; --index) {
-                if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
-                    Toast.makeText(this, "Required permission '" + permissions[index] + "' not granted, exiting", Toast.LENGTH_LONG).show();
-                    finish();
-                    return;
+            case REQUEST_CODE_ASK_PERMISSIONS:
+                for (int index = permissions.length - 1; index >= 0; --index) {
+                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
+                        Toast.makeText(this, "Required permission '" + permissions[index]
+                                        + "' not granted, exiting",
+                                Toast.LENGTH_LONG).show();
+                        finish();
+                        return;
+                    }
                 }
-            }
-            initializeMapsAndPositioning();
-            break;
+                initializeMapsAndPositioning();
+                break;
         }
     }
 
@@ -197,7 +203,7 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
             final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.length];
             Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
             onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, REQUIRED_SDK_PERMISSIONS,
-                grantResults);
+                    grantResults);
         } else {
             final String[] permissions = missingPermissions.toArray(new String[missingPermissions.size()]);
             ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_ASK_PERMISSIONS);
@@ -210,8 +216,8 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
     private void initializeMapsAndPositioning() {
         setContentView(R.layout.activity_main);
         mLocationInfo = (TextView) findViewById(R.id.textViewLocationInfo);
-        mapFragment = (MapFragment)getFragmentManager().findFragmentById(
-            R.id.mapfragment);
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(
+                R.id.mapfragment);
         mapFragment.setRetainInstance(false);
 
         // Set path of isolated disk cache
@@ -220,15 +226,17 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
         // Retrieve intent name from manifest
         String intentName = "";
         try {
-            ApplicationInfo ai = getPackageManager().getApplicationInfo(this.getPackageName(), PackageManager.GET_META_DATA);
+            ApplicationInfo ai = getPackageManager().getApplicationInfo(this.getPackageName(),
+                    PackageManager.GET_META_DATA);
             Bundle bundle = ai.metaData;
-            intentName= bundle.getString("INTENT_NAME");
+            intentName = bundle.getString("INTENT_NAME");
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(this.getClass().toString(), "Failed to find intent name, NameNotFound: " + e.getMessage());
         }
 
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot, intentName);
-        if (!success){
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot,
+                intentName);
+        if (!success) {
             // Setting the isolated disk cache was not successful, please check if the path is valid and
             // ensure that it does not match the default location
             // (getExternalStorageDirectory()/.here-maps).
@@ -291,7 +299,8 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
                                     }
                                 });
                         if (mHereLocation == null) {
-                            Toast.makeText(BasicPositioningActivity.this, "LocationDataSourceHERE.getInstance(): failed, exiting", Toast.LENGTH_LONG).show();
+                            Toast.makeText(BasicPositioningActivity.this,
+                                    "LocationDataSourceHERE.getInstance(): failed, exiting", Toast.LENGTH_LONG).show();
                             finish();
                         }
                         mPositioningManager.setDataSource(mHereLocation);
@@ -301,11 +310,14 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
                         if (mPositioningManager.start(PositioningManager.LocationMethod.GPS_NETWORK_INDOOR)) {
                             mapFragment.getPositionIndicator().setVisible(true);
                         } else {
-                            Toast.makeText(BasicPositioningActivity.this, "PositioningManager.start: failed, exiting", Toast.LENGTH_LONG).show();
+                            Toast.makeText(BasicPositioningActivity.this, "PositioningManager.start: failed, exiting",
+                                    Toast.LENGTH_LONG).show();
                             finish();
                         }
                     } else {
-                        Toast.makeText(BasicPositioningActivity.this, "onEngineInitializationCompleted: error: " + error + ", exiting", Toast.LENGTH_LONG).show();
+                        Toast.makeText(BasicPositioningActivity.this,
+                                "onEngineInitializationCompleted: error: " + error + ", exiting",
+                                Toast.LENGTH_LONG).show();
                         finish();
                     }
                 }
@@ -315,7 +327,9 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
 
     /**
      * Update location information.
-     * @param geoPosition Latest geo position update.
+     *
+     * @param geoPosition
+     *         Latest geo position update.
      */
     private void updateLocationInfo(PositioningManager.LocationMethod locationMethod, GeoPosition geoPosition) {
         if (mLocationInfo == null) {
@@ -324,7 +338,8 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
         final StringBuffer sb = new StringBuffer();
         final GeoCoordinate coord = geoPosition.getCoordinate();
         sb.append("Type: ").append(String.format(Locale.US, "%s\n", locationMethod.name()));
-        sb.append("Coordinate:").append(String.format(Locale.US, "%.6f, %.6f\n", coord.getLatitude(), coord.getLongitude()));
+        sb.append("Coordinate:").append(
+                String.format(Locale.US, "%.6f, %.6f\n", coord.getLatitude(), coord.getLongitude()));
         if (coord.getAltitude() != GeoCoordinate.UNKNOWN_ALTITUDE) {
             sb.append("Altitude:").append(String.format(Locale.US, "%.2fm\n", coord.getAltitude()));
         }
@@ -357,22 +372,22 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final String[] names = getResources().getStringArray(R.array.locationMethodNames);
         builder.setTitle(R.string.title_select_location_method)
-            .setItems(names, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    try {
-                        final String[] values = getResources().getStringArray(R.array.locationMethodValues);
-                        final PositioningManager.LocationMethod method =
-                                PositioningManager.LocationMethod.valueOf(values[which]);
-                        setLocationMethod(method);
-                    } catch (IllegalArgumentException ex) {
-                        Toast.makeText(BasicPositioningActivity.this, "setLocationMethod failed: "
-                                + ex.getMessage(), Toast.LENGTH_LONG).show();
-                    } finally {
-                        dialog.dismiss();
+                .setItems(names, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            final String[] values = getResources().getStringArray(R.array.locationMethodValues);
+                            final PositioningManager.LocationMethod method =
+                                    PositioningManager.LocationMethod.valueOf(values[which]);
+                            setLocationMethod(method);
+                        } catch (IllegalArgumentException ex) {
+                            Toast.makeText(BasicPositioningActivity.this, "setLocationMethod failed: "
+                                    + ex.getMessage(), Toast.LENGTH_LONG).show();
+                        } finally {
+                            dialog.dismiss();
+                        }
                     }
-                }
-            });
+                });
         builder.create().show();
     }
 
@@ -383,55 +398,61 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
         final AlertDialog.Builder builder = new AlertDialog.Builder(this);
         final String[] names = getResources().getStringArray(R.array.indoorPositioningModeNames);
         builder.setTitle(R.string.title_select_indoor_mode)
-            .setItems(names, new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    try {
-                        final String[] values = getResources().getStringArray(R.array.indoorPositioningModeValues);
-                        final LocationDataSourceHERE.IndoorPositioningMode mode =
-                                LocationDataSourceHERE.IndoorPositioningMode.valueOf(values[which]);
-                        setIndoorMode(mode);
-                    } catch (IllegalArgumentException ex) {
-                        Toast.makeText(BasicPositioningActivity.this, "setIndoorMode failed: "
-                                + ex.getMessage(), Toast.LENGTH_LONG).show();
-                    } finally {
-                        dialog.dismiss();
+                .setItems(names, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        try {
+                            final String[] values = getResources().getStringArray(R.array.indoorPositioningModeValues);
+                            final LocationDataSourceHERE.IndoorPositioningMode mode =
+                                    LocationDataSourceHERE.IndoorPositioningMode.valueOf(values[which]);
+                            setIndoorMode(mode);
+                        } catch (IllegalArgumentException ex) {
+                            Toast.makeText(BasicPositioningActivity.this, "setIndoorMode failed: "
+                                    + ex.getMessage(), Toast.LENGTH_LONG).show();
+                        } finally {
+                            dialog.dismiss();
+                        }
                     }
-                }
-            });
+                });
         builder.create().show();
     }
 
     /**
      * Sets location method for the PositioningManager.
-     * @param method New location method.
+     *
+     * @param method
+     *         New location method.
      */
     private void setLocationMethod(PositioningManager.LocationMethod method) {
         if (!mPositioningManager.start(method)) {
-            Toast.makeText(BasicPositioningActivity.this, "PositioningManager.start(" + method + "): failed", Toast.LENGTH_LONG).show();
+            Toast.makeText(BasicPositioningActivity.this, "PositioningManager.start(" + method + "): failed",
+                    Toast.LENGTH_LONG).show();
         }
     }
 
     /**
      * Sets indoor positioning method.
-     * @param mode New indoor positioning mode.
+     *
+     * @param mode
+     *         New indoor positioning mode.
      */
     private void setIndoorMode(LocationDataSourceHERE.IndoorPositioningMode mode) {
-        final LocationDataSourceHERE.IndoorPositioningModeSetResult result = mHereLocation.setIndoorPositioningMode(mode);
+        final LocationDataSourceHERE.IndoorPositioningModeSetResult result = mHereLocation.setIndoorPositioningMode(
+                mode);
         switch (result) {
-        case FEATURE_NOT_LICENSED:
-            Toast.makeText(BasicPositioningActivity.this, mode + ": is not licensed", Toast.LENGTH_LONG).show();
-            break;
-        case INTERNAL_ERROR:
-            Toast.makeText(BasicPositioningActivity.this, mode + ": internal error", Toast.LENGTH_LONG).show();
-            break;
-        case MODE_NOT_ALLOWED:
-            Toast.makeText(BasicPositioningActivity.this, mode + ": is not allowed", Toast.LENGTH_LONG).show();
-            break;
-        case PENDING:
-        case OK:
-        default:
-            break;
+            case FEATURE_NOT_LICENSED:
+                Toast.makeText(BasicPositioningActivity.this, mode + ": is not licensed", Toast.LENGTH_LONG).show();
+                break;
+            case INTERNAL_ERROR:
+                Toast.makeText(BasicPositioningActivity.this, mode + ": internal error", Toast.LENGTH_LONG).show();
+                break;
+            case MODE_NOT_ALLOWED:
+                Toast.makeText(BasicPositioningActivity.this, mode + ": is not allowed", Toast.LENGTH_LONG).show();
+                break;
+            case PENDING:
+            case OK:
+            default:
+                break;
         }
     }
 

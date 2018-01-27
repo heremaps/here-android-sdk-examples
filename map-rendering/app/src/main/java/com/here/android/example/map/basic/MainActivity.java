@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.WRITE_EXTERNAL_STORAGE,
                 Manifest.permission.INTERNET,
                 Manifest.permission.ACCESS_WIFI_STATE,
-                Manifest.permission.ACCESS_NETWORK_STATE};
+                Manifest.permission.ACCESS_NETWORK_STATE };
 
         // check list of permissions
         boolean isPermissionsGranted = true;
@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         // request permissions
-        if (android.os.Build.VERSION.SDK_INT >= 23){
+        if (android.os.Build.VERSION.SDK_INT >= 23) {
             ActivityCompat.requestPermissions(this,
                     RUNTIME_PERMISSIONS,
                     REQUEST_CODE_ASK_PERMISSIONS);
@@ -79,7 +79,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
     /**
      * Create map fragment view.
      * !!! Please note: the HERE SDK requires all permissions defined above to operate properly. !!!
@@ -87,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
     void createMapFragmentView() {
         m_mapFragmentView = new MapFragmentView(this);
     }
-
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,

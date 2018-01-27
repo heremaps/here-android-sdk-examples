@@ -16,18 +16,6 @@
 
 package com.here.android.example.geocoding;
 
-import java.io.File;
-import java.util.List;
-
-import com.here.android.mpa.common.GeoCoordinate;
-import com.here.android.mpa.common.MapEngine;
-import com.here.android.mpa.common.OnEngineInitListener;
-import com.here.android.mpa.search.ErrorCode;
-import com.here.android.mpa.search.GeocodeRequest;
-import com.here.android.mpa.search.Location;
-import com.here.android.mpa.search.ResultListener;
-import com.here.android.mpa.search.ReverseGeocodeRequest2;
-
 import android.app.Activity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -38,6 +26,18 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.here.android.mpa.common.GeoCoordinate;
+import com.here.android.mpa.common.MapEngine;
+import com.here.android.mpa.common.OnEngineInitListener;
+import com.here.android.mpa.search.ErrorCode;
+import com.here.android.mpa.search.GeocodeRequest;
+import com.here.android.mpa.search.Location;
+import com.here.android.mpa.search.ResultListener;
+import com.here.android.mpa.search.ReverseGeocodeRequest2;
+
+import java.io.File;
+import java.util.List;
 
 /**
  * This class demonstrates the usage of Geocoding and Reverse Geocoding request APIs
@@ -60,15 +60,17 @@ public class MainView {
         // Retrieve intent name from manifest
         String intentName = "";
         try {
-            ApplicationInfo ai = m_activity.getPackageManager().getApplicationInfo(m_activity.getPackageName(), PackageManager.GET_META_DATA);
+            ApplicationInfo ai = m_activity.getPackageManager().getApplicationInfo(m_activity.getPackageName(),
+                    PackageManager.GET_META_DATA);
             Bundle bundle = ai.metaData;
-            intentName= bundle.getString("INTENT_NAME");
+            intentName = bundle.getString("INTENT_NAME");
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(this.getClass().toString(), "Failed to find intent name, NameNotFound: " + e.getMessage());
         }
 
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot, intentName);
-        if (!success){
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot,
+                intentName);
+        if (!success) {
             // Setting the isolated disk cache was not successful, please check if the path is valid and
             // ensure that it does not match the default location
             // (getExternalStorageDirectory()/.here-maps).

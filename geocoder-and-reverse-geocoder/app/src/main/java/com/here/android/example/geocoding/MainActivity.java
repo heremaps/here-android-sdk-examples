@@ -16,9 +16,6 @@
 
 package com.here.android.example.geocoding;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -26,6 +23,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Main activity which launches map view and handles Android run-time requesting permission.
@@ -48,7 +48,6 @@ public class MainActivity extends AppCompatActivity {
      * needs when the app is running.
      */
     private void requestPermissions() {
-
         final List<String> requiredSDKPermissions = new ArrayList<String>();
         requiredSDKPermissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
         requiredSDKPermissions.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);

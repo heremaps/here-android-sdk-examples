@@ -35,17 +35,17 @@
             android:name="com.here.android.maps.license.key"
             android:value="{YOUR_LICENSE_KEY}" />
 
-        <!--Developers should always provide custom values for each of {YOUR_LABEL_NAME} and {YOUR_INTENT_NAME}. Do not reuse HERE SDK defaults.-->
+        <!--Developers should always provide custom values for each of {YOUR_LABEL_NAME} and {YOUR_INTENT_NAME}.
+         Do not reuse HERE SDK defaults.-->
         <meta-data
             android:name="INTENT_NAME"
             android:value="{YOUR_INTENT_NAME}" />
         <service
             android:name="com.here.android.mpa.service.MapService"
-            android:label="{YOUR_LABEL_NAME}"
-            android:exported="false" >
+            android:exported="false"
+            android:label="{YOUR_LABEL_NAME}">
             <intent-filter>
-                <action android:name="{YOUR_INTENT_NAME}" >
-                </action>
+                <action android:name="{YOUR_INTENT_NAME}"></action>
             </intent-filter>
         </service>
 

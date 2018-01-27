@@ -81,15 +81,17 @@ public class MapFragmentView {
         // Retrieve intent name from manifest
         String intentName = "";
         try {
-            ApplicationInfo ai = m_activity.getPackageManager().getApplicationInfo(m_activity.getPackageName(), PackageManager.GET_META_DATA);
+            ApplicationInfo ai = m_activity.getPackageManager().getApplicationInfo(m_activity.getPackageName(),
+                    PackageManager.GET_META_DATA);
             Bundle bundle = ai.metaData;
-            intentName= bundle.getString("INTENT_NAME");
+            intentName = bundle.getString("INTENT_NAME");
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(this.getClass().toString(), "Failed to find intent name, NameNotFound: " + e.getMessage());
         }
 
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot, intentName);
-        if (!success){
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot,
+                intentName);
+        if (!success) {
             // Setting the isolated disk cache was not successful, please check if the path is valid and
             // ensure that it does not match the default location
             // (getExternalStorageDirectory()/.here-maps).
@@ -258,17 +260,21 @@ public class MapFragmentView {
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(m_activity);
         alertDialogBuilder.setTitle("Navigation");
         alertDialogBuilder.setMessage("Choose Mode");
-        alertDialogBuilder.setNegativeButton("Navigation",new DialogInterface.OnClickListener() {
+        alertDialogBuilder.setNegativeButton("Navigation", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialoginterface, int i) {
                 m_navigationManager.startNavigation(m_route);
                 m_map.setTilt(60);
-            };
+            }
+
+            ;
         });
-        alertDialogBuilder.setPositiveButton("Simulation",new DialogInterface.OnClickListener() {
+        alertDialogBuilder.setPositiveButton("Simulation", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialoginterface, int i) {
-                m_navigationManager.simulate(m_route,60);//Simualtion speed is set to 60 m/s
+                m_navigationManager.simulate(m_route, 60);//Simualtion speed is set to 60 m/s
                 m_map.setTilt(60);
-            };
+            }
+
+            ;
         });
         AlertDialog alertDialog = alertDialogBuilder.create();
         alertDialog.show();

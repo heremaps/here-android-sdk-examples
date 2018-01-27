@@ -90,15 +90,17 @@ public class MapFragmentView {
         // Retrieve intent name from manifest
         String intentName = "";
         try {
-            ApplicationInfo ai = m_activity.getPackageManager().getApplicationInfo(m_activity.getPackageName(), PackageManager.GET_META_DATA);
+            ApplicationInfo ai = m_activity.getPackageManager().getApplicationInfo(m_activity.getPackageName(),
+                    PackageManager.GET_META_DATA);
             Bundle bundle = ai.metaData;
-            intentName= bundle.getString("INTENT_NAME");
+            intentName = bundle.getString("INTENT_NAME");
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(this.getClass().toString(), "Failed to find intent name, NameNotFound: " + e.getMessage());
         }
 
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot, intentName);
-        if (!success){
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot,
+                intentName);
+        if (!success) {
             // Setting the isolated disk cache was not successful, please check if the path is valid and
             // ensure that it does not match the default location
             // (getExternalStorageDirectory()/.here-maps).
@@ -190,6 +192,7 @@ public class MapFragmentView {
             m_nlp.resume(m_activity);
         }
     }
+
     public boolean startNlpListening() {
         boolean nlpIsInitialized = nlpIsInitialized();
         if (nlpIsInitialized) {
@@ -201,7 +204,6 @@ public class MapFragmentView {
     private boolean nlpIsInitialized() {
         return (m_nlp != null) && m_nlpInitialized;
     }
-
 
     // Place markers handling helpers
 
@@ -336,10 +338,10 @@ public class MapFragmentView {
          */
         @Override
         public void onComplete(final Error error,
-                               final String searchString,
-                               final String whereString,
-                               final String nearString,
-                               List<PlaceLink> placeLinks) {
+                final String searchString,
+                final String whereString,
+                final String nearString,
+                List<PlaceLink> placeLinks) {
             if (error == Error.NONE && placeLinks != null) {
                 // Show all place results on the map.
                 for (PlaceLink place : placeLinks) {

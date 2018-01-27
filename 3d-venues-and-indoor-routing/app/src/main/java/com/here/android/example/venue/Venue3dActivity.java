@@ -18,15 +18,11 @@ package com.here.android.example.venue;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PointF;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -108,7 +104,7 @@ public class Venue3dActivity extends FragmentActivity
         private LayoutInflater m_inflater = null;
 
         public VenueFloorAdapter(Context context, List<Level> levels, int floorItemId,
-                                 int floorNameId, int floorGroundSepId) {
+                int floorNameId, int floorGroundSepId) {
             this.m_levels = new Level[levels.size()];
             m_floorItem = floorItemId;
             m_floorName = floorNameId;
@@ -208,6 +204,7 @@ public class Venue3dActivity extends FragmentActivity
 
             if (m_venueMapFragment.getSelectedVenue() != null) {
                 onVenueSelected(m_venueMapFragment.getSelectedVenue());
+
             }
         }
 
@@ -348,15 +345,17 @@ public class Venue3dActivity extends FragmentActivity
         // Retrieve intent name from manifest
         String intentName = "";
         try {
-            ApplicationInfo ai = getPackageManager().getApplicationInfo(m_activity.getPackageName(), PackageManager.GET_META_DATA);
+            ApplicationInfo ai = getPackageManager().getApplicationInfo(m_activity.getPackageName(),
+                    PackageManager.GET_META_DATA);
             Bundle bundle = ai.metaData;
-            intentName= bundle.getString("INTENT_NAME");
+            intentName = bundle.getString("INTENT_NAME");
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(this.getClass().toString(), "Failed to find intent name, NameNotFound: " + e.getMessage());
         }
 
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot, intentName);
-        if (!success){
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot,
+                intentName);
+        if (!success) {
             // Setting the isolated disk cache was not successful, please check if the path is valid and
             // ensure that it does not match the default location
             // (getExternalStorageDirectory()/.here-maps).
@@ -545,7 +544,7 @@ public class Venue3dActivity extends FragmentActivity
     }
 
     private void openVenueAsync() {
-        InputMethodManager imm = (InputMethodManager)getSystemService(
+        InputMethodManager imm = (InputMethodManager) getSystemService(
                 Context.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(m_venueIdEditText.getWindowToken(), 0);
 
@@ -653,7 +652,7 @@ public class Venue3dActivity extends FragmentActivity
         if (controller == null) {
             super.onBackPressed();
         } else {
-            if( controller.getSelectedSpace() == null ) {
+            if (controller.getSelectedSpace() == null) {
                 m_mapFragment.deselectVenue();
                 if (m_currentVenue != null) {
                     m_currentVenue = null;

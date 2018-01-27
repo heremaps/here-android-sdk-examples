@@ -59,7 +59,7 @@ public class MainActivity extends Activity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
+            @NonNull int[] grantResults) {
         switch (requestCode) {
             case REQUEST_CODE_ASK_PERMISSIONS: {
                 for (int index = 0; index < permissions.length; index++) {
@@ -136,11 +136,13 @@ public class MainActivity extends Activity {
     /**
      * Checks HW keys to activate the Speech Recognition Mode.
      *
-     * @param keyCode specified Key code
+     * @param keyCode
+     *         specified Key code
+     *
      * @return TRUE if key activates speech
      */
     private boolean keyActivatesSpeech(int keyCode) {
-        switch(keyCode) {
+        switch (keyCode) {
             case KeyEvent.KEYCODE_VOLUME_UP:
                 // Volume UP key triggers Nlp to listen to
                 // voice input

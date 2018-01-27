@@ -80,26 +80,26 @@ public class MapFragmentView {
         // Retrieve intent name from manifest
         String intentName = "";
         try {
-            ApplicationInfo ai = m_activity.getPackageManager().getApplicationInfo(m_activity.getPackageName(), PackageManager.GET_META_DATA);
+            ApplicationInfo ai = m_activity.getPackageManager().getApplicationInfo(m_activity.getPackageName(),
+                    PackageManager.GET_META_DATA);
             Bundle bundle = ai.metaData;
-            intentName= bundle.getString("INTENT_NAME");
+            intentName = bundle.getString("INTENT_NAME");
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(this.getClass().toString(), "Failed to find intent name, NameNotFound: " + e.getMessage());
         }
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot, intentName);
-        if (!success){
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot,
+                intentName);
+        if (!success) {
             // Setting the isolated disk cache was not successful, please check if the path is valid and
             // ensure that it does not match the default location
             // (getExternalStorageDirectory()/.here-maps).
             // Also, ensure the provided intent name does not match the default intent name.
         } else {
             if (m_mapFragment != null) {
-
             /* Initialize the MapFragment, results will be given via the called back. */
                 m_mapFragment.init(new OnEngineInitListener() {
                     @Override
                     public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
-
                         if (error == OnEngineInitListener.Error.NONE) {
                             m_mapFragment.getMapGesture().addOnGestureListener(gestureListener, 100, true);
                             // retrieve a reference of the map from the map fragment
@@ -120,7 +120,7 @@ public class MapFragmentView {
                                 coreRouter.calculateRoute(routePlan, new CoreRouter.Listener() {
                                     @Override
                                     public void onCalculateRouteFinished(List<RouteResult> list,
-                                                                         RoutingError routingError) {
+                                            RoutingError routingError) {
                                         if (routingError == RoutingError.NONE) {
                                             Route route = list.get(0).getRoute();
 
@@ -170,7 +170,8 @@ public class MapFragmentView {
                                             // listen to updates from RoadView which tells you where the map
                                             // center should be situated. This is used when RoadView is active.
                                             NavigationManager.getInstance().getRoadView().addListener(new
-                                                    WeakReference<NavigationManager.RoadView.Listener>(roadViewListener));
+                                                    WeakReference<NavigationManager.RoadView.Listener>(
+                                                    roadViewListener));
 
                                             // start navigation simulation travelling at 13 meters per second
                                             NavigationManager.getInstance().simulate(route, 13);
@@ -200,7 +201,6 @@ public class MapFragmentView {
                 });
             }
         }
-
 
         m_mapFragment.addOnMapRenderListener(new OnMapRenderListener() {
             @Override
