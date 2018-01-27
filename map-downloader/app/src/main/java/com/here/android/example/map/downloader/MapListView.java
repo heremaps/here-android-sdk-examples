@@ -45,8 +45,8 @@ class MapListView {
     private MapLoader m_mapLoader;
     private MapListAdapter m_listAdapter;
     private List<MapPackage> m_currentMapPackageList;// Global variable to keep track of the map
-    // package list currently being displayed on
-    // screen
+                                                     // package list currently being displayed on
+                                                     // screen
 
     MapListView(ListActivity activity) {
         m_activity = activity;
