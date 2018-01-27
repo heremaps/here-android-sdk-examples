@@ -16,7 +16,16 @@
 
 package com.here.android.example.geocoding;
 
-import java.util.List;
+import android.app.Activity;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.MapEngine;
@@ -27,11 +36,8 @@ import com.here.android.mpa.search.Location;
 import com.here.android.mpa.search.ResultListener;
 import com.here.android.mpa.search.ReverseGeocodeRequest2;
 
-import android.app.Activity;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
+import java.io.File;
+import java.util.List;
 
 /**
  * This class demonstrates the usage of Geocoding and Reverse Geocoding request APIs
@@ -47,18 +53,42 @@ public class MainView {
     }
 
     private void initMapEngine() {
-        /*
-         * Even though we don't display a map view in this application, in order to access any
-         * services that HERE Android SDK provides, the MapEngine must be initialized as the
-         * prerequisite.
-         */
-        MapEngine.getInstance().init(m_activity, new OnEngineInitListener() {
-            @Override
-            public void onEngineInitializationCompleted(Error error) {
-                Toast.makeText(m_activity, "Map Engine initialized with error code:" + error,
-                        Toast.LENGTH_SHORT).show();
-            }
-        });
+
+        // Set path of isolated disk cache
+        String diskCacheRoot = Environment.getExternalStorageDirectory().getPath()
+                + File.separator + ".isolated-here-maps";
+        // Retrieve intent name from manifest
+        String intentName = "";
+        try {
+            ApplicationInfo ai = m_activity.getPackageManager().getApplicationInfo(m_activity.getPackageName(),
+                    PackageManager.GET_META_DATA);
+            Bundle bundle = ai.metaData;
+            intentName = bundle.getString("INTENT_NAME");
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(this.getClass().toString(), "Failed to find intent name, NameNotFound: " + e.getMessage());
+        }
+
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot,
+                intentName);
+        if (!success) {
+            // Setting the isolated disk cache was not successful, please check if the path is valid and
+            // ensure that it does not match the default location
+            // (getExternalStorageDirectory()/.here-maps).
+            // Also, ensure the provided intent name does not match the default intent name.
+        } else {
+            /*
+             * Even though we don't display a map view in this application, in order to access any
+             * services that HERE Android SDK provides, the MapEngine must be initialized as the
+             * prerequisite.
+             */
+            MapEngine.getInstance().init(m_activity, new OnEngineInitListener() {
+                @Override
+                public void onEngineInitializationCompleted(Error error) {
+                    Toast.makeText(m_activity, "Map Engine initialized with error code:" + error,
+                            Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 
     private void initUIElements() {
