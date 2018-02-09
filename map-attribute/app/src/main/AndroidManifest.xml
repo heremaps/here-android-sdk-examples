@@ -39,8 +39,8 @@
          <!--Developers should always provide custom values for each of {YOUR_LABEL_NAME} and {YOUR_INTENT_NAME}.
          Do not reuse HERE SDK defaults.-->
         <meta-data
-        android:name="INTENT_NAME"
-        android:value="{YOUR_INTENT_NAME}" />
+            android:name="INTENT_NAME"
+            android:value="{YOUR_INTENT_NAME}" />
         <service
             android:name="com.here.android.mpa.service.MapService"
             android:label="{YOUR_LABEL_NAME}"
