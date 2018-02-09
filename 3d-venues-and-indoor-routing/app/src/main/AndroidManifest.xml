@@ -18,27 +18,15 @@
 
         <!--Developers should put application credentials here.To obtain them, please register the application
          at https://developer.here.com/develop/mobile-sdks-->
-<<<<<<< HEAD
         <meta-data
-        android:name="com.here.android.maps.appid"
-        android:value="{YOUR_APP_ID}" />
-        <meta-data
-        android:name="com.here.android.maps.apptoken"
-        android:value="{YOUR_APP_CODE}" />
-        <meta-data
-        android:name="com.here.android.maps.license.key"
-        android:value="{YOUR_LICENSE_KEY}" />
-=======
-         <meta-data
             android:name="com.here.android.maps.appid"
             android:value="{YOUR_APP_ID}" />
-         <meta-data
+        <meta-data
             android:name="com.here.android.maps.apptoken"
             android:value="{YOUR_APP_CODE}" />
-         <meta-data
+        <meta-data
             android:name="com.here.android.maps.license.key"
             android:value="{YOUR_LICENSE_KEY}" />
->>>>>>> Android Manifests updated
 
         <activity
             android:label="@string/app_name"
