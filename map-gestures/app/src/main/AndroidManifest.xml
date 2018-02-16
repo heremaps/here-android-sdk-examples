@@ -23,7 +23,7 @@
         </activity>
 
         <!--Developers should put application credentials here.To obtain them, please register the application
-        at https://developer.here.com/develop/mobile-sdks-->
+         at https://developer.here.com/develop/mobile-sdks-->
         <meta-data
             android:name="com.here.android.maps.appid"
             android:value="{YOUR_APP_ID}" />
@@ -34,16 +34,18 @@
             android:name="com.here.android.maps.license.key"
             android:value="{YOUR_LICENSE_KEY}" />
 
+         <!--Developers should always provide custom values for each of {YOUR_LABEL_NAME} and {YOUR_INTENT_NAME}.
+         Do not reuse HERE SDK defaults.-->
+        <meta-data
+            android:name="INTENT_NAME"
+            android:value="{YOUR_INTENT_NAME}" />
         <service
             android:name="com.here.android.mpa.service.MapService"
-            android:label="HereMapService"
-            android:process="global.Here.Map.Service.v3"
-            android:exported="true">
+            android:label="{YOUR_LABEL_NAME}"
+            android:exported="false">
             <intent-filter>
-                <action android:name="com.here.android.mpa.service.MapService.v3">
-                </action>
+                <action android:name="{YOUR_INTENT_NAME}"></action>
             </intent-filter>
         </service>
     </application>
-
 </manifest>

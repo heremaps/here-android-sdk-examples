@@ -17,7 +17,12 @@
 package com.here.android.example.advanced.navigation;
 
 import android.app.Activity;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.graphics.PointF;
+import android.os.Bundle;
+import android.os.Environment;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.here.android.mpa.common.GeoCoordinate;
@@ -40,6 +45,7 @@ import com.here.android.mpa.routing.RouteResult;
 import com.here.android.mpa.routing.RouteWaypoint;
 import com.here.android.mpa.routing.RoutingError;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -68,113 +74,133 @@ public class MapFragmentView {
     private void initMapFragment() {
         m_mapFragment = (MapFragment) m_activity.getFragmentManager()
                 .findFragmentById(R.id.mapfragment);
-
-        if (m_mapFragment != null) {
+        // Set path of isolated disk cache
+        String diskCacheRoot = Environment.getExternalStorageDirectory().getPath()
+                + File.separator + ".isolated-here-maps";
+        // Retrieve intent name from manifest
+        String intentName = "";
+        try {
+            ApplicationInfo ai = m_activity.getPackageManager().getApplicationInfo(m_activity.getPackageName(), PackageManager.GET_META_DATA);
+            Bundle bundle = ai.metaData;
+            intentName = bundle.getString("INTENT_NAME");
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(this.getClass().toString(), "Failed to find intent name, NameNotFound: " + e.getMessage());
+        }
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot, intentName);
+        if (!success) {
+            // Setting the isolated disk cache was not successful, please check if the path is valid and
+            // ensure that it does not match the default location
+            // (getExternalStorageDirectory()/.here-maps).
+            // Also, ensure the provided intent name does not match the default intent name.
+        } else {
+            if (m_mapFragment != null) {
 
             /* Initialize the MapFragment, results will be given via the called back. */
-            m_mapFragment.init(new OnEngineInitListener() {
-                @Override
-                public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
+                m_mapFragment.init(new OnEngineInitListener() {
+                    @Override
+                    public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
 
-                    if (error == OnEngineInitListener.Error.NONE) {
-                        m_mapFragment.getMapGesture().addOnGestureListener(gestureListener, 100, true);
-                        // retrieve a reference of the map from the map fragment
-                        m_map = m_mapFragment.getMap();
-                        m_map.setZoomLevel(19);
-                        m_map.addTransformListener(onTransformListener);
+                        if (error == OnEngineInitListener.Error.NONE) {
+                            m_mapFragment.getMapGesture().addOnGestureListener(gestureListener, 100, true);
+                            // retrieve a reference of the map from the map fragment
+                            m_map = m_mapFragment.getMap();
+                            m_map.setZoomLevel(19);
+                            m_map.addTransformListener(onTransformListener);
 
-                        PositioningManager.getInstance().start(PositioningManager.LocationMethod.GPS_NETWORK);
-                        final RoutePlan routePlan = new RoutePlan();
+                            PositioningManager.getInstance().start(PositioningManager.LocationMethod.GPS_NETWORK);
+                            final RoutePlan routePlan = new RoutePlan();
 
-                        // these two waypoints cover suburban roads
-                        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(48.98382, 2.50292)));
-                        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(48.95602, 2.45939)));
+                            // these two waypoints cover suburban roads
+                            routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(48.98382, 2.50292)));
+                            routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(48.95602, 2.45939)));
 
-                        try {
-                            // calculate a route for navigation
-                            CoreRouter coreRouter = new CoreRouter();
-                            coreRouter.calculateRoute(routePlan, new CoreRouter.Listener() {
-                                @Override
-                                public void onCalculateRouteFinished(List<RouteResult> list,
-                                        RoutingError routingError) {
-                                    if (routingError == RoutingError.NONE) {
-                                        Route route = list.get(0).getRoute();
+                            try {
+                                // calculate a route for navigation
+                                CoreRouter coreRouter = new CoreRouter();
+                                coreRouter.calculateRoute(routePlan, new CoreRouter.Listener() {
+                                    @Override
+                                    public void onCalculateRouteFinished(List<RouteResult> list,
+                                                                         RoutingError routingError) {
+                                        if (routingError == RoutingError.NONE) {
+                                            Route route = list.get(0).getRoute();
 
-                                        // move the map to the first waypoint which is starting point of
-                                        // the route
-                                        m_map.setCenter(routePlan.getWaypoint(0).getNavigablePosition(),
-                                                Map.Animation.NONE);
+                                            // move the map to the first waypoint which is starting point of
+                                            // the route
+                                            m_map.setCenter(routePlan.getWaypoint(0).getNavigablePosition(),
+                                                    Map.Animation.NONE);
 
-                                        // setting MapUpdateMode to RoadView will enable automatic map
-                                        // movements and zoom level adjustments
-                                        NavigationManager.getInstance().setMapUpdateMode
-                                                (NavigationManager.MapUpdateMode.ROADVIEW);
+                                            // setting MapUpdateMode to RoadView will enable automatic map
+                                            // movements and zoom level adjustments
+                                            NavigationManager.getInstance().setMapUpdateMode
+                                                    (NavigationManager.MapUpdateMode.ROADVIEW);
 
-                                        // adjust tilt to show 3D view
-                                        m_map.setTilt(80);
+                                            // adjust tilt to show 3D view
+                                            m_map.setTilt(80);
 
-                                        // adjust transform center for navigation experience in portrait
-                                        // view
-                                        m_mapTransformCenter = new PointF(m_map.getTransformCenter().x, (m_map
-                                                .getTransformCenter().y * 85 / 50));
-                                        m_map.setTransformCenter(m_mapTransformCenter);
+                                            // adjust transform center for navigation experience in portrait
+                                            // view
+                                            m_mapTransformCenter = new PointF(m_map.getTransformCenter().x, (m_map
+                                                    .getTransformCenter().y * 85 / 50));
+                                            m_map.setTransformCenter(m_mapTransformCenter);
 
-                                        // create a map marker to show current position
-                                        Image icon = new Image();
-                                        m_positionIndicatorFixed = new MapMarker();
-                                        try {
-                                            icon.setImageResource(R.drawable.gps_position);
-                                            m_positionIndicatorFixed.setIcon(icon);
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
+                                            // create a map marker to show current position
+                                            Image icon = new Image();
+                                            m_positionIndicatorFixed = new MapMarker();
+                                            try {
+                                                icon.setImageResource(R.drawable.gps_position);
+                                                m_positionIndicatorFixed.setIcon(icon);
+                                            } catch (IOException e) {
+                                                e.printStackTrace();
+                                            }
+
+                                            m_positionIndicatorFixed.setVisible(true);
+                                            m_positionIndicatorFixed.setCoordinate(m_map.getCenter());
+                                            m_map.addMapObject(m_positionIndicatorFixed);
+
+                                            m_mapFragment.getPositionIndicator().setVisible(false);
+
+                                            NavigationManager.getInstance().setMap(m_map);
+
+                                            // listen to real position updates. This is used when RoadView is
+                                            // not active.
+                                            PositioningManager.getInstance().addListener(
+                                                    new WeakReference<PositioningManager.OnPositionChangedListener>(
+                                                            mapPositionHandler));
+
+                                            // listen to updates from RoadView which tells you where the map
+                                            // center should be situated. This is used when RoadView is active.
+                                            NavigationManager.getInstance().getRoadView().addListener(new
+                                                    WeakReference<NavigationManager.RoadView.Listener>(roadViewListener));
+
+                                            // start navigation simulation travelling at 13 meters per second
+                                            NavigationManager.getInstance().simulate(route, 13);
+
+                                        } else {
+                                            Toast.makeText(m_activity,
+                                                    "Error:route calculation returned error code: " + routingError,
+                                                    Toast.LENGTH_LONG).show();
+
                                         }
+                                    }
 
-                                        m_positionIndicatorFixed.setVisible(true);
-                                        m_positionIndicatorFixed.setCoordinate(m_map.getCenter());
-                                        m_map.addMapObject(m_positionIndicatorFixed);
-
-                                        m_mapFragment.getPositionIndicator().setVisible(false);
-
-                                        NavigationManager.getInstance().setMap(m_map);
-
-                                        // listen to real position updates. This is used when RoadView is
-                                        // not active.
-                                        PositioningManager.getInstance().addListener(
-                                                new WeakReference<PositioningManager.OnPositionChangedListener>(
-                                                        mapPositionHandler));
-
-                                        // listen to updates from RoadView which tells you where the map
-                                        // center should be situated. This is used when RoadView is active.
-                                        NavigationManager.getInstance().getRoadView().addListener(new
-                                                WeakReference<NavigationManager.RoadView.Listener>(roadViewListener));
-
-                                        // start navigation simulation travelling at 13 meters per second
-                                        NavigationManager.getInstance().simulate(route, 13);
-
-                                    } else {
-                                        Toast.makeText(m_activity,
-                                                "Error:route calculation returned error code: " + routingError,
-                                                Toast.LENGTH_LONG).show();
+                                    @Override
+                                    public void onProgress(int i) {
 
                                     }
-                                }
-
-                                @Override
-                                public void onProgress(int i) {
-
-                                }
-                            });
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                                });
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            Toast.makeText(m_activity,
+                                    "ERROR: Cannot initialize Map with error " + error,
+                                    Toast.LENGTH_LONG).show();
                         }
-                    } else {
-                        Toast.makeText(m_activity,
-                                "ERROR: Cannot initialize Map with error " + error,
-                                Toast.LENGTH_LONG).show();
                     }
-                }
-            });
+                });
+            }
         }
+
 
         m_mapFragment.addOnMapRenderListener(new OnMapRenderListener() {
             @Override

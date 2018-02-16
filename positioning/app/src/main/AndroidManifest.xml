@@ -23,29 +23,36 @@
             </intent-filter>
         </activity>
 
-        <!-- Developers should put application credentials here. To obtain them, please register the application at developer.here.com -->
-        <meta-data android:name="com.here.android.maps.appid" android:value="{YOUR_APP_ID}"/>
-        <meta-data android:name="com.here.android.maps.apptoken" android:value="{YOUR_APP_TOKEN}"/>
-        <meta-data android:name="com.here.android.maps.license.key" android:value="{YOUR_LICENSE_KEY}"/>
+        <!--Developers should put application credentials here.To obtain them, please register the application
+         at https://developer.here.com/develop/mobile-sdks-->
+        <meta-data
+            android:name="com.here.android.maps.appid"
+            android:value="{YOUR_APP_ID}" />
+        <meta-data
+            android:name="com.here.android.maps.apptoken"
+            android:value="{YOUR_APP_CODE}" />
+        <meta-data
+            android:name="com.here.android.maps.license.key"
+            android:value="{YOUR_LICENSE_KEY}" />
 
-        <!--
-            Embed the HERE Map Service.
-            For more information, see the HERE SDK Developer's Guide
-        -->
-        <service android:exported="true" android:label="HereMapService" android:name="com.here.android.mpa.service.MapService" android:process="global.Here.Map.Service.v2">
+         <!--Developers should always provide custom values for each of {YOUR_LABEL_NAME} and {YOUR_INTENT_NAME}.
+         Do not reuse HERE SDK defaults.-->
+        <meta-data
+            android:name="INTENT_NAME"
+            android:value="{YOUR_INTENT_NAME}" />
+        <service
+            android:name="com.here.android.mpa.service.MapService"
+            android:label="{YOUR_LABEL_NAME}"
+            android:exported="false">
             <intent-filter>
-                <action android:name="com.here.android.mpa.service.MapService">
-                </action>
+                <action android:name="{YOUR_INTENT_NAME}"></action>
             </intent-filter>
         </service>
-
         <!--
             Embed the HERE Positioning Service.
             For more information, see the HERE SDK Developer's Guide
         -->
         <service android:enabled="true" android:exported="false" android:name="com.here.services.internal.LocationService" android:process=":remote">
         </service>
-
     </application>
-
 </manifest>
