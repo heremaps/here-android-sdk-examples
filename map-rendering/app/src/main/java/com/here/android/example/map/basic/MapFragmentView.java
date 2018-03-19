@@ -16,6 +16,7 @@
 
 package com.here.android.example.map.basic;
 
+import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
@@ -54,14 +55,16 @@ public class MapFragmentView {
         // Retrieve intent name from manifest
         String intentName = "";
         try {
-            ApplicationInfo ai = m_activity.getPackageManager().getApplicationInfo(m_activity.getPackageName(), PackageManager.GET_META_DATA);
+            ApplicationInfo ai = m_activity.getPackageManager().getApplicationInfo(m_activity.getPackageName(),
+                    PackageManager.GET_META_DATA);
             Bundle bundle = ai.metaData;
             intentName = bundle.getString("INTENT_NAME");
         } catch (PackageManager.NameNotFoundException e) {
             Log.e(this.getClass().toString(), "Failed to find intent name, NameNotFound: " + e.getMessage());
         }
 
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot, intentName);
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot,
+                intentName);
         if (!success) {
             // Setting the isolated disk cache was not successful, please check if the path is valid and
             // ensure that it does not match the default location
@@ -81,6 +84,14 @@ public class MapFragmentView {
                          * by calling Map APIs.
                          */
                             m_map = m_mapFragment.getMap();
+
+                            /*
+                             * Map center can be set to a desired location at this point.
+                             * It also can be set to the current location ,which needs to be delivered by the PositioningManager.
+                             * Please refer to the user guide for how to get the real-time location.
+                             */
+
+                            m_map.setCenter(new GeoCoordinate(49.258576, -123.008268), Map.Animation.NONE);
                         } else {
                             Toast.makeText(m_activity,
                                     "ERROR: Cannot initialize Map with error " + error,
