@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2017 HERE Europe B.V.
+ * Copyright (c) 2011-2018 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import com.here.android.mpa.routing.RoutingError;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -63,6 +64,7 @@ public class MapFragmentView {
     private NavigationManager m_navigationManager;
     private GeoBoundingBox m_geoBoundingBox;
     private Route m_route;
+    private boolean m_foregroundServiceStarted;
 
     public MapFragmentView(Activity activity) {
         m_activity = activity;
@@ -241,12 +243,38 @@ public class MapFragmentView {
         });
     }
 
+    /*
+     * Android 8.0 (API level 26) limits how frequently background apps can retrieve the user's
+     * current location. Apps can receive location updates only a few times each hour.
+     * See href="https://developer.android.com/about/versions/oreo/background-location-limits.html
+     * In order to retrieve location updates more frequently start a foreground service.
+     * See https://developer.android.com/guide/components/services.html#Foreground
+     */
+    private void startForegroundService() {
+        if (!m_foregroundServiceStarted) {
+            m_foregroundServiceStarted = true;
+            Intent startIntent = new Intent(m_activity, ForegroundService.class);
+            startIntent.setAction(ForegroundService.START_ACTION);
+            m_activity.getApplicationContext().startService(startIntent);
+        }
+    }
+
+    private void stopForegroundService() {
+        if (m_foregroundServiceStarted) {
+            m_foregroundServiceStarted = false;
+            Intent stopIntent = new Intent(m_activity, ForegroundService.class);
+            stopIntent.setAction(ForegroundService.STOP_ACTION);
+            m_activity.getApplicationContext().startService(stopIntent);
+        }
+    }
+
     private void startNavigation() {
         m_naviControlButton.setText(R.string.stop_navi);
         /* Display the position indicator on map */
         m_map.getPositionIndicator().setVisible(true);
         /* Configure Navigation manager to launch navigation on current map */
         m_navigationManager.setMap(m_map);
+
         /*
          * Start the turn-by-turn navigation.Please note if the transport mode of the passed-in
          * route is pedestrian, the NavigationManager automatically triggers the guidance which is
@@ -262,12 +290,14 @@ public class MapFragmentView {
             public void onClick(DialogInterface dialoginterface, int i) {
                 m_navigationManager.startNavigation(m_route);
                 m_map.setTilt(60);
+                startForegroundService();
             };
         });
         alertDialogBuilder.setPositiveButton("Simulation",new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialoginterface, int i) {
                 m_navigationManager.simulate(m_route,60);//Simualtion speed is set to 60 m/s
                 m_map.setTilt(60);
+                startForegroundService();
             };
         });
         AlertDialog alertDialog = alertDialogBuilder.create();
@@ -324,6 +354,7 @@ public class MapFragmentView {
         @Override
         public void onEnded(NavigationManager.NavigationMode navigationMode) {
             Toast.makeText(m_activity, navigationMode + " was ended", Toast.LENGTH_SHORT).show();
+            stopForegroundService();
         }
 
         @Override
@@ -347,6 +378,7 @@ public class MapFragmentView {
     public void onDestroy() {
         /* Stop the navigation when app is destroyed */
         if (m_navigationManager != null) {
+            stopForegroundService();
             m_navigationManager.stop();
         }
     }
