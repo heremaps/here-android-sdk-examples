@@ -33,10 +33,12 @@ import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapFragment;
 import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapObject;
+import com.here.android.mpa.mapping.MapRoute;
 import com.here.android.mpa.nlp.Error;
 import com.here.android.mpa.nlp.Intention;
 import com.here.android.mpa.nlp.Nlp;
 import com.here.android.mpa.nlp.Nlp.OnInitializationListener;
+import com.here.android.mpa.nlp.Place;
 import com.here.android.mpa.routing.Route;
 import com.here.android.mpa.search.CategoryFilter;
 import com.here.android.mpa.search.PlaceLink;
@@ -129,6 +131,7 @@ public class MapFragmentView {
                             m_nlp = Nlp.getInstance();
                             m_myAsr = new MyASR(m_activity.getApplicationContext());
                             m_nlp.init(m_activity, m_mapFragment, null, m_myAsr, m_nlpListener);
+                            m_nlp.addListener(m_routeListener);
                         } else {
                             Toast.makeText(m_activity,
                                     "ERROR: Cannot initialize Map with error " + error,
@@ -344,6 +347,25 @@ public class MapFragmentView {
                 for (PlaceLink place : placeLinks) {
                     addMarkerAtPlace(place);
                 }
+            }
+        }
+    };
+
+    /**
+     * Route callbacks
+     */
+    private Nlp.OnRouteListener m_routeListener = new Nlp.OnRouteListener() {
+        @Override
+        public void onStart() {
+            cleanMap();
+        }
+
+        @Override
+        public void onComplete(Error error, Route route, List<Place> list, String s, List<Route> list1) {
+            if (error == Error.NONE) {
+                MapRoute mapRoute = new MapRoute(route);
+                m_mapObjectList.add(mapRoute);
+                m_map.addMapObject(mapRoute);
             }
         }
     };
