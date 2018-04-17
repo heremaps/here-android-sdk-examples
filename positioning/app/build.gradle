@@ -1,14 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 27
 
     defaultConfig {
         // Developers must replace this with their own application's package name, which matches
         // their HERE application ID.
         applicationId "com.here.android.example.basicpositioningsolution"
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
     }
@@ -29,5 +29,5 @@ repositories {
 
 dependencies {
     implementation(name: 'HERE-sdk', ext: 'aar')
-    implementation 'com.android.support:appcompat-v7:23.4.0'
+    implementation 'com.android.support:appcompat-v7:27.1.1'
 }
