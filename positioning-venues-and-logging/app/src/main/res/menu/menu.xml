@@ -1,0 +1,15 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" tools:context=".BasicVenueActivity">
+    <group android:id="@+id/grp1">
+        <item android:id="@+id/action_add_private_venues" android:title="@string/action_add_private_venues" /> 
+        <item android:id="@+id/action_remove_private_venues" android:title="@string/action_remove_private_venues" />
+    </group>
+    <group android:id="@+id/grp2" android:checkableBehavior="all">
+        <item   android:id="@+id/follow_position"
+                android:title="@string/action_follow_position"
+                android:checkable="true"/>
+        <item   android:id="@+id/add_indoor_to_position"
+                android:title="@string/action_add_indoor_to_position"
+                android:checkable="true"/>
+    </group>
+</menu>
