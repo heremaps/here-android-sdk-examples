@@ -1,0 +1,62 @@
+
+<RelativeLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:tools="http://schemas.android.com/tools"
+android:layout_width="fill_parent"
+android:layout_height="fill_parent"
+android:orientation="vertical" >
+
+<!-- Map Fragment embedded with the map object with venues -->
+<fragment
+    class="com.here.android.mpa.venues3d.VenueMapFragment"
+    android:id="@+id/mapfragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"/>
+
+    <LinearLayout
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginBottom="100dp"
+        android:layout_marginRight="19dp"
+        android:layout_marginTop="100dp"
+        android:baselineAligned="false" >
+
+        <ListView
+            android:id="@+id/floorListView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:choiceMode="singleChoice"
+            android:clickable="true"
+            android:divider="@null"
+            android:dividerHeight="0dp"
+            android:footerDividersEnabled="false"
+            android:headerDividersEnabled="false"
+            android:scrollbars="none"
+            android:visibility="invisible" >
+
+        </ListView>
+
+    </LinearLayout>
+
+
+<!-- Text field containing locaiton information -->
+<RelativeLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="#40000000"
+    android:id="@+id/relativeLayout">
+
+    <TextView
+        android:id="@+id/textViewLocationInfo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Base.TextAppearance.AppCompat.Large"
+        android:text="Waiting for position fix.."
+        android:padding="3dp"/>
+
+</RelativeLayout>
+
+
+</RelativeLayout>
