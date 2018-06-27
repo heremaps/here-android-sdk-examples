@@ -195,7 +195,7 @@ public class MapFragmentView {
                                         public boolean onTwoFingerTapEvent(PointF pointF) {
                                             return false;
                                         }
-                                    });
+                                    }, 0, false);
                         } else {
                             Toast.makeText(m_activity,
                                     "ERROR: Cannot initialize Map with error " + error,

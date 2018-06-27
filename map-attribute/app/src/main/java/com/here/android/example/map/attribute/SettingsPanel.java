@@ -127,16 +127,5 @@ public class SettingsPanel {
                         isChecked);
             }
         });
-
-        /**
-         * Turn on or off street level coverage.
-         */
-        m_coverageSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                m_map.setStreetLevelCoverageVisible(isChecked);
-            }
-        });
     }
 }
