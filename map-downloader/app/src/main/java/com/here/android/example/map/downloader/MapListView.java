@@ -28,6 +28,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.here.android.mpa.common.ApplicationContext;
 import com.here.android.mpa.common.MapEngine;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.odml.MapLoader;
@@ -74,7 +75,7 @@ class MapListView {
             // (getExternalStorageDirectory()/.here-maps).
             // Also, ensure the provided intent name does not match the default intent name.
         } else {
-            MapEngine.getInstance().init(m_activity, new OnEngineInitListener() {
+            MapEngine.getInstance().init(new ApplicationContext(m_activity), new OnEngineInitListener() {
                 @Override
                 public void onEngineInitializationCompleted(Error error) {
                     if (error == Error.NONE) {

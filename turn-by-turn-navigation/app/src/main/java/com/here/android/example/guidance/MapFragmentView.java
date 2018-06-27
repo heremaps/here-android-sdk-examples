@@ -270,8 +270,6 @@ public class MapFragmentView {
 
     private void startNavigation() {
         m_naviControlButton.setText(R.string.stop_navi);
-        /* Display the position indicator on map */
-        m_map.getPositionIndicator().setVisible(true);
         /* Configure Navigation manager to launch navigation on current map */
         m_navigationManager.setMap(m_map);
 
