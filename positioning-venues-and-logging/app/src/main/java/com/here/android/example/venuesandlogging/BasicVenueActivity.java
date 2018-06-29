@@ -926,7 +926,7 @@ public class BasicVenueActivity extends AppCompatActivity
                     venueMapFragment.setVenuesInViewportCallback(true);
 
                     // Add Gesture Listener for map fragment
-                    venueMapFragment.getMapGesture().addOnGestureListener(mActivity);
+                    venueMapFragment.getMapGesture().addOnGestureListener(mActivity, 0, false);
 
                     // retrieve a reference of the map from the map fragment
                     mMap = venueMapFragment.getMap();
@@ -954,10 +954,6 @@ public class BasicVenueActivity extends AppCompatActivity
                     }
                     break;
                 }
-            }
-
-            @Override
-            public void onGetVenueCompleted(Venue venue) {
             }
         });
     }

@@ -36,7 +36,6 @@ public class SettingsPanel {
 
     private Switch m_flowSwitch;
     private Switch m_incidentSwitch;
-    private Switch m_coverageSwitch;
 
     private Activity m_activity;
     private Map m_map;
@@ -52,7 +51,6 @@ public class SettingsPanel {
         m_mapTransitGroup = (RadioGroup) m_activity.findViewById(R.id.transitGroup);
         m_flowSwitch = (Switch) m_activity.findViewById(R.id.flowSwitch);
         m_incidentSwitch = (Switch) m_activity.findViewById(R.id.incidentSwitch);
-        m_coverageSwitch = (Switch) m_activity.findViewById(R.id.coverageSwitch);
 
         setUIListeners();
     }
@@ -125,17 +123,6 @@ public class SettingsPanel {
                 m_map.setTrafficInfoVisible(isChecked);
                 m_map.getMapTrafficLayer().setEnabled(MapTrafficLayer.RenderLayer.INCIDENT,
                         isChecked);
-            }
-        });
-
-        /**
-         * Turn on or off street level coverage.
-         */
-        m_coverageSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                m_map.setStreetLevelCoverageVisible(isChecked);
             }
         });
     }

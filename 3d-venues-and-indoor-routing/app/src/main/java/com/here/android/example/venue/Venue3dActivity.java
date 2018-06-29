@@ -390,7 +390,7 @@ public class Venue3dActivity extends FragmentActivity
                         m_mapFragment.getRoutingController().addListener(m_activity);
 
                         // Add listener for map gesture.
-                        m_mapFragment.getMapGesture().addOnGestureListener(m_activity);
+                        m_mapFragment.getMapGesture().addOnGestureListener(m_activity, 0, false);
 
                         // Create floor change widget
                         m_floorsController = new VenueFloorsController(m_activity, m_mapFragment,
@@ -406,10 +406,6 @@ public class Venue3dActivity extends FragmentActivity
                         PositionIndicator positionIndicator = m_mapFragment.getPositionIndicator();
                         positionIndicator.setVisible(true);
                     }
-                }
-
-                @Override
-                public void onGetVenueCompleted(Venue venue) {
                 }
             });
         }

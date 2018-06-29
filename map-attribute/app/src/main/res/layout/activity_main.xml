@@ -155,29 +155,6 @@
                     android:textColor="#fffcfc"/>
 
             </LinearLayout>
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="fill_parent"
-                android:layout_height="35dp"
-                android:paddingTop="@dimen/abc_action_bar_subtitle_bottom_margin_material"
-                android:text="STREE LEVEL COVERAGE"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#fffcfc"/>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:padding="@dimen/abc_dropdownitem_text_padding_left">
-
-                <Switch
-                    android:id="@+id/coverageSwitch"
-                    android:layout_width="fill_parent"
-                    android:layout_height="35dp"
-                    android:text="@string/Coverage"
-                    android:textColor="#fffcfc"/>
-            </LinearLayout>
         </LinearLayout>
 
         <ImageButton
