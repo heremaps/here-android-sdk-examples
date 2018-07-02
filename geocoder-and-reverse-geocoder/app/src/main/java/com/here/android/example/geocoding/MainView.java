@@ -19,11 +19,13 @@ package com.here.android.example.geocoding;
 import java.io.File;
 import java.util.List;
 
+import com.here.android.mpa.common.ApplicationContext;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.MapEngine;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.search.ErrorCode;
-import com.here.android.mpa.search.GeocodeRequest;
+import com.here.android.mpa.search.GeocodeRequest2;
+import com.here.android.mpa.search.GeocodeResult;
 import com.here.android.mpa.search.Location;
 import com.here.android.mpa.search.ResultListener;
 import com.here.android.mpa.search.ReverseGeocodeRequest2;
@@ -78,7 +80,7 @@ public class MainView {
              * services that HERE Android SDK provides, the MapEngine must be initialized as the
              * prerequisite.
              */
-            MapEngine.getInstance().init(m_activity, new OnEngineInitListener() {
+            MapEngine.getInstance().init(new ApplicationContext(m_activity), new OnEngineInitListener() {
                 @Override
                 public void onEngineInitializationCompleted(Error error) {
                     Toast.makeText(m_activity, "Map Engine initialized with error code:" + error,
@@ -116,20 +118,21 @@ public class MainView {
          * providing a GeoCoordinate and radius before executing the request.
          */
         String query = "4350 Still Creek Dr,Burnaby";
-        GeocodeRequest geocodeRequest = new GeocodeRequest(query);
+        GeocodeRequest2 geocodeRequest = new GeocodeRequest2(query);
         GeoCoordinate coordinate = new GeoCoordinate(49.266787, -123.056640);
         geocodeRequest.setSearchArea(coordinate, 5000);
-        geocodeRequest.execute(new ResultListener<List<Location>>() {
+        geocodeRequest.execute(new ResultListener<List<GeocodeResult>>() {
             @Override
-            public void onCompleted(List<Location> locations, ErrorCode errorCode) {
+            public void onCompleted(List<GeocodeResult> results, ErrorCode errorCode) {
                 if (errorCode == ErrorCode.NONE) {
                     /*
-                     * From the location object, we retrieve the coordinate and display to the
-                     * screen. Please refer to HERE Android SDK doc for other supported APIs.
+                     * From the result object, we retrieve the location and its coordinate and
+                     * display to the screen. Please refer to HERE Android SDK doc for other
+                     * supported APIs.
                      */
                     StringBuilder sb = new StringBuilder();
-                    for (Location loc : locations) {
-                        sb.append(loc.getCoordinate().toString());
+                    for (GeocodeResult result : results) {
+                        sb.append(result.getLocation().getCoordinate().toString());
                         sb.append("\n");
                     }
                     updateTextView(sb.toString());
