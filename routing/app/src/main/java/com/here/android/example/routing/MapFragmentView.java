@@ -17,6 +17,7 @@
 package com.here.android.example.routing;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.here.android.mpa.common.GeoBoundingBox;
@@ -32,6 +33,7 @@ import com.here.android.mpa.routing.RouteResult;
 import com.here.android.mpa.routing.RouteWaypoint;
 import com.here.android.mpa.routing.Router;
 import com.here.android.mpa.routing.RoutingError;
+import com.here.android.mpa.routing.RoutingZone;
 
 import android.app.Activity;
 import android.content.pm.ApplicationInfo;
@@ -50,12 +52,15 @@ import android.widget.Toast;
 public class MapFragmentView {
     private MapFragment m_mapFragment;
     private Button m_createRouteButton;
+    private Button m_avoidZoneButton;
+    private List<String> m_avoidZoneIDs;
     private Activity m_activity;
     private Map m_map;
     private MapRoute m_mapRoute;
 
     public MapFragmentView(Activity activity) {
         m_activity = activity;
+
         initMapFragment();
         /*
          * We use a button in this example to control the route calculation
@@ -95,16 +100,16 @@ public class MapFragmentView {
                     public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
 
                         if (error == Error.NONE) {
-                        /* get the map object */
+                            /* get the map object */
                             m_map = m_mapFragment.getMap();
 
-                        /*
-                         * Set the map center to the 4350 Still Creek Dr Burnaby BC (no animation).
-                         */
-                            m_map.setCenter(new GeoCoordinate(49.259149, -123.008555, 0.0),
+                            /*
+                             * Set the map center (no animation).
+                             */
+                            m_map.setCenter(new GeoCoordinate(14.62043, 121.0537, 0.0),
                                     Map.Animation.NONE);
 
-                        /* Set the zoom level to the average between min and max zoom level. */
+                            /* Set the zoom level to the average between min and max zoom level. */
                             m_map.setZoomLevel((m_map.getMaxZoomLevel() + m_map.getMinZoomLevel()) / 2);
                         } else {
                             Toast.makeText(m_activity,
@@ -118,7 +123,7 @@ public class MapFragmentView {
     }
 
     private void initCreateRouteButton() {
-        m_createRouteButton = (Button) m_activity.findViewById(R.id.button);
+        m_createRouteButton = m_activity.findViewById(R.id.button);
 
         m_createRouteButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -140,13 +145,38 @@ public class MapFragmentView {
                      *
                      */
                     createRoute();
+                    initAvoidZoneButton();
                 }
             }
         });
-
     }
 
-    /* Creates a route from 4350 Still Creek Dr to Langley BC with highways disallowed */
+    private void initAvoidZoneButton() {
+        m_avoidZoneButton = m_activity.findViewById(R.id.avoidZoneButton);
+        m_avoidZoneButton.setVisibility(View.VISIBLE);
+
+        m_avoidZoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /* Create list of zones to exclude. */
+                m_avoidZoneIDs = new ArrayList<>();
+
+                if (m_map != null && m_mapRoute != null) {
+                    /* Get routing zones used on the route. */
+                    List<RoutingZone> zones = m_mapRoute.getRoute().getRoutingZones();
+                    /* Get identifier of the first zone. */
+                    String zoneId = zones.get(0).getId();
+                    /* Add zone identifier to the exclusion list. */
+                    m_avoidZoneIDs.add(zoneId);
+
+                    /* Recreate route. */
+                    createRoute();
+                }
+            }
+        });
+    }
+
+    /* Creates a route */
     private void createRoute() {
         /* Initialize a CoreRouter */
         CoreRouter coreRouter = new CoreRouter();
@@ -162,20 +192,23 @@ public class MapFragmentView {
         RouteOptions routeOptions = new RouteOptions();
         /* Other transport modes are also available e.g Pedestrian */
         routeOptions.setTransportMode(RouteOptions.TransportMode.CAR);
-        /* Disable highway in this route. */
-        routeOptions.setHighwaysAllowed(false);
         /* Calculate the shortest route available. */
         routeOptions.setRouteType(RouteOptions.Type.SHORTEST);
         /* Calculate 1 route. */
         routeOptions.setRouteCount(1);
-        /* Finally set the route option */
+
+        /* Check whether routing zones should be excluded. */
+        if (m_avoidZoneIDs != null && m_avoidZoneIDs.size() > 0) {
+            /* Add exclusions to the route options */
+            routeOptions.excludeRoutingZones(m_avoidZoneIDs);
+        }
+
+        /* Finally set the route option. */
         routePlan.setRouteOptions(routeOptions);
 
         /* Define waypoints for the route */
-        /* START: 4350 Still Creek Dr */
-        RouteWaypoint startPoint = new RouteWaypoint(new GeoCoordinate(49.259149, -123.008555));
-        /* END: Langley BC */
-        RouteWaypoint destination = new RouteWaypoint(new GeoCoordinate(49.073640, -122.559549));
+        RouteWaypoint startPoint = new RouteWaypoint(new GeoCoordinate(14.65970, 120.9973));
+        RouteWaypoint destination = new RouteWaypoint(new GeoCoordinate(14.58057, 121.09481));
 
         /* Add both waypoints to the route plan */
         routePlan.addWaypoint(startPoint);
@@ -192,6 +225,13 @@ public class MapFragmentView {
                     @Override
                     public void onCalculateRouteFinished(List<RouteResult> routeResults,
                             RoutingError routingError) {
+
+                        /* Erase an old route from the map. */
+                        if (m_mapRoute != null) {
+                            m_map.removeMapObject(m_mapRoute);
+                            m_mapRoute = null;
+                        }
+
                         /* Calculation is done.Let's handle the result */
                         if (routingError == RoutingError.NONE) {
                             if (routeResults.get(0).getRoute() != null) {

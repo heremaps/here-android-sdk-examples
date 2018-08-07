@@ -6,13 +6,28 @@
 
 
     <!-- Map Fragment embedded with the map object -->
-    <Button
-        style="?android:attr/buttonStyleSmall"
+    <LinearLayout
+        android:orientation="horizontal"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create Route"
-        android:id="@+id/button"
-        android:layout_gravity="right" />
+        android:layout_gravity="right" >
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Avoid Zone"
+            android:id="@+id/avoidZoneButton"
+            android:visibility="gone" />
+
+        <Button
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Create Route"
+            android:id="@+id/button" />
+
+    </LinearLayout>
 
     <fragment
         class="com.here.android.mpa.mapping.MapFragment"
