@@ -179,6 +179,11 @@ public class BasicVenueActivity extends AppCompatActivity
         public void onPositioningError(PositioningError error) {
             Log.v(TAG, "StatusListener.onPositioningError: %s", error);
         }
+
+        @Override
+        public void onWifiIndoorPositioningNotAvailable() {
+            Log.v(TAG, "StatusListener.onWifiIndoorPositioningNotAvailable");
+        }
     };
 
 

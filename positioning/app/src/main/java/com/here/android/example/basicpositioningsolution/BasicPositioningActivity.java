@@ -289,6 +289,11 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
                                     public void onPositioningError(PositioningError positioningError) {
                                         // called when positioning fails
                                     }
+
+                                    @Override
+                                    public void onWifiIndoorPositioningNotAvailable() {
+                                        // called when running on Android 9.0 (Pie) or newer
+                                    }
                                 });
                         if (mHereLocation == null) {
                             Toast.makeText(BasicPositioningActivity.this, "LocationDataSourceHERE.getInstance(): failed, exiting", Toast.LENGTH_LONG).show();
