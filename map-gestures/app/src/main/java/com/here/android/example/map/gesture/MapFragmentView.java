@@ -54,10 +54,16 @@ public class MapFragmentView {
         initMapFragment();
     }
 
+    // Google has deprecated android.app.Fragment class. It is used in current SDK implementation.
+    // Will be fixed in future SDK version.
+    @SuppressWarnings("deprecation")
+    private MapFragment getMapFragment() {
+        return (MapFragment) m_activity.getFragmentManager().findFragmentById(R.id.mapfragment);
+    }
+
     private void initMapFragment() {
         /* Locate the mapFragment UI element */
-        m_mapFragment = (MapFragment) m_activity.getFragmentManager()
-                .findFragmentById(R.id.mapfragment);
+        m_mapFragment = getMapFragment();
 
         // Set path of isolated disk cache
         String diskCacheRoot = Environment.getExternalStorageDirectory().getPath()
