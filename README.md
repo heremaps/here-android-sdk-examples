@@ -56,4 +56,3 @@ All of the following projects use **version 3.6** of the Android Premium SDK
 * [Positioning](positioning) - Use HERE location data source
 * [Search](search) - Send different types of search requests
 * [Turn-by-Turn Navigation](turn-by-turn-navigation) - Trigger a turn-by-turn navigation from HERE Burnaby office to Langley BC
-* [Urban Mobility](urban-mobility) - Send different types of Urban Mobility requests
