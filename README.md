@@ -52,6 +52,7 @@ All of the following projects use **version 3.6** of the Android Premium SDK
 * [Map Rendering](map-rendering) - Display the HERE map on a device
 * [Natural Language Processing](natural-language-processing) - Press volume up and talk to the app to start a place search or clear the map.
 * [Routing](routing) - Create a route from HERE Burnaby office to Langely BC and display it on the map
+* [Venue Positioning](positioning-venues-and-logging) - Use HERE location data source in venue
+* [Positioning](positioning) - Use HERE location data source
 * [Search](search) - Send different types of search requests
 * [Turn-by-Turn Navigation](turn-by-turn-navigation) - Trigger a turn-by-turn navigation from HERE Burnaby office to Langley BC
-* [Urban Mobility](urban-mobility) - Send different types of Urban Mobility requests
