@@ -50,7 +50,6 @@ All of the following projects use **version 3.6** of the Android Premium SDK
 * [Map Gestures](map-gestures) - Define custom gesture actions
 * [Map Objects](map-objects) - Add map objects onto HERE map
 * [Map Rendering](map-rendering) - Display the HERE map on a device
-* [Natural Language Processing](natural-language-processing) - Press volume up and talk to the app to start a place search or clear the map.
 * [Routing](routing) - Create a route from HERE Burnaby office to Langely BC and display it on the map
 * [Venue Positioning](positioning-venues-and-logging) - Use HERE location data source in venue
 * [Positioning](positioning) - Use HERE location data source
