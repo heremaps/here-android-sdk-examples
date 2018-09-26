@@ -204,14 +204,20 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
         }
     }
 
+    // Google has deprecated android.app.Fragment class. It is used in current SDK implementation.
+    // Will be fixed in future SDK version.
+    @SuppressWarnings("deprecation")
+    private MapFragment getMapFragment() {
+        return (MapFragment)getFragmentManager().findFragmentById(R.id.mapfragment);
+    }
+
     /**
      * Initializes HERE Maps and HERE Positioning. Called after permission check.
      */
     private void initializeMapsAndPositioning() {
         setContentView(R.layout.activity_main);
         mLocationInfo = (TextView) findViewById(R.id.textViewLocationInfo);
-        mapFragment = (MapFragment)getFragmentManager().findFragmentById(
-            R.id.mapfragment);
+        mapFragment = getMapFragment();
         mapFragment.setRetainInstance(false);
 
         // Set path of isolated disk cache
