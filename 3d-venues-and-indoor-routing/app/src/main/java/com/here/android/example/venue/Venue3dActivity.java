@@ -305,13 +305,20 @@ public class Venue3dActivity extends FragmentActivity
         checkPermissions();
     }
 
+    // Google has deprecated android.app.Fragment class. It is used in current SDK implementation.
+    // Will be fixed in future SDK version.
+    @SuppressWarnings("deprecation")
+    private VenueMapFragment getMapFragment() {
+        return (VenueMapFragment) getFragmentManager().findFragmentById(R.id.map_fragment);
+    }
+
     private void initialize() {
         setContentView(R.layout.venues3d);
 
         m_activity = this;
 
         // Search for the map fragment in order to finish setup by calling init().
-        m_mapFragment = (VenueMapFragment) getFragmentManager().findFragmentById(R.id.map_fragment);
+        m_mapFragment = getMapFragment();
         m_venueIdEditText = (EditText) findViewById(R.id.venueIdEditText);
 
         m_mainControlLayout = (LinearLayout) findViewById(R.id.venueOpeningLayout);
