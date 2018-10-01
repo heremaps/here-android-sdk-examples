@@ -881,6 +881,13 @@ public class BasicVenueActivity extends AppCompatActivity
         return "NONE";
     }
 
+    // Google has deprecated android.app.Fragment class. It is used in current SDK implementation.
+    // Will be fixed in future SDK version.
+    @SuppressWarnings("deprecation")
+    private VenueMapFragment getMapFragment() {
+        return (VenueMapFragment) getFragmentManager().findFragmentById(R.id.mapfragment);
+    }
+
     /**
      * Initializes HERE Venue Maps. Called after permission check.
      */
@@ -888,7 +895,7 @@ public class BasicVenueActivity extends AppCompatActivity
         Log.v(TAG, "InitializeVenueMaps");
         mActivity = this;
 
-        venueMapFragment = (VenueMapFragment) getFragmentManager().findFragmentById(R.id.mapfragment);
+        venueMapFragment = getMapFragment();
         mLocationInfo = (TextView) findViewById(R.id.textViewLocationInfo);
 
 
