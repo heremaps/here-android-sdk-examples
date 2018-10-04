@@ -65,6 +65,17 @@
         -->
         <service android:enabled="true" android:exported="false" android:name="com.here.services.internal.LocationService" android:process=":remote">
         </service>
+        <!--
+            HERE Location boot receiver definition.
+            For more information, see the HERE SDK Developer's Guide
+        -->
+        <receiver
+            android:name="com.here.services.internal.BootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
     </application>
 
