@@ -198,7 +198,7 @@ public class MapFragmentView {
                     @Override
                     public void onCalculateRouteFinished(List<RouteResult> routeResults,
                             RoutingError routingError) {
-                        /* Calculation is done.Let's handle the result */
+                        /* Calculation is done. Let's handle the result */
                         if (routingError == RoutingError.NONE) {
                             if (routeResults.get(0).getRoute() != null) {
                                 /* Create a MapRoute so that it can be placed on the map */

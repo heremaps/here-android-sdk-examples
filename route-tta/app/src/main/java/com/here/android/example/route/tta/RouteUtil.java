@@ -28,15 +28,14 @@ public class RouteUtil {
         /* Finally set the route option */
         routePlan.setRouteOptions(routeOptions);
 
-
-
         /* Define waypoints for the route */
         /* START: Holländerstraße, Wedding, 13407 Berlin */
         RouteWaypoint startPoint = new RouteWaypoint(
                 new GeoCoordinate(52.562755700200796, 13.34599438123405));
 
         /* MIDDLE: Lynarstraße 3 */
-        RouteWaypoint middlePoint = new RouteWaypoint(new GeoCoordinate(52.54172, 13.36354));
+        RouteWaypoint middlePoint = new RouteWaypoint(
+                new GeoCoordinate(52.54172, 13.36354));
 
         /* END: Agricolastraße 29, 10555 Berlin */
         RouteWaypoint destination = new RouteWaypoint(
