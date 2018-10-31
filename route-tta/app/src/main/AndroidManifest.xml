@@ -10,7 +10,6 @@
     <application
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
@@ -23,7 +22,7 @@
         </activity>
 
         <!--Developers should put application credentials here.To obtain them, please register the application
-         at https://developer.here.com/develop/mobile-sdks-->
+                 at https://developer.here.com/develop/mobile-sdks-->
         <meta-data
             android:name="com.here.android.maps.appid"
             android:value="{YOUR_APP_ID}" />
@@ -35,7 +34,7 @@
             android:value="{YOUR_LICENSE_KEY}" />
 
         <!--Developers should always provide custom values for each of {YOUR_LABEL_NAME} and {YOUR_INTENT_NAME}.
-        Do not reuse HERE SDK defaults.-->
+         Do not reuse HERE SDK defaults.-->
         <meta-data
             android:name="INTENT_NAME"
             android:value="{YOUR_INTENT_NAME}" />
