@@ -51,6 +51,7 @@ All of the following projects use **version 3.6** of the Android Premium SDK
 * [Map Objects](map-objects) - Add map objects onto HERE map
 * [Map Rendering](map-rendering) - Display the HERE map on a device
 * [Routing](routing) - Create a route from HERE Burnaby office to Langely BC and display it on the map
+* [Routing TTA](route-tta) - Create a route and retrieves Time To Arrival
 * [Venue Positioning](positioning-venues-and-logging) - Use HERE location data source in venue
 * [Positioning](positioning) - Use HERE location data source
 * [Search](search) - Send different types of search requests
