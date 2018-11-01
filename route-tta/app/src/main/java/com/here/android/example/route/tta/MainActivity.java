@@ -73,8 +73,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (permissionGranted) {
             initMap();
-        } else {
-            requestPermissions();
         }
     }
 
@@ -94,9 +92,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if (MapEngine.isInitialized()) {
-            TrafficUpdater.getInstance().enableUpdate(false);
-        }
+        /* Remove traffic updates */
+        TrafficUpdater.getInstance().enableUpdate(false);
 
         if (m_requestInfo != null) {
             /*  Cancel request by request Id */
@@ -110,6 +107,18 @@ public class MainActivity extends AppCompatActivity {
      * Also in callback check if initialization completed successfully
      */
     private void initMap() {
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
+                getApplicationContext().getExternalFilesDir(null)
+                        + File.separator + ".here-maps", "{YOUR_INTENT_NAME}");
+
+        if (!success) {
+            return;
+            // Setting the isolated disk cache was not successful, please check if the path is valid
+            // and ensure that it does not match the default location
+            // (getExternalStorageDirectory()/.here-maps).
+            // Also, ensure the provided intent name does not match the default intent name.
+        }
+
         MapEngine.getInstance().init(new ApplicationContext(getApplicationContext()),
                 new OnEngineInitListener() {
                     @Override
