@@ -41,6 +41,7 @@ Unless otherwise noted in `LICENSE` files for specific files or directories, the
 
 All of the following projects use **version 3.6** of the Android Premium SDK
 
+* [3D Model](3DModel) - Show 3D model on the map
 * [3D Venues](3d-venues-and-indoor-routing) - Show venues in 3D mode
 * [Advanced Navigation](advanced-navigation) - Handle user interactions and position updates during navigation
 * [Geocoding and Reverse Gecoding](geocoder-and-reverse-geocoder) - Trigger a Geocode and Reverse Geocode request in HERE SDK
