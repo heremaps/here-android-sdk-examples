@@ -1,3 +1,19 @@
+/*
+ * Copyright (c) 2011-2018 HERE Europe B.V.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package com.here.android.example.route.tta;
 
 import android.Manifest;
@@ -13,6 +29,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.here.android.mpa.common.ApplicationContext;
 import com.here.android.mpa.common.MapEngine;
@@ -158,6 +175,9 @@ public class MainActivity extends AppCompatActivity {
                             m_map = new Map();
                             m_mapView.setMap(m_map);
                             m_calculateRouteBtn.setEnabled(true);
+                        } else {
+                            Toast.makeText(getApplicationContext(), error.name(),
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -215,7 +235,6 @@ public class MainActivity extends AppCompatActivity {
 
         final RoutePlan routePlan = RouteUtil.createRoute();
 
-        Log.d("MyLog", "onCalculateRouteFinished: before");
         m_coreRouter.calculateRoute(routePlan,
                 new RouteUtil.RouteListener<List<RouteResult>, RoutingError>() {
                     @Override
@@ -248,6 +267,9 @@ public class MainActivity extends AppCompatActivity {
                             /* Get TTA */
                             calculateTta();
                             calculateTtaUsingDownloadedTraffic();
+                        } else {
+                            Toast.makeText(getApplicationContext(), routingError.name(),
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
