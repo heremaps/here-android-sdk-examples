@@ -26,7 +26,10 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.here.android.mpa.common.ApplicationContext;
 import com.here.android.mpa.common.MapEngine;
@@ -57,12 +60,24 @@ public class MainActivity extends AppCompatActivity {
     private Map m_map;
     private Route m_route;
     private TrafficUpdater.RequestInfo m_requestInfo;
+    private CoreRouter m_coreRouter;
+    private MapRoute m_mapRoute;
+    private Button m_calculateRouteBtn;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         m_mapView = findViewById(R.id.mapView);
+        m_calculateRouteBtn = findViewById(R.id.btnCalculateRoute);
+        m_calculateRouteBtn.setEnabled(false);
+        m_calculateRouteBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /* Start calculating m_route */
+                calculateRoute();
+            }
+        });
         requestPermissions();
     }
 
@@ -159,9 +174,10 @@ public class MainActivity extends AppCompatActivity {
                             /* get the map object */
                             m_map = new Map();
                             m_mapView.setMap(m_map);
-
-                            /* Start calculating m_route */
-                            calculateRoute();
+                            m_calculateRouteBtn.setEnabled(true);
+                        } else {
+                            Toast.makeText(getApplicationContext(), error.name(),
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -210,16 +226,16 @@ public class MainActivity extends AppCompatActivity {
 
     private void calculateRoute() {
         /* Initialize a CoreRouter */
-        CoreRouter coreRouter = new CoreRouter();
+        m_coreRouter = new CoreRouter();
 
         /* For calculating traffic on the m_route */
         DynamicPenalty dynamicPenalty = new DynamicPenalty();
         dynamicPenalty.setTrafficPenaltyMode(Route.TrafficPenaltyMode.OPTIMAL);
-        coreRouter.setDynamicPenalty(dynamicPenalty);
+        m_coreRouter.setDynamicPenalty(dynamicPenalty);
 
         final RoutePlan routePlan = RouteUtil.createRoute();
 
-        coreRouter.calculateRoute(routePlan,
+        m_coreRouter.calculateRoute(routePlan,
                 new RouteUtil.RouteListener<List<RouteResult>, RoutingError>() {
                     @Override
                     public void onCalculateRouteFinished(List<RouteResult> routeResults,
@@ -229,11 +245,18 @@ public class MainActivity extends AppCompatActivity {
                             /* Get route fro results */
                             m_route = routeResults.get(0).getRoute();
 
+                            /* check if map route is already on map and if it is,
+                                delete it.
+                             */
+                            if (m_mapRoute != null) {
+                                m_map.removeMapObject(m_mapRoute);
+                            }
+
                             /* Create a MapRoute so that it can be placed on the map */
-                            final MapRoute map_route = new MapRoute(routeResults.get(0).getRoute());
+                            m_mapRoute = new MapRoute(routeResults.get(0).getRoute());
 
                             /* Add the MapRoute to the map */
-                            m_map.addMapObject(map_route);
+                            m_map.addMapObject(m_mapRoute);
 
                             /*
                              * We may also want to make sure the map view is orientated properly so
@@ -244,6 +267,9 @@ public class MainActivity extends AppCompatActivity {
                             /* Get TTA */
                             calculateTta();
                             calculateTtaUsingDownloadedTraffic();
+                        } else {
+                            Toast.makeText(getApplicationContext(), routingError.name(),
+                                    Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
