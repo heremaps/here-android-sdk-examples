@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">speedlimit</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="navigation_speed_label_km">km/h</string>
+    <string name="navigation_speed_label_m">m/h</string>
+
+    <string name="navigation_speed_limit_default">N/A</string>
+</resources>

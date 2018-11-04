@@ -1,0 +1,8 @@
+.gradle/
+.DS_Store
+build/
+app/libs/
+!app/libs/README.md
+.idea/
+*.iml
+local.properties
