@@ -1,0 +1,1 @@
+After having [signed-up](https://developer.here.com/plans), please download and extract the SDK for Android and copy the contained `HERE-sdk.aar` file to this directory

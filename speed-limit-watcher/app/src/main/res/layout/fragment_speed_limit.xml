@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SpeedLimitFragment">
+
+    <LinearLayout
+        android:visibility="visible"
+        android:id="@+id/expanded_container"
+        android:layout_width="wrap_content"
+        android:layout_height="80dp"
+        android:orientation="horizontal"
+        android:padding="5dp">
+
+        <TextView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:textAlignment="center"
+            android:text="@string/navigation_speed_limit_default"
+            android:background="@drawable/no_limit_circle_background"
+            android:textColor="@color/noLimitText"
+            android:gravity="center_vertical"
+            android:id="@+id/currentSpeedLimit"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_weight="0.50"
+            android:layout_width="0dp"
+            android:textAlignment="center"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content"
+            android:id="@+id/currentSpeedContainer">
+
+            <TextView
+                android:layout_width="45dp"
+                android:layout_height="50dp"
+                android:textAlignment="center"
+                android:gravity="center_vertical"
+                android:id="@+id/currentSpeed"
+                android:text=""
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+</FrameLayout>
