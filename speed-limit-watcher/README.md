@@ -43,7 +43,7 @@ First, please open the `AndroidManifest.xml` file and add some permissions that 
 *We will not focus on requesting permissions itself but the code example in the repository includes a requesting method that can be used for `SDK Version > 22`.  
 More information can be found [here](https://developer.here.com/documentation/android-premium/dev_guide/topics/request-android-permissions.html)*
 
-As you can also read in our [documentation](https://developer.here.com/documentation/android-premium/dev_guide/topics/app-simple.html),
+As you can also read in our [documentation](https://developer.here.com/documentation/android-premium/dev_guide/topics/app-run-simple.html),
 you should insert the credentials that you generated into the `<application>` tag:
 ```xml
     <meta-data android:name="com.here.android.maps.appid" android:value="{SAMPLE_APP_ID}"/>
@@ -70,7 +70,7 @@ The last snippet that we will add to the `AndroidManifest.xml` file, is the defi
 
 ## Step 2. Initializing HERE SDK 
 
-The documentation section, that we used for [creating simple app](https://developer.here.com/documentation/android-premium/dev_guide/topics/app-simple-android-studio.html) also describes how to initialize the Map Fragment.
+The documentation section, that we used for [creating simple app](https://developer.here.com/documentation/android-premium/dev_guide/topics/app-create-simple.html) also describes how to initialize the Map Fragment.
 
 As our application will not need a Map Fragment rendered on the UI, we will use [`MapEngine Class`](https://developer.here.com/documentation/android-premium/dev_guide/topics/class-map-engine.html), which is another way of initializing the HERE SDK. 
 
