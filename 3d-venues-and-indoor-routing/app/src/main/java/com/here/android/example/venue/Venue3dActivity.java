@@ -378,6 +378,8 @@ public class Venue3dActivity extends FragmentActivity
                                 Map.Animation.NONE);
                     } else {
                         System.out.println("ERROR: Cannot initialize Map Fragment" + error.toString());
+                        Toast.makeText(getBaseContext(), "Map engine can't be initialized: "
+                                + error.toString(), Toast.LENGTH_LONG);
                     }
                 }
             }, new VenueServiceListener() {
@@ -466,6 +468,9 @@ public class Venue3dActivity extends FragmentActivity
     public void onOpenVenueClick(View v) {
         if (m_initCompleted.get()) {
             openVenueAsync();
+        } else {
+            Toast.makeText(getBaseContext(), "Initialization is incomplete, please, check logs",
+                    Toast.LENGTH_LONG).show();
         }
     }
 
