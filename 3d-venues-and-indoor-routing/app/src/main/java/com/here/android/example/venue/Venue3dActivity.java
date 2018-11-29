@@ -23,6 +23,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.PointF;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
@@ -302,7 +303,13 @@ public class Venue3dActivity extends FragmentActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        checkPermissions();
+
+        if (hasPermissions(this, REQUIRED_SDK_PERMISSIONS)) {
+            initialize();
+        } else {
+            ActivityCompat.requestPermissions(this, REQUIRED_SDK_PERMISSIONS,
+                                              REQUEST_CODE_ASK_PERMISSIONS);
+        }
     }
 
     // Google has deprecated android.app.Fragment class. It is used in current SDK implementation.
@@ -419,47 +426,51 @@ public class Venue3dActivity extends FragmentActivity
     }
 
     /**
-     * Checks the dynamically controlled permissions and requests missing permissions from end user.
+     * Only when the app's target SDK is 23 or higher, it requests each dangerous permissions it
+     * needs when the app is running.
      */
-    private void checkPermissions() {
-        final List<String> missingPermissions = new ArrayList<>();
-        // check all required dynamic permissions
-        for (final String permission : REQUIRED_SDK_PERMISSIONS) {
-            final int result = ContextCompat.checkSelfPermission(this, permission);
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                missingPermissions.add(permission);
+    private static boolean hasPermissions(Context context, String... permissions) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission) != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
             }
         }
-        if (!missingPermissions.isEmpty()) {
-            // request all missing permissions
-            final String[] permissions = missingPermissions
-                    .toArray(new String[missingPermissions.size()]);
-            ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_ASK_PERMISSIONS);
-        } else {
-            final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.length];
-            Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
-            onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, REQUIRED_SDK_PERMISSIONS,
-                    grantResults);
-        }
+        return true;
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
             @NonNull int[] grantResults) {
         switch (requestCode) {
-            case REQUEST_CODE_ASK_PERMISSIONS:
-                for (int index = permissions.length - 1; index >= 0; --index) {
+            case REQUEST_CODE_ASK_PERMISSIONS: {
+                for (int index = 0; index < permissions.length; index++) {
                     if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
-                        // exit the app if one permission is not granted
-                        Toast.makeText(this, "Required permission '" + permissions[index]
-                                + "' not granted, exiting", Toast.LENGTH_LONG).show();
-                        finish();
-                        return;
+
+                        /*
+                         * If the user turned down the permission request in the past and chose the
+                         * Don't ask again option in the permission request system dialog.
+                         */
+                        if (!ActivityCompat.shouldShowRequestPermissionRationale(this,
+                                                                                 permissions[index])) {
+                            Toast.makeText(this,
+                                           "Required permission " + permissions[index] + " not granted. "
+                                                   + "Please go to settings and turn on for sample app",
+                                           Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(this,
+                                           "Required permission " + permissions[index] + " not granted",
+                                           Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
-                // all permissions were granted
+
                 initialize();
                 break;
+            }
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 

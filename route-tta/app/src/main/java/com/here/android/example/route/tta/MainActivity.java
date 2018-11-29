@@ -17,13 +17,14 @@
 package com.here.android.example.route.tta;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -56,6 +57,13 @@ public class MainActivity extends AppCompatActivity {
 
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 0x754;
 
+    private static final String[] RUNTIME_PERMISSIONS = {
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.INTERNET,
+            Manifest.permission.ACCESS_WIFI_STATE,
+            Manifest.permission.ACCESS_NETWORK_STATE
+    };
+
     private MapView m_mapView;
     private Map m_map;
     private Route m_route;
@@ -78,37 +86,61 @@ public class MainActivity extends AppCompatActivity {
                 calculateRoute();
             }
         });
-        requestPermissions();
+
+        if (hasPermissions(this, RUNTIME_PERMISSIONS)) {
+            initMap();
+        } else {
+            ActivityCompat
+                    .requestPermissions(this, RUNTIME_PERMISSIONS, REQUEST_CODE_ASK_PERMISSIONS);
+        }
     }
 
     /**
      * Only when the app's target SDK is 23 or higher, it requests each dangerous permissions it
      * needs when the app is running.
      */
-    private void requestPermissions() {
-        final int result = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        if (result != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this,
-                    new String[] {Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                    REQUEST_CODE_ASK_PERMISSIONS);
-        } else {
-            initMap();
+    private static boolean hasPermissions(Context context, String... permissions) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
+            }
         }
+        return true;
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
-                                           @NonNull int[] grantResults) {
-        final boolean permissionGranted = grantResults.length > 0
-                && (requestCode == REQUEST_CODE_ASK_PERMISSIONS
-                && grantResults[0] == PackageManager.PERMISSION_GRANTED);
+            @NonNull int[] grantResults) {
+        switch (requestCode) {
+            case REQUEST_CODE_ASK_PERMISSIONS: {
+                for (int index = 0; index < permissions.length; index++) {
+                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
 
-        if (permissionGranted) {
-            initMap();
-        } else {
-            requestPermissions();
+                        /*
+                         * If the user turned down the permission request in the past and chose the
+                         * Don't ask again option in the permission request system dialog.
+                         */
+                        if (!ActivityCompat
+                                .shouldShowRequestPermissionRationale(this, permissions[index])) {
+                            Toast.makeText(this, "Required permission " + permissions[index]
+                                                   + " not granted. "
+                                                   + "Please go to settings and turn on for sample app",
+                                           Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(this, "Required permission " + permissions[index]
+                                    + " not granted", Toast.LENGTH_LONG).show();
+                        }
+                    }
+                }
+
+                initMap();
+                break;
+            }
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
