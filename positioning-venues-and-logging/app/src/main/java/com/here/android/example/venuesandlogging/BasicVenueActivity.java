@@ -20,9 +20,9 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -64,8 +64,6 @@ import com.here.android.positioning.helpers.RadioMapLoadHelper;
 import com.here.android.positioning.radiomap.RadioMapLoader;
 
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -80,6 +78,14 @@ public class BasicVenueActivity extends AppCompatActivity
 
     // permissions request code
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
+
+    private static final String[] RUNTIME_PERMISSIONS = {
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.INTERNET,
+            Manifest.permission.ACCESS_WIFI_STATE,
+            Manifest.permission.ACCESS_NETWORK_STATE
+    };
 
     // map embedded in the map fragment
     private Map mMap;
@@ -409,7 +415,12 @@ public class BasicVenueActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_main);
         // checking dynamically controlled permissions
-        checkPermissions();
+        if (hasPermissions(this, RUNTIME_PERMISSIONS)) {
+            startVenueMaps();
+        } else {
+            ActivityCompat
+                    .requestPermissions(this, RUNTIME_PERMISSIONS, REQUEST_CODE_ASK_PERMISSIONS);
+        }
     }
 
     @Override
@@ -618,50 +629,51 @@ public class BasicVenueActivity extends AppCompatActivity
     }
 
     /**
-     * Checks the dynamically controlled permissions and requests missing
-     * permissions from end user.
+     * Only when the app's target SDK is 23 or higher, it requests each dangerous permissions it
+     * needs when the app is running.
      */
-    private void checkPermissions() {
-        Log.v(TAG, "checkPermissions");
-        final List<String> missingPermissions = new ArrayList<>();
-        // check all required dynamic permissions
-        for (final String permission : REQUIRED_SDK_PERMISSIONS) {
-            final int result = ContextCompat.checkSelfPermission(this, permission);
-            if (result != PackageManager.PERMISSION_GRANTED) {
-                missingPermissions.add(permission);
+    private static boolean hasPermissions(Context context, String... permissions) {
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && permissions != null) {
+            for (String permission : permissions) {
+                if (ActivityCompat.checkSelfPermission(context, permission)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    return false;
+                }
             }
         }
-        if (!missingPermissions.isEmpty()) {
-            // request all missing permissions
-            final String[] permissions = missingPermissions
-                    .toArray(new String[missingPermissions.size()]);
-            ActivityCompat.requestPermissions(this, permissions, REQUEST_CODE_ASK_PERMISSIONS);
-        } else {
-            final int[] grantResults = new int[REQUIRED_SDK_PERMISSIONS.length];
-            Arrays.fill(grantResults, PackageManager.PERMISSION_GRANTED);
-            onRequestPermissionsResult(REQUEST_CODE_ASK_PERMISSIONS, REQUIRED_SDK_PERMISSIONS,
-                    grantResults);
-        }
+        return true;
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[],
-                                           @NonNull int[] grantResults) {
-        Log.v(TAG, "onRequestPermissionsResult");
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+            @NonNull int[] grantResults) {
         switch (requestCode) {
-            case REQUEST_CODE_ASK_PERMISSIONS:
-                for (int index = permissions.length - 1; index >= 0; --index) {
+            case REQUEST_CODE_ASK_PERMISSIONS: {
+                for (int index = 0; index < permissions.length; index++) {
                     if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
-                        // exit the app if one permission is not granted
-                        Toast.makeText(this, "Required permission '" + permissions[index]
-                                + "' not granted, exiting", Toast.LENGTH_LONG).show();
-                        finish();
-                        return;
+
+                        /*
+                         * If the user turned down the permission request in the past and chose the
+                         * Don't ask again option in the permission request system dialog.
+                         */
+                        if (!ActivityCompat
+                                .shouldShowRequestPermissionRationale(this, permissions[index])) {
+                            Toast.makeText(this, "Required permission " + permissions[index]
+                                                   + " not granted. "
+                                                   + "Please go to settings and turn on for sample app",
+                                           Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(this, "Required permission " + permissions[index]
+                                    + " not granted", Toast.LENGTH_LONG).show();
+                        }
                     }
                 }
-                // After all permissions were granted start venue map initialization
+
                 startVenueMaps();
                 break;
+            }
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
