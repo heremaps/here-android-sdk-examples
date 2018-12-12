@@ -14,7 +14,7 @@
         android:layout_gravity="right" />
 
     <fragment
-        class="com.here.android.mpa.mapping.MapFragment"
+        class="com.here.android.mpa.mapping.SupportMapFragment"
         android:id="@+id/mapfragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

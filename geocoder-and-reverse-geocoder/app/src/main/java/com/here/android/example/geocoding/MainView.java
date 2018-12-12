@@ -30,7 +30,7 @@ import com.here.android.mpa.search.Location;
 import com.here.android.mpa.search.ResultListener;
 import com.here.android.mpa.search.ReverseGeocodeRequest2;
 
-import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -45,10 +45,10 @@ import android.widget.Toast;
  * This class demonstrates the usage of Geocoding and Reverse Geocoding request APIs
  */
 public class MainView {
-    private Activity m_activity;
+    private AppCompatActivity m_activity;
     private TextView m_resultTextView;
 
-    public MainView(Activity activity) {
+    public MainView(AppCompatActivity activity) {
         m_activity = activity;
         initMapEngine();
         initUIElements();
