@@ -18,13 +18,15 @@ package com.here.android.example.venuesandlogging;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
+import android.os.Bundle;
+import android.os.Environment;
 import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -60,6 +62,7 @@ import com.here.android.mpa.venues3d.VenueService.VenueServiceListener;
 import com.here.android.positioning.DiagnosticsListener;
 import com.here.android.positioning.StatusListener;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.Locale;
@@ -900,6 +903,26 @@ public class BasicVenueActivity extends AppCompatActivity
         venueMapFragment = getMapFragment();
         mLocationInfo = (TextView) findViewById(R.id.textViewLocationInfo);
 
+        // Set path of isolated disk cache
+        String diskCacheRoot = Environment.getExternalStorageDirectory().getPath()
+                + File.separator + ".isolated-here-maps";
+        // Retrieve intent name from manifest
+        String intentName = "";
+        try {
+            ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(),
+                    PackageManager.GET_META_DATA);
+            Bundle bundle = ai.metaData;
+            intentName = bundle.getString("INTENT_NAME");
+        } catch (PackageManager.NameNotFoundException e) {
+            Log.e(TAG, "Failed to find intent name, NameNotFound: " + e.getMessage());
+        }
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
+                diskCacheRoot, intentName);
+        if (!success) {
+            Toast.makeText(mActivity, "Operation 'setIsolatedDiskCacheRootPath' was not successful",
+                    Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         venueMapFragment.init(new OnEngineInitListener() {
             @Override
