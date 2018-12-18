@@ -17,7 +17,7 @@
 package com.here.android.example.basicpositioningsolution;
 
 import android.Manifest;
-import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -41,7 +41,7 @@ import com.here.android.mpa.common.LocationDataSourceHERE;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.common.PositioningManager;
 import com.here.android.mpa.mapping.Map;
-import com.here.android.mpa.mapping.MapFragment;
+import com.here.android.mpa.mapping.SupportMapFragment;
 import com.here.android.mpa.mapping.MapState;
 import com.here.android.positioning.StatusListener;
 
@@ -52,7 +52,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-public class BasicPositioningActivity extends Activity implements PositioningManager.OnPositionChangedListener, Map.OnTransformListener {
+public class BasicPositioningActivity extends AppCompatActivity implements PositioningManager.OnPositionChangedListener, Map.OnTransformListener {
 
     // permissions request code
     private final static int REQUEST_CODE_ASK_PERMISSIONS = 1;
@@ -68,7 +68,7 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
     private Map map;
 
     // map fragment embedded in this activity
-    private MapFragment mapFragment;
+    private SupportMapFragment mapFragment;
 
     // positioning manager instance
     private PositioningManager mPositioningManager;
@@ -222,11 +222,8 @@ public class BasicPositioningActivity extends Activity implements PositioningMan
         }
     }
 
-    // Google has deprecated android.app.Fragment class. It is used in current SDK implementation.
-    // Will be fixed in future SDK version.
-    @SuppressWarnings("deprecation")
-    private MapFragment getMapFragment() {
-        return (MapFragment)getFragmentManager().findFragmentById(R.id.mapfragment);
+    private SupportMapFragment getMapFragment() {
+        return (SupportMapFragment)getSupportFragmentManager().findFragmentById(R.id.mapfragment);
     }
 
     /**

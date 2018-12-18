@@ -3,7 +3,7 @@ package com.here.example.speedlimit;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,7 +15,6 @@ import com.here.android.mpa.common.GeoPosition;
 import com.here.android.mpa.common.MapEngine;
 import com.here.android.mpa.common.MatchedGeoPosition;
 import com.here.android.mpa.common.PositioningManager;
-import com.here.android.mpa.common.RoadElement;
 import com.here.android.mpa.prefetcher.MapDataPrefetcher;
 
 import java.lang.ref.WeakReference;
@@ -90,13 +89,13 @@ public class SpeedLimitFragment extends Fragment {
     }
 
     private void updateCurrentSpeedView(int currentSpeed, int currentSpeedLimit) {
+        int colorValue =
+                (currentSpeed > currentSpeedLimit && currentSpeedLimit > 0)
+                    ? R.color.notAllowedSpeedBackground
+                    : R.color.allowedSpeedBackground;
 
-        int color;
-        if (currentSpeed > currentSpeedLimit && currentSpeedLimit > 0) {
-            color = getResources().getColor(R.color.notAllowedSpeedBackground);
-        } else {
-            color = getResources().getColor(R.color.allowedSpeedBackground);
-        }
+        int color = ContextCompat.getColor(getContext(), colorValue);
+
         currentSpeedContainerView.setBackgroundColor(color);
         currentSpeedView.setText(String.valueOf(currentSpeed));
     }
@@ -117,10 +116,9 @@ public class SpeedLimitFragment extends Fragment {
             backgroundImageId = R.drawable.no_limit_circle_background;
         }
         currentSpeedLimitView.setText(currentSpeedLimitText);
-        currentSpeedLimitView.setTextColor(getResources().getColor(textColorId));
+        currentSpeedLimitView.setTextColor(ContextCompat.getColor(getContext(), textColorId));
         currentSpeedLimitView.setBackgroundResource(backgroundImageId);
     }
-
 
     MapDataPrefetcher.Adapter prefetcherListener = new MapDataPrefetcher.Adapter() {
         @Override
