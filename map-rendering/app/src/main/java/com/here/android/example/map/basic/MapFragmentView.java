@@ -19,9 +19,9 @@ package com.here.android.example.map.basic;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.mapping.Map;
-import com.here.android.mpa.mapping.MapFragment;
+import com.here.android.mpa.mapping.SupportMapFragment;
 
-import android.app.Activity;
+import android.support.v7.app.AppCompatActivity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -35,20 +35,17 @@ import java.io.File;
  * This class encapsulates the properties and functionality of the Map view.
  */
 public class MapFragmentView {
-    private MapFragment m_mapFragment;
-    private Activity m_activity;
+    private SupportMapFragment m_mapFragment;
+    private AppCompatActivity m_activity;
     private Map m_map;
 
-    public MapFragmentView(Activity activity) {
+    public MapFragmentView(AppCompatActivity activity) {
         m_activity = activity;
         initMapFragment();
     }
 
-    // Google has deprecated android.app.Fragment class. It is used in current SDK implementation.
-    // Will be fixed in future SDK version.
-    @SuppressWarnings("deprecation")
-    private MapFragment getMapFragment() {
-        return (MapFragment) m_activity.getFragmentManager().findFragmentById(R.id.mapfragment);
+    private SupportMapFragment getMapFragment() {
+        return (SupportMapFragment) m_activity.getSupportFragmentManager().findFragmentById(R.id.mapfragment);
     }
 
     private void initMapFragment() {
@@ -78,7 +75,7 @@ public class MapFragmentView {
             // Also, ensure the provided intent name does not match the default intent name.
         } else {
             if (m_mapFragment != null) {
-            /* Initialize the MapFragment, results will be given via the called back. */
+            /* Initialize the SupportMapFragment, results will be given via the called back. */
                 m_mapFragment.init(new OnEngineInitListener() {
                     @Override
                     public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
