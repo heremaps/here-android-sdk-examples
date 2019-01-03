@@ -21,9 +21,9 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -850,21 +850,30 @@ public class BasicVenueActivity extends AppCompatActivity
      * @return string representation of position source
      */
     private String positionSourceToString(GeoPosition geoPosition) {
-        switch (geoPosition.getPositionSource()) {
-            case GeoPosition.SOURCE_OFFLINE:
-                return "OFFLINE";
-            case GeoPosition.SOURCE_ONLINE:
-                return "ONLINE";
-            case GeoPosition.SOURCE_CACHE:
-                return "CACHE";
-            case GeoPosition.SOURCE_FUSION:
-                return "FUSION";
-            case GeoPosition.SOURCE_HARDWARE:
-                return "HARDWARE";
-            case GeoPosition.SOURCE_INDOOR:
-                return "INDOOR";
+        final int sources = geoPosition.getPositionSource();
+        if (sources == GeoPosition.SOURCE_NONE) {
+            return "NONE";
         }
-        return "NONE";
+        final StringBuilder result = new StringBuilder();
+        if ((sources & GeoPosition.SOURCE_CACHE) != 0) {
+            result.append("CACHE ");
+        }
+        if ((sources & GeoPosition.SOURCE_FUSION) != 0) {
+            result.append("FUSION ");
+        }
+        if ((sources & GeoPosition.SOURCE_HARDWARE) != 0) {
+            result.append("HARDWARE ");
+        }
+        if ((sources & GeoPosition.SOURCE_INDOOR) != 0) {
+            result.append("INDOOR ");
+        }
+        if ((sources & GeoPosition.SOURCE_OFFLINE) != 0) {
+            result.append("OFFLINE ");
+        }
+        if ((sources & GeoPosition.SOURCE_ONLINE) != 0) {
+            result.append("ONLINE ");
+        }
+        return result.toString().trim();
     }
 
     /**
@@ -873,17 +882,27 @@ public class BasicVenueActivity extends AppCompatActivity
      * @return string representation of position technology
      */
     private String positionTechnologyToString(GeoPosition geoPosition) {
-        switch (geoPosition.getPositionTechnology()) {
-            case GeoPosition.TECHNOLOGY_WIFI:
-                return "WIFI";
-            case GeoPosition.TECHNOLOGY_BLE:
-                return "BLE";
-            case GeoPosition.TECHNOLOGY_CELL:
-                return "CELL";
-            case GeoPosition.TECHNOLOGY_GNSS:
-                return "GNSS";
+        final int technologies = geoPosition.getPositionTechnology();
+        if (technologies == GeoPosition.TECHNOLOGY_NONE) {
+            return "NONE";
         }
-        return "NONE";
+        final StringBuilder result = new StringBuilder();
+        if ((technologies & GeoPosition.TECHNOLOGY_BLE) != 0) {
+            result.append("BLE ");
+        }
+        if ((technologies & GeoPosition.TECHNOLOGY_CELL) != 0) {
+            result.append("CELL ");
+        }
+        if ((technologies & GeoPosition.TECHNOLOGY_GNSS) != 0) {
+            result.append("GNSS ");
+        }
+        if ((technologies & GeoPosition.TECHNOLOGY_WIFI) != 0) {
+            result.append("WIFI ");
+        }
+        if ((technologies & GeoPosition.TECHNOLOGY_SENSORS) != 0) {
+            result.append("SENSORS ");
+        }
+        return result.toString().trim();
     }
 
     // Google has deprecated android.app.Fragment class. It is used in current SDK implementation.
