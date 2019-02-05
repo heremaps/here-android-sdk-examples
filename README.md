@@ -2,7 +2,7 @@
 
 # HERE SDK for Android example projects
 
-Copyright (c) 2011-2018 HERE Europe B.V.
+Copyright (c) 2011-2019 HERE Europe B.V.
 
 This repository holds a series of Java-based projects using the **HERE SDK for Android**. More information about the API can be found on the HERE Developer Portal's [Mobile SDKs](https://developer.here.com/develop/mobile-sdks) page.
 
