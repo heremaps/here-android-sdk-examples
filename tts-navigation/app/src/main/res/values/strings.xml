@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">TTS and Navigation</string>
+    <string name="title_activity_main">TTS and Navigation</string>
+    <string name="download">Download navigation voice</string>
+    <string name="update">Check for voice updates</string>
+    <string name="navigation_start">Start navigation</string>
+    <string name="navigation_stop">Stop navigation</string>
+    <string name="wait_gps">Waiting for GPS fix …</string>
+    <string name="use_nuance">Use Nuance</string>
+    <string name="nuance_not_initialized">You are wanting to enable Nuance TTS engine, but it wasn\'t properly initialized. Default TTS engine for a device will be used instead.</string>
+</resources>
