@@ -55,12 +55,15 @@ import com.here.android.mpa.venues3d.Level;
 import com.here.android.mpa.venues3d.Space;
 import com.here.android.mpa.venues3d.Venue;
 import com.here.android.mpa.venues3d.VenueController;
+import com.here.android.mpa.venues3d.VenueInfo;
 import com.here.android.mpa.venues3d.VenueMapFragment;
 import com.here.android.mpa.venues3d.VenueMapFragment.VenueListener;
 import com.here.android.mpa.venues3d.VenueService;
 import com.here.android.mpa.venues3d.VenueService.VenueServiceListener;
 import com.here.android.positioning.DiagnosticsListener;
 import com.here.android.positioning.StatusListener;
+import com.here.android.positioning.helpers.RadioMapLoadHelper;
+import com.here.android.positioning.radiomap.RadioMapLoader;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -193,6 +196,28 @@ public class BasicVenueActivity extends AppCompatActivity
         public void onWifiIndoorPositioningNotAvailable() {
             Log.v(TAG, "StatusListener.onWifiIndoorPositioningNotAvailable");
         }
+    };
+
+    // Venue load listener to request radio map loading for the loaded venue.
+    private final VenueService.VenueLoadListener mVenueLoadListener = new VenueService.VenueLoadListener() {
+        @Override
+        public void onVenueLoadCompleted(Venue venue, VenueInfo venueInfo, VenueService.VenueLoadStatus venueLoadStatus) {
+            if (venueLoadStatus != VenueService.VenueLoadStatus.FAILED) {
+                Log.v(TAG, "onVenueLoadCompleted: loading radio maps for " + venue.getId());
+                mRadioMapLoader.load(venue);
+            }
+        }
+    };
+
+    // Radio map loader helper instance.
+    private RadioMapLoadHelper mRadioMapLoader;
+
+    /**
+     * Permissions that need to be explicitly requested from end user.
+     */
+    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
     /**
@@ -1043,6 +1068,7 @@ public class BasicVenueActivity extends AppCompatActivity
             Log.w(TAG, "startPositionUpdates: PositioningManager is null");
             return;
         }
+
         mHereLocation = LocationDataSourceHERE.getInstance(mPositioningStatusListener);
 
         if (mHereLocation == null) {
@@ -1076,6 +1102,31 @@ public class BasicVenueActivity extends AppCompatActivity
         } catch (Exception ex) {
             Log.w(TAG, "startPositionUpdates: Could not register for location updates: %s", Log.getStackTraceString(ex));
         }
+
+        try {
+            mRadioMapLoader = new RadioMapLoadHelper(LocationDataSourceHERE.getInstance().getRadioMapLoader(),
+                    new RadioMapLoadHelper.Listener() {
+                        @Override
+                        public void onError(@NonNull Venue venue, RadioMapLoader.Status status) {
+                            // Radio map loading failed with status.
+                        }
+
+                        @Override
+                        public void onProgress(@NonNull Venue venue, int progress) {
+                            // Radio map loading progress.
+                        }
+
+                        @Override
+                        public void onCompleted(@NonNull Venue venue, RadioMapLoader.Status status) {
+                            Log.i(TAG, "Radio map for venue: " + venue.getId() + ", completed with status: " + status);
+                            // Radio map loading completed with status.
+                        }
+                    });
+            mVenueService.addVenueLoadListener(mVenueLoadListener);
+        } catch (Exception ex) {
+            Log.e(TAG, "startPositionUpdates: setting up radio map loader failed", ex);
+            mRadioMapLoader = null;
+        }
     }
 
     /**
@@ -1087,6 +1138,10 @@ public class BasicVenueActivity extends AppCompatActivity
         if (mPositioningManager != null) {
             mPositioningManager.stop();
             mPositioningManager.removeListener(mActivity);
+        }
+        if (mRadioMapLoader != null) {
+            mVenueService.removeVenueLoadListener(mVenueLoadListener);
+            mRadioMapLoader = null;
         }
     }
 
