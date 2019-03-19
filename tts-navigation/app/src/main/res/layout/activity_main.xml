@@ -1,0 +1,39 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:weightSum="1">
+
+    <!-- Map Fragment embedded with the map object -->
+    <fragment
+        android:id="@+id/mapfragment"
+        class="com.here.android.mpa.mapping.MapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1.05" />
+
+    <Switch
+        android:id="@+id/tts_selector"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/use_nuance" />
+
+    <Button
+        android:id="@+id/download"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/download" />
+
+    <Button
+        android:id="@+id/update"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/update" />
+
+    <Button
+        android:id="@+id/navigation"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/navigation_start" />
+
+</LinearLayout>

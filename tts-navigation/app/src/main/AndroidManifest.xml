@@ -1,0 +1,70 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.here.tcsdemo">
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <application
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:hardwareAccelerated="true">
+        <activity android:name="com.here.tcsdemo.MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+            Put your credentials here
+        -->
+        <meta-data
+            android:name="com.here.android.maps.appid"
+            android:value="{YOUR_APP_ID}" />
+        <meta-data
+            android:name="com.here.android.maps.apptoken"
+            android:value="{YOUR_APP_CODE}" />
+        <meta-data
+            android:name="com.here.android.maps.license.key"
+            android:value="{YOUR_LICENSE_KEY}" />
+
+        <!--
+            Nuance Credentials
+            If you need credentials, then you should get it here: https://developer.nuance.com/public/index.php?task=home
+        -->
+        <meta-data
+            android:name="nuance.app.key"
+            android:value="" />
+        <meta-data
+            android:name="nuance.app.id"
+            android:value="" />
+        <meta-data
+            android:name="nuance.app.host"
+            android:value="" />
+        <meta-data
+            android:name="nuance.app.port"
+            android:value="" />
+
+        <!--
+            Embed the HERE Map Service.
+            For more information, see the HERE SDK Developer's Guide
+        -->
+        <service
+            android:name="com.here.android.mpa.service.MapService"
+            android:exported="true"
+            android:label="HereMapService"
+            android:process="global.Here.Map.Service.v2">
+            <intent-filter>
+                <action android:name="com.here.android.mpa.service.MapService" />
+            </intent-filter>
+        </service>
+
+    </application>
+
+</manifest>

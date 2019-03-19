@@ -1,0 +1,33 @@
+<resources>
+    <string name="app_name">FleetConnectivitySample</string>
+    <string name="action_settings">Settings</string>
+    <string name="connection_error_message">Connection error (%s)!</string>
+    <string name="server_error_message">Server error (%s):</string>
+    <string name="show_action">SHOW</string>
+    <string name="job_snackbar">New job received: %s</string>
+    <string name="service_start_failure">Starting FCE service failed.</string>
+    <string name="show_jobs_action">SHOW JOBS</string>
+    <string name="start_job">START</string>
+    <string name="abort_job">ABORT</string>
+    <string name="reject_job">REJECT</string>
+    <string name="no_jobs_available">No jobs available.</string>
+    <string name="action_details">Asset Details</string>
+    <string name="asset_details">Asset ID:\n%1$s\n\nDispatcher ID:\n%2$s</string>
+    <string name="not_available">N/A</string>
+    <string name="route_calculation_error">Error during route calculation: %s</string>
+    <string name="no_position">Current position not known.</string>
+    <string name="tta_h_m">%1$dh%2$dm</string>
+    <string name="tta_m">%1$dm</string>
+    <string name="distance_km">%.1fkm</string>
+    <string name="distance_m">%1dm</string>
+    <string name="job_running">Running: %s</string>
+    <string name="job_in_progress">Running...</string>
+    <string name="action_truck_restrictions">Truck Restrictions</string>
+    <string name="action_traffic">Traffic</string>
+    <string name="action_simulate_guidance">Simulate Guidance</string>
+    <string name="route_recalculated">Route recalculated.</string>
+    <plurals name="jobs_pending">
+        <item quantity="one">%d job pending.</item>
+        <item quantity="other">%d jobs pending.</item>
+    </plurals>
+</resources>
