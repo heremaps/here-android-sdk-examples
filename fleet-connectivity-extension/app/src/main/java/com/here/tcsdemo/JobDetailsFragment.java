@@ -84,8 +84,10 @@ public class JobDetailsFragment extends FleetConnectivityFragment implements Vie
                 } else {
                     RouteResult result = list.get(0);
                     mRoute = result.getRoute();
-                    RouteTta tta = mRoute.getTta(getBridge().isTrafficEnabled() ? Route.TrafficPenaltyMode.OPTIMAL : Route.TrafficPenaltyMode.DISABLED,
-                            Route.WHOLE_ROUTE);
+                    RouteTta tta = getBridge().isTrafficEnabled()
+                            ? mRoute.getTtaIncludingTraffic(Route.WHOLE_ROUTE)
+                            : mRoute.getTtaExcludingTraffic(Route.WHOLE_ROUTE);
+
                     int distanceInMeters = mRoute.getLength();
                     // Updating route info.
                     updateTtaLabel(tta.getDuration());

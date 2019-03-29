@@ -44,7 +44,6 @@ import java.util.EnumSet;
  * and enter proper asset ID and dispatcher ID (can be accessed from the Menu -> Asset Details).
  */
 public class FleetConnectivityActivity extends AppCompatActivity implements FleetConnectivityFragmentBridge {
-    private static final String TAG = FleetConnectivityActivity.class.getSimpleName();
     // Helper class which manages incoming jobs.
     private final JobsManager mJobsManager;
     // Snackbar containing information about new job.
@@ -197,6 +196,7 @@ public class FleetConnectivityActivity extends AppCompatActivity implements Flee
      * @param map Map instance provided by the MapEngine.
      */
     @Override
+    @SuppressWarnings("deprecation")
     public void onEngineInitialized(Map map) {
         mMap = map;
         // Enabling positioning.
