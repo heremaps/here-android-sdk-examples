@@ -193,8 +193,14 @@ public class BasicVenueActivity extends AppCompatActivity
         }
 
         @Override
+        @SuppressWarnings("deprecation")
         public void onWifiIndoorPositioningNotAvailable() {
             Log.v(TAG, "StatusListener.onWifiIndoorPositioningNotAvailable");
+        }
+
+        @Override
+        public void onWifiIndoorPositioningDegraded() {
+            // called when running on Android 9.0 (Pie) or newer
         }
     };
 

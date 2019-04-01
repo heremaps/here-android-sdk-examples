@@ -42,6 +42,7 @@ import com.here.android.mpa.mapping.MapRoute;
 import com.here.android.mpa.mapping.MapView;
 import com.here.android.mpa.routing.Route;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.EnumSet;
@@ -218,40 +219,12 @@ public class MapFragment extends FleetConnectivityFragment {
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mJobStatus = (TextView) view.findViewById(R.id.job_status);
-        mShowJobs = (Button) view.findViewById(R.id.show_jobs);
-        mMapView = (MapView) view.findViewById(R.id.map_view);
+        mJobStatus = view.findViewById(R.id.job_status);
+        mShowJobs = view.findViewById(R.id.show_jobs);
+        mMapView = view.findViewById(R.id.map_view);
 
-        // Initializing the MapEngine.
-        MapEngine.getInstance().init(new ApplicationContext(getActivity()), new OnEngineInitListener() {
-            @Override
-            public void onEngineInitializationCompleted(
-                    Error error) {
-                if (error == Error.NONE) {
-                    mMap = new Map();
-                    mMapView.setMap(mMap);
-                    mMapView.getMapGesture().addOnGestureListener(mOnGestureListener, 0, false);
-                    mMap.setCenter(new GeoCoordinate(52.531027, 13.3827493, 0.0), Map.Animation.NONE);
-                    mMap.setZoomLevel((mMap.getMaxZoomLevel() + mMap.getMinZoomLevel()) / 2);
-                    // Switching to Truck Day map scheme.
-                    mMap.setMapScheme(Map.Scheme.TRUCK_DAY);
-                    // Enabling truck restrictions.
-                    mMap.setFleetFeaturesVisible(EnumSet.allOf(Map.FleetFeature.class));
-                    // Enabling traffic info.
-                    mMap.setTrafficInfoVisible(true);
-                    onEngineInitialized();
-                    // Starting JobsManager.
-                    if (!getBridge().getJobsManager().start(getActivity())) {
-                        Log.e(TAG, "Could not start the service!");
-                        Toast.makeText(getActivity(), R.string.service_start_failure, Toast.LENGTH_LONG).show();
-                    }
-                } else {
-                    Log.e(TAG, "ERROR: Cannot initialize Map Fragment: " + error);
-                    Log.e(TAG, error.getDetails());
-                    Log.e(TAG, error.getStackTrace());
-                }
-            }
-        });
+        initMapEngine();
+
         mShowJobs.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -260,6 +233,50 @@ public class MapFragment extends FleetConnectivityFragment {
         });
 
         updateShowJobsButton();
+    }
+
+    private void initMapEngine() {
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
+                getActivity().getApplicationContext().getExternalFilesDir(null) + File.separator + ".here-maps",
+                "{YOUR_INTENT_NAME}");
+
+        if (!success) {
+            // Setting the isolated disk cache was not successful, please check if the path is valid and
+            // ensure that it does not match the default location
+            // (getExternalStorageDirectory()/.here-maps).
+            // Also, ensure the provided intent name does not match the default intent name.
+        } else {
+            // Initializing the MapEngine.
+            MapEngine.getInstance().init(new ApplicationContext(getActivity()), new OnEngineInitListener() {
+                @Override
+                public void onEngineInitializationCompleted(
+                        Error error) {
+                    if (error == Error.NONE) {
+                        mMap = new Map();
+                        mMapView.setMap(mMap);
+                        mMapView.getMapGesture().addOnGestureListener(mOnGestureListener, 0, false);
+                        mMap.setCenter(new GeoCoordinate(52.531027, 13.3827493, 0.0), Map.Animation.NONE);
+                        mMap.setZoomLevel((mMap.getMaxZoomLevel() + mMap.getMinZoomLevel()) / 2);
+                        // Switching to Truck Day map scheme.
+                        mMap.setMapScheme(Map.Scheme.TRUCK_DAY);
+                        // Enabling truck restrictions.
+                        mMap.setFleetFeaturesVisible(EnumSet.allOf(Map.FleetFeature.class));
+                        // Enabling traffic info.
+                        mMap.setTrafficInfoVisible(true);
+                        onEngineInitialized();
+                        // Starting JobsManager.
+                        if (!getBridge().getJobsManager().start(getActivity())) {
+                            Log.e(TAG, "Could not start the service!");
+                            Toast.makeText(getActivity(), R.string.service_start_failure, Toast.LENGTH_LONG).show();
+                        }
+                    } else {
+                        Log.e(TAG, "ERROR: Cannot initialize Map Fragment: " + error);
+                        Log.e(TAG, error.getDetails());
+                        Log.e(TAG, error.getStackTrace());
+                    }
+                }
+            });
+        }
     }
 
     /**
