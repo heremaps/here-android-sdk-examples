@@ -312,7 +312,13 @@ public class BasicPositioningActivity extends AppCompatActivity implements Posit
                                     }
 
                                     @Override
+                                    @SuppressWarnings("deprecation")
                                     public void onWifiIndoorPositioningNotAvailable() {
+                                        // called when running on Android 9.0 (Pie) or newer
+                                    }
+
+                                    @Override
+                                    public void onWifiIndoorPositioningDegraded() {
                                         // called when running on Android 9.0 (Pie) or newer
                                     }
                                 });

@@ -16,9 +16,9 @@
 
 package com.here.tcsdemo;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -30,11 +30,11 @@ import com.here.android.mpa.common.GeoPolyline;
 import com.here.android.mpa.common.Image;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.mapping.Map;
-import com.here.android.mpa.mapping.MapFragment;
 import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapObject;
 import com.here.android.mpa.mapping.MapPolyline;
 import com.here.android.mpa.mapping.MapRoute;
+import com.here.android.mpa.mapping.SupportMapFragment;
 import com.here.android.mpa.pde.PlatformDataItem;
 import com.here.android.mpa.pde.PlatformDataItemCollection;
 import com.here.android.mpa.pde.PlatformDataRequest;
@@ -46,6 +46,7 @@ import com.here.android.mpa.routing.RouteResult;
 import com.here.android.mpa.routing.RouteWaypoint;
 import com.here.android.mpa.routing.RoutingError;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -63,8 +64,8 @@ public class MapFragmentView {
     private final static int HIGH_COLOR = Color.GREEN;
     private final static int LOW_COLOR = Color.RED;
     private final Set<Long> pvids = new HashSet<>();
-    private MapFragment mapFragment;
-    private Activity activity;
+    private SupportMapFragment mapFragment;
+    private AppCompatActivity activity;
     private Map map;
 
     /**
@@ -72,54 +73,70 @@ public class MapFragmentView {
      *
      * @param activity
      */
-    public MapFragmentView(Activity activity) {
+    public MapFragmentView(AppCompatActivity activity) {
         this.activity = activity;
         initMapFragment();
-        initCapitalsButton();
-        initRoadSlopesButton();
+    }
+
+    private SupportMapFragment getMapFragment() {
+        return (SupportMapFragment) activity
+                .getSupportFragmentManager().findFragmentById(R.id.mapfragment);
     }
 
     private void initMapFragment() {
         /*
          * Locate the mapFragment UI element
          */
-        mapFragment = (MapFragment) activity.getFragmentManager()
-                .findFragmentById(R.id.mapfragment);
+        mapFragment = getMapFragment();
 
-        if (mapFragment != null) {
-            /*
-             * Initialize the MapFragment, results will be given via the called back.
-             */
-            mapFragment.init(new OnEngineInitListener() {
-                @Override
-                public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
-                    if (error == Error.NONE) {
-                        /*
-                         * If no error returned from map fragment initialization, the map will be
-                         * rendered on screen at this moment.Further actions on map can be provided
-                         * by calling Map APIs.
-                         */
-                        map = mapFragment.getMap();
-                        /*
-                         * Set the map center to Berlin Germany.
-                         */
-                        map.setCenter(new GeoCoordinate(52.517031, 13.389015),
-                                Map.Animation.NONE);
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
+                activity.getApplicationContext().getExternalFilesDir(null) + File.separator + ".here-maps",
+                "{YOUR_INTENT_NAME}");
 
-                        /*
-                         * Set the zoom level.
-                         */
-                        map.setZoomLevel(3.95);
-                    } else {
-                        /*
-                         * Process errors during initialization.
-                         */
-                        Log.e(TAG, "Error on map fragment initialization: " + error);
-                        Log.e(TAG, error.getDetails());
-                        Log.e(TAG, error.getStackTrace());
+        if (!success) {
+            // Setting the isolated disk cache was not successful, please check if the path is valid and
+            // ensure that it does not match the default location
+            // (getExternalStorageDirectory()/.here-maps).
+            // Also, ensure the provided intent name does not match the default intent name.
+        } else {
+            if (mapFragment != null) {
+                /*
+                 * Initialize the MapFragment, results will be given via the called back.
+                 */
+                mapFragment.init(new OnEngineInitListener() {
+                    @Override
+                    public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
+                        if (error == Error.NONE) {
+                            /*
+                             * If no error returned from map fragment initialization, the map will be
+                             * rendered on screen at this moment.Further actions on map can be provided
+                             * by calling Map APIs.
+                             */
+                            map = mapFragment.getMap();
+                            /*
+                             * Set the map center to Berlin Germany.
+                             */
+                            map.setCenter(new GeoCoordinate(52.517031, 13.389015),
+                                    Map.Animation.NONE);
+
+                            /*
+                             * Set the zoom level.
+                             */
+                            map.setZoomLevel(3.95);
+
+                            initCapitalsButton();
+                            initRoadSlopesButton();
+                        } else {
+                            /*
+                             * Process errors during initialization.
+                             */
+                            Log.e(TAG, "Error on map fragment initialization: " + error);
+                            Log.e(TAG, error.getDetails());
+                            Log.e(TAG, error.getStackTrace());
+                        }
                     }
-                }
-            });
+                });
+            }
         }
     }
 
