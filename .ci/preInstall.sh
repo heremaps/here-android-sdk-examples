@@ -8,7 +8,7 @@ unzip -j -o 'HERE_SDK.zip' -d 'HERE_SDK'
 
 # Extract the contained inner ZIP.
 unzip -l -l
-unzip -j -o 'HERE_SDK/HERE-sdk.zip' 'HERE-sdk.aar' -d 'HERE_SDK'
+unzip -j -o 'HERE_SDK/HERE-sdk.zip' 'libs/HERE-sdk.aar' -d 'HERE_SDK'
 ls -al HERE_SDK/
 
 exit 1
