@@ -7,7 +7,7 @@ curl -s -S -o HERE_SDK.zip "$HERE_SDK_URL"
 unzip -j -o 'HERE_SDK.zip' -d 'HERE_SDK'
 
 # Extract the contained inner ZIP.
-unzip -j -o 'HERE_SDK/HERE-sdk.zip' -d 'HERE_SDK'
+unzip -j -o 'HERE_SDK/HERE-sdk.zip' HERE-sdk.aar -d 'HERE_SDK'
 ls -al HERE_SDK/
 
 exit 1
