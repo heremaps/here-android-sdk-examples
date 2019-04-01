@@ -10,7 +10,8 @@ unzip -j -o 'HERE_SDK.zip' -d 'HERE_SDK'
 unzip -j -o 'HERE_SDK/HERE-sdk.zip' -d 'HERE_SDK'
 ls -al HERE_SDK/
 
-# Find paths that contain an app module
+exit 1
+## Find paths that contain an app module
 APP_PROJECTS=$(find "$PWD" -maxdepth 1 -type d -exec [ -d {}/app/libs ] \; -print -prune)
 
 for APP_PATH in $APP_PROJECTS; do
