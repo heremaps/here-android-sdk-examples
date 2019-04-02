@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.here.tcsdemo">
+
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <application
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme"
+        android:hardwareAccelerated="true">
+        <activity
+            android:name=".FleetConnectivityActivity"
+            android:screenOrientation="portrait"
+            android:configChanges="orientation|screenSize|keyboardHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!--
+            Credentials for demo only
+        -->
+        <meta-data
+            android:name="com.here.android.maps.appid"
+            android:value="{YOUR_APP_ID}" />
+        <meta-data
+            android:name="com.here.android.maps.apptoken"
+            android:value="{YOUR_APP_CODE}" />
+        <meta-data
+            android:name="com.here.android.maps.license.key"
+            android:value="{YOUR_LICENSE_KEY}" />
+
+        <!--
+            Embed the HERE Map Service. This will create and run the map service under the
+            application's process making sure that the map data between this application
+            and others' using the HERE SDK are not shared. See BasicMapActivity.java on
+            details how to set the location of your map data cache.
+            For more information, see the HERE SDK Developer's Guide
+        -->
+        <service android:exported="false" android:label="BasicMapSolutionMapService" android:name="com.here.android.mpa.service.MapService">
+            <intent-filter>
+                <action android:name="{YOUR_INTENT_NAME}">
+                </action>
+            </intent-filter>
+        </service>
+
+    </application>
+
+</manifest>

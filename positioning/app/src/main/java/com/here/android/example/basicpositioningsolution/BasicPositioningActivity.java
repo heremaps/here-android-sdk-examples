@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2018 HERE Europe B.V.
+ * Copyright (c) 2011-2019 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -312,7 +312,13 @@ public class BasicPositioningActivity extends AppCompatActivity implements Posit
                                     }
 
                                     @Override
+                                    @SuppressWarnings("deprecation")
                                     public void onWifiIndoorPositioningNotAvailable() {
+                                        // called when running on Android 9.0 (Pie) or newer
+                                    }
+
+                                    @Override
+                                    public void onWifiIndoorPositioningDegraded() {
                                         // called when running on Android 9.0 (Pie) or newer
                                     }
                                 });

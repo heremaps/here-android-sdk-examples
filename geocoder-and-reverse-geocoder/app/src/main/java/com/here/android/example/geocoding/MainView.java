@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2018 HERE Europe B.V.
+ * Copyright (c) 2011-2019 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,11 @@ import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.MapEngine;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.search.ErrorCode;
-import com.here.android.mpa.search.GeocodeRequest2;
+import com.here.android.mpa.search.GeocodeRequest;
 import com.here.android.mpa.search.GeocodeResult;
 import com.here.android.mpa.search.Location;
 import com.here.android.mpa.search.ResultListener;
-import com.here.android.mpa.search.ReverseGeocodeRequest2;
+import com.here.android.mpa.search.ReverseGeocodeRequest;
 
 import android.support.v7.app.AppCompatActivity;
 import android.content.pm.ApplicationInfo;
@@ -118,7 +118,7 @@ public class MainView {
          * providing a GeoCoordinate and radius before executing the request.
          */
         String query = "4350 Still Creek Dr,Burnaby";
-        GeocodeRequest2 geocodeRequest = new GeocodeRequest2(query);
+        GeocodeRequest geocodeRequest = new GeocodeRequest(query);
         GeoCoordinate coordinate = new GeoCoordinate(49.266787, -123.056640);
         geocodeRequest.setSearchArea(coordinate, 5000);
         geocodeRequest.execute(new ResultListener<List<GeocodeResult>>() {
@@ -147,7 +147,7 @@ public class MainView {
         m_resultTextView.setText("");
         /* Create a ReverseGeocodeRequest object with a GeoCoordinate. */
         GeoCoordinate coordinate = new GeoCoordinate(49.25914, -123.00777);
-        ReverseGeocodeRequest2 revGecodeRequest = new ReverseGeocodeRequest2(coordinate);
+        ReverseGeocodeRequest revGecodeRequest = new ReverseGeocodeRequest(coordinate);
         revGecodeRequest.execute(new ResultListener<Location>() {
             @Override
             public void onCompleted(Location location, ErrorCode errorCode) {

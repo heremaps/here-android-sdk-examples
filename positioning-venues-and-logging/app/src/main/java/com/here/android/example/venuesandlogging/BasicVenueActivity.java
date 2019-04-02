@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2018 HERE Europe B.V.
+ * Copyright (c) 2011-2019 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,9 @@ import android.content.Context;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
@@ -55,12 +55,15 @@ import com.here.android.mpa.venues3d.Level;
 import com.here.android.mpa.venues3d.Space;
 import com.here.android.mpa.venues3d.Venue;
 import com.here.android.mpa.venues3d.VenueController;
+import com.here.android.mpa.venues3d.VenueInfo;
 import com.here.android.mpa.venues3d.VenueMapFragment;
 import com.here.android.mpa.venues3d.VenueMapFragment.VenueListener;
 import com.here.android.mpa.venues3d.VenueService;
 import com.here.android.mpa.venues3d.VenueService.VenueServiceListener;
 import com.here.android.positioning.DiagnosticsListener;
 import com.here.android.positioning.StatusListener;
+import com.here.android.positioning.helpers.RadioMapLoadHelper;
+import com.here.android.positioning.radiomap.RadioMapLoader;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -190,9 +193,37 @@ public class BasicVenueActivity extends AppCompatActivity
         }
 
         @Override
+        @SuppressWarnings("deprecation")
         public void onWifiIndoorPositioningNotAvailable() {
             Log.v(TAG, "StatusListener.onWifiIndoorPositioningNotAvailable");
         }
+
+        @Override
+        public void onWifiIndoorPositioningDegraded() {
+            // called when running on Android 9.0 (Pie) or newer
+        }
+    };
+
+    // Venue load listener to request radio map loading for the loaded venue.
+    private final VenueService.VenueLoadListener mVenueLoadListener = new VenueService.VenueLoadListener() {
+        @Override
+        public void onVenueLoadCompleted(Venue venue, VenueInfo venueInfo, VenueService.VenueLoadStatus venueLoadStatus) {
+            if (venueLoadStatus != VenueService.VenueLoadStatus.FAILED) {
+                Log.v(TAG, "onVenueLoadCompleted: loading radio maps for " + venue.getId());
+                mRadioMapLoader.load(venue);
+            }
+        }
+    };
+
+    // Radio map loader helper instance.
+    private RadioMapLoadHelper mRadioMapLoader;
+
+    /**
+     * Permissions that need to be explicitly requested from end user.
+     */
+    private static final String[] REQUIRED_SDK_PERMISSIONS = new String[] {
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
     /**
@@ -850,21 +881,30 @@ public class BasicVenueActivity extends AppCompatActivity
      * @return string representation of position source
      */
     private String positionSourceToString(GeoPosition geoPosition) {
-        switch (geoPosition.getPositionSource()) {
-            case GeoPosition.SOURCE_OFFLINE:
-                return "OFFLINE";
-            case GeoPosition.SOURCE_ONLINE:
-                return "ONLINE";
-            case GeoPosition.SOURCE_CACHE:
-                return "CACHE";
-            case GeoPosition.SOURCE_FUSION:
-                return "FUSION";
-            case GeoPosition.SOURCE_HARDWARE:
-                return "HARDWARE";
-            case GeoPosition.SOURCE_INDOOR:
-                return "INDOOR";
+        final int sources = geoPosition.getPositionSource();
+        if (sources == GeoPosition.SOURCE_NONE) {
+            return "NONE";
         }
-        return "NONE";
+        final StringBuilder result = new StringBuilder();
+        if ((sources & GeoPosition.SOURCE_CACHE) != 0) {
+            result.append("CACHE ");
+        }
+        if ((sources & GeoPosition.SOURCE_FUSION) != 0) {
+            result.append("FUSION ");
+        }
+        if ((sources & GeoPosition.SOURCE_HARDWARE) != 0) {
+            result.append("HARDWARE ");
+        }
+        if ((sources & GeoPosition.SOURCE_INDOOR) != 0) {
+            result.append("INDOOR ");
+        }
+        if ((sources & GeoPosition.SOURCE_OFFLINE) != 0) {
+            result.append("OFFLINE ");
+        }
+        if ((sources & GeoPosition.SOURCE_ONLINE) != 0) {
+            result.append("ONLINE ");
+        }
+        return result.toString().trim();
     }
 
     /**
@@ -873,17 +913,27 @@ public class BasicVenueActivity extends AppCompatActivity
      * @return string representation of position technology
      */
     private String positionTechnologyToString(GeoPosition geoPosition) {
-        switch (geoPosition.getPositionTechnology()) {
-            case GeoPosition.TECHNOLOGY_WIFI:
-                return "WIFI";
-            case GeoPosition.TECHNOLOGY_BLE:
-                return "BLE";
-            case GeoPosition.TECHNOLOGY_CELL:
-                return "CELL";
-            case GeoPosition.TECHNOLOGY_GNSS:
-                return "GNSS";
+        final int technologies = geoPosition.getPositionTechnology();
+        if (technologies == GeoPosition.TECHNOLOGY_NONE) {
+            return "NONE";
         }
-        return "NONE";
+        final StringBuilder result = new StringBuilder();
+        if ((technologies & GeoPosition.TECHNOLOGY_BLE) != 0) {
+            result.append("BLE ");
+        }
+        if ((technologies & GeoPosition.TECHNOLOGY_CELL) != 0) {
+            result.append("CELL ");
+        }
+        if ((technologies & GeoPosition.TECHNOLOGY_GNSS) != 0) {
+            result.append("GNSS ");
+        }
+        if ((technologies & GeoPosition.TECHNOLOGY_WIFI) != 0) {
+            result.append("WIFI ");
+        }
+        if ((technologies & GeoPosition.TECHNOLOGY_SENSORS) != 0) {
+            result.append("SENSORS ");
+        }
+        return result.toString().trim();
     }
 
     // Google has deprecated android.app.Fragment class. It is used in current SDK implementation.
@@ -1024,6 +1074,7 @@ public class BasicVenueActivity extends AppCompatActivity
             Log.w(TAG, "startPositionUpdates: PositioningManager is null");
             return;
         }
+
         mHereLocation = LocationDataSourceHERE.getInstance(mPositioningStatusListener);
 
         if (mHereLocation == null) {
@@ -1057,6 +1108,31 @@ public class BasicVenueActivity extends AppCompatActivity
         } catch (Exception ex) {
             Log.w(TAG, "startPositionUpdates: Could not register for location updates: %s", Log.getStackTraceString(ex));
         }
+
+        try {
+            mRadioMapLoader = new RadioMapLoadHelper(LocationDataSourceHERE.getInstance().getRadioMapLoader(),
+                    new RadioMapLoadHelper.Listener() {
+                        @Override
+                        public void onError(@NonNull Venue venue, RadioMapLoader.Status status) {
+                            // Radio map loading failed with status.
+                        }
+
+                        @Override
+                        public void onProgress(@NonNull Venue venue, int progress) {
+                            // Radio map loading progress.
+                        }
+
+                        @Override
+                        public void onCompleted(@NonNull Venue venue, RadioMapLoader.Status status) {
+                            Log.i(TAG, "Radio map for venue: " + venue.getId() + ", completed with status: " + status);
+                            // Radio map loading completed with status.
+                        }
+                    });
+            mVenueService.addVenueLoadListener(mVenueLoadListener);
+        } catch (Exception ex) {
+            Log.e(TAG, "startPositionUpdates: setting up radio map loader failed", ex);
+            mRadioMapLoader = null;
+        }
     }
 
     /**
@@ -1068,6 +1144,10 @@ public class BasicVenueActivity extends AppCompatActivity
         if (mPositioningManager != null) {
             mPositioningManager.stop();
             mPositioningManager.removeListener(mActivity);
+        }
+        if (mRadioMapLoader != null) {
+            mVenueService.removeVenueLoadListener(mVenueLoadListener);
+            mRadioMapLoader = null;
         }
     }
 

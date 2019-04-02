@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2011-2018 HERE Europe B.V.
+ * Copyright (c) 2011-2019 HERE Europe B.V.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,17 @@
 
 package com.here.android.example.map.objects;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.os.Bundle;
+import android.os.Environment;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.here.android.mpa.common.GeoBoundingBox;
 import com.here.android.mpa.common.GeoCoordinate;
@@ -27,39 +34,42 @@ import com.here.android.mpa.common.GeoPolygon;
 import com.here.android.mpa.common.GeoPolyline;
 import com.here.android.mpa.common.Image;
 import com.here.android.mpa.common.OnEngineInitListener;
+import com.here.android.mpa.common.ViewRect;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapCircle;
-import com.here.android.mpa.mapping.SupportMapFragment;
 import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapPolygon;
 import com.here.android.mpa.mapping.MapPolyline;
+import com.here.android.mpa.mapping.SupportMapFragment;
 
-import android.support.v7.app.AppCompatActivity;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.graphics.Color;
-import android.os.Bundle;
-import android.os.Environment;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This class encapsulates the properties and functionality of the Map view.
  */
 public class MapFragmentView {
+    private static final int ADD_MARKER_MENU_ID = 0;
+    private static final int REMOVE_MARKER_MENU_ID = 1;
+    private static final int ADD_POLYGON_MENU_ID = 2;
+    private static final int REMOVE_POLYGON_MENU_ID = 3;
+    private static final int ADD_POLYLINE_MENU_ID = 4;
+    private static final int REMOVE_POLYLINE_MENU_ID = 5;
+    private static final int ADD_CIRCLE_MENU_ID = 6;
+    private static final int REMOVE_CIRCLE_MENU_ID = 7;
+    private static final int NAVIGATE_TO_MENU_ID = 8;
+
     private SupportMapFragment m_mapFragment;
     private AppCompatActivity m_activity;
     private Map m_map;
-    private MapPolygon m_polygon;
-    private MapPolyline m_polyline;
-    private MapCircle m_circle;
-    private MapMarker m_map_marker;
 
-    private Button m_polygon_button;
-    private Button m_polyline_button;
-    private Button m_circle_button;
-    private Button m_marker_button;
+    private final LinkedList<MapPolygon> m_polygons = new LinkedList<>();
+    private final LinkedList<MapPolyline> m_polylines = new LinkedList<>();
+    private final LinkedList<MapCircle> m_circles = new LinkedList<>();
+    private final LinkedList<MapMarker> m_map_markers = new LinkedList<>();
 
     /**
      * Initial UI button on map fragment view. It includes several buttons to add/remove map objects
@@ -70,10 +80,6 @@ public class MapFragmentView {
     public MapFragmentView(AppCompatActivity activity) {
         m_activity = activity;
         initMapFragment();
-        initCreatePolygonButton();
-        initCreatePolylineButton();
-        initCreateCircleButton();
-        initCreateMapMarkerButton();
     }
 
     private SupportMapFragment getMapFragment() {
@@ -127,6 +133,11 @@ public class MapFragmentView {
                         /* Set the zoom level to the average between min and max zoom level. */
                             m_map.setZoomLevel(14);
 
+                            m_activity.supportInvalidateOptionsMenu();
+
+                        } else {
+                            Log.e(this.getClass().toString(), "onEngineInitializationCompleted: " +
+                                    "ERROR=" + error.getDetails(), error.getThrowable());
                         }
                     }
                 });
@@ -134,31 +145,74 @@ public class MapFragmentView {
         }
     }
 
-    /**
-     * Initialize Create Polygon Button to add/remove MapPolygon.
-     */
-    private void initCreatePolygonButton() {
-        m_polygon_button = (Button) m_activity.findViewById(R.id.polygon_button);
-
-        m_polygon_button.setOnClickListener(new View.OnClickListener() {
-            // if MapPolygon already exist on map, then remove MapPolygon, otherwise create
-            // MapPolygon.
-            @Override
-            public void onClick(View v) {
-                if (m_map != null && m_polygon != null) {
-                    m_map.removeMapObject(m_polygon);
-                    m_polygon = null;
-                } else {
-                    createPolygon();
+    boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case ADD_MARKER_MENU_ID:
+                addMapMarkerObject();
+                break;
+            case REMOVE_MARKER_MENU_ID:
+                if (!m_map_markers.isEmpty()) {
+                    m_map.removeMapObject(m_map_markers.removeLast());
                 }
-            }
-        });
+                break;
+            case ADD_POLYGON_MENU_ID:
+                addPolygonObject();
+                break;
+            case REMOVE_POLYGON_MENU_ID:
+                if (!m_polygons.isEmpty()) {
+                    m_map.removeMapObject(m_polygons.removeLast());
+                }
+                break;
+            case ADD_POLYLINE_MENU_ID:
+                addPolylineObject();
+                break;
+            case REMOVE_POLYLINE_MENU_ID:
+                if (!m_polylines.isEmpty()) {
+                    m_map.removeMapObject(m_polylines.removeLast());
+                }
+                break;
+            case ADD_CIRCLE_MENU_ID:
+                addCircleObject();
+                break;
+            case REMOVE_CIRCLE_MENU_ID:
+                if (!m_circles.isEmpty()) {
+                    m_map.removeMapObject(m_circles.removeLast());
+                }
+                break;
+
+            case NAVIGATE_TO_MENU_ID:
+                if (!m_map_markers.isEmpty()) {
+                    int padding = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
+                            100, m_activity.getResources().getDisplayMetrics());
+                    navigateToMapMarkers(m_map_markers, padding);
+                } else {
+                    Toast.makeText(m_activity, "There is no any map markers added on the map",
+                            Toast.LENGTH_SHORT).show();
+                }
+                break;
+        }
+
+        return true;
+    }
+
+    boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, ADD_MARKER_MENU_ID, ADD_MARKER_MENU_ID, "Add Marker");
+        menu.add(0, REMOVE_MARKER_MENU_ID, REMOVE_MARKER_MENU_ID, "Remove Marker");
+        menu.add(0, ADD_POLYGON_MENU_ID, ADD_POLYGON_MENU_ID, "Add Polygon");
+        menu.add(0, REMOVE_POLYGON_MENU_ID, REMOVE_POLYGON_MENU_ID, "Remove polygon");
+        menu.add(0, ADD_POLYLINE_MENU_ID, ADD_POLYLINE_MENU_ID, "Add polyline");
+        menu.add(0, REMOVE_POLYLINE_MENU_ID, REMOVE_POLYLINE_MENU_ID, "Remove polyline");
+        menu.add(0, ADD_CIRCLE_MENU_ID, ADD_CIRCLE_MENU_ID, "Add circle");
+        menu.add(0, REMOVE_CIRCLE_MENU_ID, REMOVE_CIRCLE_MENU_ID, "Remove circle");
+        menu.add(0, NAVIGATE_TO_MENU_ID, NAVIGATE_TO_MENU_ID, "Navigate to added markers");
+
+        return true;
     }
 
     /**
      * Create a MapPolygon and add the MapPolygon to active map view.
      */
-    private void createPolygon() {
+    private void addPolygonObject() {
         // create an bounding box centered at current cent
         GeoBoundingBox boundingBox = new GeoBoundingBox(m_map.getCenter(), 1000, 1000);
         // add boundingbox's four vertices to list of Geocoordinates.
@@ -173,40 +227,21 @@ public class MapFragmentView {
         // create GeoPolygon with list of GeoCoordinates.
         GeoPolygon geoPolygon = new GeoPolygon(coordinates);
         // create MapPolygon with GeoPolygon.
-        m_polygon = new MapPolygon(geoPolygon);
+        MapPolygon polygon = new MapPolygon(geoPolygon);
         // set line color, fill color and line width
-        m_polygon.setLineColor(Color.RED);
-        m_polygon.setFillColor(Color.GRAY);
-        m_polygon.setLineWidth(12);
+        polygon.setLineColor(Color.RED);
+        polygon.setFillColor(Color.GRAY);
+        polygon.setLineWidth(12);
         // add MapPolygon to map.
-        m_map.addMapObject(m_polygon);
-    }
+        m_map.addMapObject(polygon);
 
-    /**
-     * Initialize Create Polyline Button to add/remove MapPolyline.
-     */
-    private void initCreatePolylineButton() {
-        m_polyline_button = (Button) m_activity.findViewById(R.id.polyline_button);
-
-        m_polyline_button.setOnClickListener(new View.OnClickListener() {
-            // if MapPolyline already exists on map, then remove MapPolyline, otherwise create
-            // MapPolyline.
-            @Override
-            public void onClick(View v) {
-                if (m_map != null && m_polyline != null) {
-                    m_map.removeMapObject(m_polyline);
-                    m_polyline = null;
-                } else {
-                    createPolyline();
-                }
-            }
-        });
+        m_polygons.add(polygon);
     }
 
     /**
      * Create a MapPolyline and add the MapPolyline to active map view.
      */
-    private void createPolyline() {
+    private void addPolylineObject() {
         // create boundingBox centered at current location
         GeoBoundingBox boundingBox = new GeoBoundingBox(m_map.getCenter(), 1000, 1000);
         // add boundingBox's top left and bottom right vertices to list of GeoCoordinates
@@ -215,69 +250,34 @@ public class MapFragmentView {
         coordinates.add(boundingBox.getBottomRight());
         // create GeoPolyline with list of GeoCoordinates
         GeoPolyline geoPolyline = new GeoPolyline(coordinates);
-        m_polyline = new MapPolyline(geoPolyline);
-        m_polyline.setLineColor(Color.BLUE);
-        m_polyline.setLineWidth(12);
+        MapPolyline polyline = new MapPolyline(geoPolyline);
+        polyline.setLineColor(Color.BLUE);
+        polyline.setLineWidth(12);
         // add GeoPolyline to current active map
-        m_map.addMapObject(m_polyline);
+        m_map.addMapObject(polyline);
+
+        m_polylines.add(polyline);
     }
 
-    /**
-     * Initialize Create Circle Button to add/remove MapCircle.
-     */
-    private void initCreateCircleButton() {
-        m_circle_button = (Button) m_activity.findViewById(R.id.circle_button);
-
-        m_circle_button.setOnClickListener(new View.OnClickListener() {
-            // if MapCircle already exist on map, then remove MapCircle, or else create MapCircle.
-            @Override
-            public void onClick(View v) {
-                if (m_map != null && m_circle != null) {
-                    m_map.removeMapObject(m_circle);
-                    m_circle = null;
-                } else {
-                    createCircle();
-                }
-            }
-        });
-    }
 
     /**
      * create a MapCircle and add the MapCircle to active map view.
      */
-    private void createCircle() {
+    private void addCircleObject() {
         // create a MapCircle centered at current location with radius 400
-        m_circle = new MapCircle(400.0, m_map.getCenter());
-        m_circle.setLineColor(Color.BLUE);
-        m_circle.setFillColor(Color.GRAY);
-        m_circle.setLineWidth(12);
-        m_map.addMapObject(m_circle);
-    }
+        MapCircle circle = new MapCircle(400.0, m_map.getCenter());
+        circle.setLineColor(Color.BLUE);
+        circle.setFillColor(Color.GRAY);
+        circle.setLineWidth(12);
+        m_map.addMapObject(circle);
 
-    /**
-     * Initialize Create MapMarker Button to add/remove MapMarker.
-     */
-    private void initCreateMapMarkerButton() {
-        m_marker_button = (Button) m_activity.findViewById(R.id.marker_button);
-
-        m_marker_button.setOnClickListener(new View.OnClickListener() {
-            // if MapMarker already exist on map, then remove MapMarker, other create MapMarker.
-            @Override
-            public void onClick(View v) {
-                if (m_map != null && m_map_marker != null) {
-                    m_map.removeMapObject(m_map_marker);
-                    m_map_marker = null;
-                } else {
-                    createMapMarker();
-                }
-            }
-        });
+        m_circles.add(circle);
     }
 
     /**
      * create a MapMarker and add the MapMarker to active map view.
      */
-    private void createMapMarker() {
+    private void addMapMarkerObject() {
         // create an image from cafe.png.
         Image marker_img = new Image();
         try {
@@ -286,8 +286,37 @@ public class MapFragmentView {
             e.printStackTrace();
         }
         // create a MapMarker centered at current location with png image.
-        m_map_marker = new MapMarker(m_map.getCenter(), marker_img);
+        MapMarker marker = new MapMarker(m_map.getCenter(), marker_img);
         // add a MapMarker to current active map.
-        m_map.addMapObject(m_map_marker);
+        m_map.addMapObject(marker);
+
+        m_map_markers.add(marker);
     }
+
+    private void navigateToMapMarkers(List<MapMarker> markers, int padding) {
+        // find max and min latitudes and longitudes in order to calculate
+        // geo bounding box so then we can map.zoomTo(geoBox, ...) to it.
+        double minLat = 90.0d;
+        double minLon = 180.0d;
+        double maxLat = -90.0d;
+        double maxLon = -180.0d;
+
+        for (MapMarker marker : markers) {
+            GeoCoordinate coordinate = marker.getCoordinate();
+            double latitude = coordinate.getLatitude();
+            double longitude = coordinate.getLongitude();
+            minLat = Math.min(minLat, latitude);
+            minLon = Math.min(minLon, longitude);
+            maxLat = Math.max(maxLat, latitude);
+            maxLon = Math.max(maxLon, longitude);
+        }
+
+        GeoBoundingBox box = new GeoBoundingBox(new GeoCoordinate(maxLat, minLon),
+                new GeoCoordinate(minLat, maxLon));
+
+        ViewRect viewRect = new ViewRect(padding, padding, m_map.getWidth() - padding * 2,
+                m_map.getHeight() - padding * 2);
+        m_map.zoomTo(box, viewRect, Map.Animation.LINEAR, Map.MOVE_PRESERVE_ORIENTATION);
+    }
+
 }

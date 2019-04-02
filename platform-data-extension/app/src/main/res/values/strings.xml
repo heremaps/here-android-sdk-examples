@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">PDE</string>
+    <string name="pde_first_label">Show capitals</string>
+    <string name="pde_second_label">Route slopes</string>
+</resources>
