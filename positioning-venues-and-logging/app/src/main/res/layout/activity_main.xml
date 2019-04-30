@@ -58,5 +58,17 @@ android:orientation="vertical" >
 
 </RelativeLayout>
 
+<Button
+    android:id="@+id/buttonShowRoute"
+    style="?android:attr/buttonStyleSmall"
+    android:layout_width="wrap_content"
+    android:layout_height="40dp"
+    android:layout_marginBottom="6dp"
+    android:layout_marginRight="6dp"
+    android:layout_alignParentBottom="true"
+    android:layout_alignParentRight="true"
+    android:onClick="onCalculateRouteClick"
+    android:text="Show route"
+    android:visibility="gone"/>
 
 </RelativeLayout>

@@ -11,5 +11,8 @@
         <item   android:id="@+id/add_indoor_to_position"
                 android:title="@string/action_add_indoor_to_position"
                 android:checkable="true"/>
+        <item   android:id="@+id/indoor_routing"
+                android:title="@string/action_indoor_routing"
+                android:checkable="true"/>
     </group>
 </menu>
