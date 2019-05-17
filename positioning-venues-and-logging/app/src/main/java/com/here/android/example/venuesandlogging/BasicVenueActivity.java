@@ -35,6 +35,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,14 +51,22 @@ import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.Map.OnTransformListener;
 import com.here.android.mpa.mapping.MapGesture.OnGestureListener;
 import com.here.android.mpa.mapping.MapState;
+import com.here.android.mpa.routing.RouteOptions;
+import com.here.android.mpa.venues3d.BaseLocation;
+import com.here.android.mpa.venues3d.CombinedRoute;
 import com.here.android.mpa.venues3d.DeselectionSource;
 import com.here.android.mpa.venues3d.Level;
+import com.here.android.mpa.venues3d.LevelLocation;
+import com.here.android.mpa.venues3d.OutdoorLocation;
+import com.here.android.mpa.venues3d.RoutingController;
 import com.here.android.mpa.venues3d.Space;
+import com.here.android.mpa.venues3d.SpaceLocation;
 import com.here.android.mpa.venues3d.Venue;
 import com.here.android.mpa.venues3d.VenueController;
 import com.here.android.mpa.venues3d.VenueInfo;
 import com.here.android.mpa.venues3d.VenueMapFragment;
 import com.here.android.mpa.venues3d.VenueMapFragment.VenueListener;
+import com.here.android.mpa.venues3d.VenueRouteOptions;
 import com.here.android.mpa.venues3d.VenueService;
 import com.here.android.mpa.venues3d.VenueService.VenueServiceListener;
 import com.here.android.positioning.DiagnosticsListener;
@@ -74,7 +83,8 @@ public class BasicVenueActivity extends AppCompatActivity
         implements VenueListener,
             OnGestureListener,
             OnPositionChangedListener,
-            OnTransformListener {
+            OnTransformListener,
+            RoutingController.RoutingControllerListener {
 
     // TAG string for logging purposes
     private static final String TAG = "VenuesAndLogging.BasicVenueActivity";
@@ -94,7 +104,13 @@ public class BasicVenueActivity extends AppCompatActivity
     private Map mMap;
 
     // Venue map fragment embedded in this activity
-    private VenueMapFragment venueMapFragment;
+    private VenueMapFragment mVenueMapFragment;
+
+    // Venue map fragment routing controller
+    RoutingController mRoutingController;
+
+    // True if route is shown
+    private boolean mRouteShown;
 
     // Widget for selecting floors of the venue
     private FloorsControllerWidget mFloorsControllerWidget;
@@ -104,6 +120,9 @@ public class BasicVenueActivity extends AppCompatActivity
 
     // Flag for using indoor positioning
     private boolean mIndoorPositioning;
+
+    // Flag for using indoor routing
+    private boolean mIndoorRouting;
 
     // HERE location data source instance
     private LocationDataSourceHERE mHereLocation;
@@ -125,9 +144,13 @@ public class BasicVenueActivity extends AppCompatActivity
     private MenuItem remove_private_venues;
     private MenuItem follow_position;
     private MenuItem add_indoor_to_position;
+    private MenuItem indoor_routing;
 
     // Last known map center
     private GeoCoordinate mLastMapCenter;
+
+    // Last received position update
+    private GeoPosition mLastReceivedPosition;
 
     // flag that indicates whether maps is being transformed
     private boolean mTransforming;
@@ -225,6 +248,12 @@ public class BasicVenueActivity extends AppCompatActivity
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+
+    // Latest selected venue
+    private Venue mSelectedVenue;
+
+    // Latest selected space
+    private Space mSelectedSpace;
 
     /**
      * An example list view adapter for floor switcher
@@ -360,6 +389,7 @@ public class BasicVenueActivity extends AppCompatActivity
 
         @Override
         public void onVenueSelected(Venue venue) {
+            mSelectedVenue = venue;
             mFloorListView.setAdapter(new VenueFloorAdapter(mActivity, venue.getLevels(),
                     mFloorItem, mFloorName, mFloorGroundSep));
             updateSelectedLevel(mVenueMapFragment.getVenueController(venue));
@@ -386,16 +416,22 @@ public class BasicVenueActivity extends AppCompatActivity
 
         @Override
         public void onVenueDeselected(Venue venue, DeselectionSource source) {
+            mSelectedVenue = null;
+            mSelectedSpace = null;
             mFloorListView.setAdapter(null);
             mFloorListView.setVisibility(View.INVISIBLE);
             mVenueMapFragment.getMap().setTilt(0);
+            clearRoute();
         }
 
         @Override
         public void onFloorChanged(Venue venue, Level oldLevel, Level newLevel) {
-            updateSelectedLevel(mVenueMapFragment.getVenueController(venue));
-            mUserControl = true;
-            invalidateOptionsMenu();
+            VenueController controller = mVenueMapFragment.getVenueController(venue);
+            if (controller != null) {
+                updateSelectedLevel(controller);
+                mUserControl = true;
+                invalidateOptionsMenu();
+            }
         }
 
         @Override
@@ -404,16 +440,49 @@ public class BasicVenueActivity extends AppCompatActivity
 
         @Override
         public void onSpaceSelected(Venue venue, Space space) {
+            clearRoute();
+            mSelectedSpace = space;
+            showOrHideRoutingButton();
         }
 
         @Override
         public void onSpaceDeselected(Venue venue, Space space) {
+            clearRoute();
+            mSelectedSpace = null;
+            showOrHideRoutingButton();
         }
 
         @Override
         public void onVenueVisibleInViewport(Venue venue, boolean visible) {
         }
     }
+
+    /**
+     * Clears the route if shown
+     */
+    private void clearRoute() {
+        if (mRouteShown) {
+            if (mRoutingController != null) {
+                mRoutingController.hideRoute();
+            }
+            mRouteShown = false;
+        }
+    }
+
+    /**
+     * Show or hide indoor routing button
+     */
+    public void showOrHideRoutingButton() {
+        Button showRouteButton = findViewById(R.id.buttonShowRoute);
+        if (showRouteButton != null) {
+            if (mSelectedSpace != null && mIndoorRouting) {
+                showRouteButton.setVisibility(View.VISIBLE);
+            } else {
+                showRouteButton.setVisibility(View.GONE);
+            }
+        }
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -446,6 +515,15 @@ public class BasicVenueActivity extends AppCompatActivity
     }
 
     @Override
+    public void onBackPressed() {
+        if (mRouteShown) {
+            clearRoute();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
@@ -453,6 +531,7 @@ public class BasicVenueActivity extends AppCompatActivity
         remove_private_venues = menu.findItem(R.id.action_remove_private_venues);
         follow_position = menu.findItem(R.id.follow_position);
         add_indoor_to_position = menu.findItem(R.id.add_indoor_to_position);
+        indoor_routing = menu.findItem(R.id.indoor_routing);
         if (!mPrivateVenues) {
             add_private_venues.setVisible(true);
             remove_private_venues.setVisible(false);
@@ -470,6 +549,12 @@ public class BasicVenueActivity extends AppCompatActivity
         } else {
             add_indoor_to_position.setChecked(false);
         }
+        if (mIndoorRouting) {
+            indoor_routing.setChecked(true);
+        } else {
+            indoor_routing.setChecked(false);
+        }
+
         return true;
     }
 
@@ -490,6 +575,10 @@ public class BasicVenueActivity extends AppCompatActivity
                 return true;
             case R.id.add_indoor_to_position:
                 indoorToPosition();
+                return true;
+            case R.id.indoor_routing:
+                indoorRouting();
+                showOrHideRoutingButton();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -546,6 +635,21 @@ public class BasicVenueActivity extends AppCompatActivity
     }
 
     /**
+     * Enable or disable indoor routing
+     */
+    private void indoorRouting() {
+        Log.v(TAG, "indoorRouting");
+        if (mIndoorRouting) {
+            mIndoorRouting = false;
+            Log.v(TAG, "Indoor routing disabled");
+        } else {
+            mIndoorRouting = true;
+            Log.v(TAG, "Indoor routing enabled");
+        }
+        invalidateOptionsMenu();
+    }
+
+    /**
      * Refreshing map view if parameters for venue map service changed
      */
     protected void refreshMapView() {
@@ -565,7 +669,8 @@ public class BasicVenueActivity extends AppCompatActivity
 
     @Override
     public void onPositionUpdated(final PositioningManager.LocationMethod locationMethod, final GeoPosition geoPosition, final boolean mapMatched) {
-        final GeoCoordinate coordinate = geoPosition.getCoordinate();
+        mLastReceivedPosition = geoPosition;
+        GeoCoordinate receivedCoordinate = mLastReceivedPosition.getCoordinate();
         if (mTransforming) {
             mPendingUpdate = new Runnable() {
                 @Override
@@ -574,16 +679,16 @@ public class BasicVenueActivity extends AppCompatActivity
                 }
             };
         } else {
-            if (venueMapFragment != null) {
-                mLastMapCenter = coordinate;
+            if (mVenueMapFragment != null) {
+                mLastMapCenter = receivedCoordinate;
                 if (!mUserControl) {
                     // when "follow position" options selected than map centered according to position updates
-                    mMap.setCenter(coordinate, Map.Animation.NONE);
+                    mMap.setCenter(receivedCoordinate, Map.Animation.NONE);
                     // Correctly displaying indoor position inside the venue
                     if (geoPosition.getPositionSource() == GeoPosition.SOURCE_INDOOR) {
                         if (!geoPosition.getBuildingId().isEmpty() && mPrivateVenues) {
-                            venueMapFragment.selectVenueAsync(geoPosition.getBuildingId());
-                            venueMapFragment.getVenueController(venueMapFragment.getSelectedVenue());
+                            mVenueMapFragment.selectVenueAsync(geoPosition.getBuildingId());
+                            mVenueMapFragment.getVenueController(mVenueMapFragment.getSelectedVenue());
                             selectLevelByFloorId(geoPosition.getFloorId());
                         }
                     }
@@ -599,15 +704,15 @@ public class BasicVenueActivity extends AppCompatActivity
      * @param floorId current indoor position
      */
     protected void selectLevelByFloorId(int floorId) {
-        if (venueMapFragment != null) {
-            Venue venue = venueMapFragment.getSelectedVenue();
+        if (mVenueMapFragment != null) {
+            Venue venue = mVenueMapFragment.getSelectedVenue();
             if (venue != null) {
-                venueMapFragment.setFloorChangingAnimation(true);
+                mVenueMapFragment.setFloorChangingAnimation(true);
                 List<Level> levels = venue.getLevels();
                 for (Level item : levels) {
                     if (item != null) {
                         if (item.getFloorNumber() == floorId) {
-                            venueMapFragment.getVenueController(venue).selectLevel(item);
+                            mVenueMapFragment.getVenueController(venue).selectLevel(item);
                             break;
                         }
                     }
@@ -618,7 +723,10 @@ public class BasicVenueActivity extends AppCompatActivity
 
     @Override
     public void onPositionFixChanged(PositioningManager.LocationMethod locationMethod, PositioningManager.LocationStatus locationStatus) {
-        // ignored
+        if (locationStatus == PositioningManager.LocationStatus.OUT_OF_SERVICE) {
+            // Out of service, last received position no longer valid for route calculation
+            mLastReceivedPosition = null;
+        }
     }
 
     @Override
@@ -775,7 +883,7 @@ public class BasicVenueActivity extends AppCompatActivity
     public void onVenueTapped(Venue venue, float x, float y) {
         Log.v(TAG, "onVenueTapped");
         mMap.pixelToGeo(new PointF(x, y));
-        venueMapFragment.selectVenue(venue);
+        mVenueMapFragment.selectVenue(venue);
     }
 
     @Override
@@ -799,7 +907,7 @@ public class BasicVenueActivity extends AppCompatActivity
     @Override
     public void onVenueSelected(Venue venue) {
         Log.v(TAG, "onVenueSelected: %s", venue.getId());
-        if (venueMapFragment == null) {
+        if (mVenueMapFragment == null) {
             return;
         }
         String venueId = venue.getId();
@@ -950,7 +1058,7 @@ public class BasicVenueActivity extends AppCompatActivity
         Log.v(TAG, "InitializeVenueMaps");
         mActivity = this;
 
-        venueMapFragment = getMapFragment();
+        mVenueMapFragment = getMapFragment();
         mLocationInfo = (TextView) findViewById(R.id.textViewLocationInfo);
 
         // Set path of isolated disk cache
@@ -974,14 +1082,17 @@ public class BasicVenueActivity extends AppCompatActivity
             return;
         }
 
-        venueMapFragment.init(new OnEngineInitListener() {
+        mVenueMapFragment.init(new OnEngineInitListener() {
             @Override
             public void onEngineInitializationCompleted(Error error) {
                 if (error == Error.NONE) {
                     Log.v(TAG, "InitializeVenueMaps: OnEngineInitializationCompleted");
 
-                    mVenueService = venueMapFragment.getVenueService();
-
+                    mVenueService = mVenueMapFragment.getVenueService();
+                    mRoutingController = mVenueMapFragment.getRoutingController();
+                    if (mRoutingController != null) {
+                        mRoutingController.addListener(BasicVenueActivity.this);
+                    }
                     // Setting venue service content based on menu option
                     if (!mPrivateVenues) {
                         setVenueServiceContent(false, false);// Public only
@@ -1004,33 +1115,33 @@ public class BasicVenueActivity extends AppCompatActivity
                 case OFFLINE_SUCCESS:
                 case ONLINE_SUCCESS:
                     // Adding venue listener to map fragment
-                    venueMapFragment.addListener(mActivity);
+                    mVenueMapFragment.addListener(mActivity);
                     // Set animations on for floor change and venue entering
-                    venueMapFragment.setFloorChangingAnimation(true);
-                    venueMapFragment.setVenueEnteringAnimation(true);
+                    mVenueMapFragment.setFloorChangingAnimation(true);
+                    mVenueMapFragment.setVenueEnteringAnimation(true);
                     // Ask notification when venue visible; this notification is
                     // part of VenueMapFragment.VenueListener
-                    venueMapFragment.setVenuesInViewportCallback(true);
+                    mVenueMapFragment.setVenuesInViewportCallback(true);
 
                     // Add Gesture Listener for map fragment
-                    venueMapFragment.getMapGesture().addOnGestureListener(mActivity, 0, false);
+                    mVenueMapFragment.getMapGesture().addOnGestureListener(mActivity, 0, false);
 
                     // retrieve a reference of the map from the map fragment
-                    mMap = venueMapFragment.getMap();
+                    mMap = mVenueMapFragment.getMap();
 
                     mMap.addTransformListener(mActivity);
                     mMap.setZoomLevel(mMap.getMaxZoomLevel() - 3);
 
 
                     // Create floors controller widget
-                        mFloorsControllerWidget = new FloorsControllerWidget(mActivity, venueMapFragment,
+                        mFloorsControllerWidget = new FloorsControllerWidget(mActivity, mVenueMapFragment,
                                 (ListView) findViewById(R.id.floorListView), R.layout.floor_item,
                                 R.id.floorName, R.id.floorGroundSep);
 
                     // Start of Position Updates
                     try {
                         startPositionUpdates();
-                        venueMapFragment.getPositionIndicator().setVisible(true);
+                        mVenueMapFragment.getPositionIndicator().setVisible(true);
                     } catch (Exception ex) {
                         Log.w(TAG, "startPositionUpdates: Could not register for location updates: %s", Log.getStackTraceString(ex));
                     }
@@ -1157,8 +1268,69 @@ public class BasicVenueActivity extends AppCompatActivity
     protected void stopVenueMaps() {
         Log.v(TAG, "stopVenueMaps");
         stopPositioningUpdates();
-        venueMapFragment = null;
+        mVenueMapFragment = null;
         mMap = null;
         mFloorsControllerWidget = null;
+    }
+
+    // Setup routing parameters and calculate route.
+    public void onCalculateRouteClick(View v) {
+        if (mLastReceivedPosition != null && mSelectedVenue != null && mSelectedSpace != null ) {
+            VenueRouteOptions venueRouteOptions = new VenueRouteOptions();
+            RouteOptions options = venueRouteOptions.getRouteOptions();
+            // Set algorithm mode shortest and transport mode pedestrian in this case
+            options.setRouteType(RouteOptions.Type.SHORTEST);
+            options.setTransportMode(RouteOptions.TransportMode.PEDESTRIAN);
+            options.setRouteCount(1);
+            venueRouteOptions.setRouteOptions(options);
+            VenueController selectedVenueController = mVenueMapFragment.getVenueController(mSelectedVenue);
+            if (selectedVenueController != null && mRoutingController != null) {
+                Toast.makeText(BasicVenueActivity.this, "Calculating route...", Toast.LENGTH_SHORT).show();
+                // Determine start location either from the venue as
+                // LevelLocation, or from outside as OutdoorLocation
+                BaseLocation startLocation;
+                if ((mLastReceivedPosition.getPositionSource() == GeoPosition.SOURCE_INDOOR)) {
+                    Level startLevel = selectedVenueController.getSelectedLevel();
+                    for (final Level level : selectedVenueController.getVenue().getLevels()) {
+                        if (level.getFloorNumber() == mLastReceivedPosition.getFloorId()) {
+                            startLevel = level;
+                            break;
+                        }
+                    }
+                    startLocation = new LevelLocation(startLevel,
+                            mLastReceivedPosition.getCoordinate(), selectedVenueController);
+                } else {
+                    startLocation = new OutdoorLocation(mLastReceivedPosition.getCoordinate());
+                }
+                // End location is in this case always the selected space
+                BaseLocation endLocation = new SpaceLocation(mSelectedSpace, selectedVenueController);
+                // This is an async function, the logic to display route is in callback
+                // onCombinedRouteCompleted(CombinedRoute route)
+                mRoutingController.calculateCombinedRoute(startLocation, endLocation, venueRouteOptions);
+            }
+        } else {
+            Toast.makeText(BasicVenueActivity.this, "Unable to calculate route", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    @Override
+    public void onCombinedRouteCompleted(CombinedRoute route) {
+        Log.v(TAG, "onCombinedRouteCompleted");
+        CombinedRoute.VenueRoutingError error = route.getError();
+        if (error == CombinedRoute.VenueRoutingError.NO_ERROR) {
+            if (mVenueMapFragment != null) {
+                VenueController selectedVenueController = mVenueMapFragment.getVenueController(mSelectedVenue);
+                if (selectedVenueController != null && mRoutingController != null) {
+                    Log.i(TAG, "onCombinedRouteCompleted route found");
+                    Toast.makeText(BasicVenueActivity.this, "Route found", Toast.LENGTH_SHORT).show();
+                    // Use RoutingController to show route
+                    mRoutingController.showRoute(route);
+                    mRouteShown = true;
+                }
+            }
+        } else {
+            Toast.makeText(BasicVenueActivity.this, "No route found", Toast.LENGTH_SHORT).show();
+        }
     }
 }

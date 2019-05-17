@@ -5,4 +5,5 @@
     <string name="action_remove_private_venues">Remove private venues from the map</string>
     <string name="action_follow_position">Go to position</string>
     <string name="action_add_indoor_to_position">Include indoor positioning</string>
+    <string name="action_indoor_routing">Indoor routing</string>
 </resources>
