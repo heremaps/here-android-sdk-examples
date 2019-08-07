@@ -56,4 +56,5 @@ All of the following projects use **version 3.10** of the Android Premium SDK
 * [Venue Positioning](positioning-venues-and-logging) - Use HERE location data source in venue
 * [Positioning](positioning) - Use HERE location data source
 * [Search](search) - Send different types of search requests
+* [AutoSuggest](AutoSuggest) - Send different types of AutoSuggest requests
 * [Turn-by-Turn Navigation](turn-by-turn-navigation) - Trigger a turn-by-turn navigation from HERE Burnaby office to Langley BC
