@@ -52,6 +52,8 @@ import java.util.List;
  * This class encapsulates the properties and functionality of the Map view.
  */
 public class MapFragmentView {
+    private static final String TAG = MapFragmentView.class.getSimpleName();
+
     private static final int ADD_MARKER_MENU_ID = 0;
     private static final int REMOVE_MARKER_MENU_ID = 1;
     private static final int ADD_POLYGON_MENU_ID = 2;
@@ -65,6 +67,8 @@ public class MapFragmentView {
     private SupportMapFragment m_mapFragment;
     private AppCompatActivity m_activity;
     private Map m_map;
+
+    private int mapMarkerCount = 0;
 
     private final LinkedList<MapPolygon> m_polygons = new LinkedList<>();
     private final LinkedList<MapPolyline> m_polylines = new LinkedList<>();
@@ -134,6 +138,11 @@ public class MapFragmentView {
                             m_map.setZoomLevel(14);
 
                             m_activity.supportInvalidateOptionsMenu();
+
+                         /*
+                          * Set up a handler for handling MapMarker drag events.
+                          */
+                            m_mapFragment.setMapMarkerDragListener(new OnDragListenerHandler());
 
                         } else {
                             Log.e(this.getClass().toString(), "onEngineInitializationCompleted: " +
@@ -287,6 +296,14 @@ public class MapFragmentView {
         }
         // create a MapMarker centered at current location with png image.
         MapMarker marker = new MapMarker(m_map.getCenter(), marker_img);
+        /*
+         * Set MapMarker draggable.
+         * How to move to?
+         * In order to activate dragging of the MapMarker you have to do a long press on
+         * the MapMarker then move it to a new position and release the MapMarker.
+         */
+        marker.setDraggable(true);
+        marker.setTitle("MapMarker id: " + mapMarkerCount++);
         // add a MapMarker to current active map.
         m_map.addMapObject(marker);
 
@@ -319,4 +336,23 @@ public class MapFragmentView {
         m_map.zoomTo(box, viewRect, Map.Animation.LINEAR, Map.MOVE_PRESERVE_ORIENTATION);
     }
 
+    private class OnDragListenerHandler implements MapMarker.OnDragListener {
+        @Override
+        public void onMarkerDrag(MapMarker mapMarker) {
+            Log.i(TAG, "onMarkerDrag: " + mapMarker.getTitle() + " -> " +mapMarker
+                    .getCoordinate());
+        }
+
+        @Override
+        public void onMarkerDragEnd(MapMarker mapMarker) {
+            Log.i(TAG, "onMarkerDragEnd: " + mapMarker.getTitle() + " -> " +mapMarker
+                    .getCoordinate());
+        }
+
+        @Override
+        public void onMarkerDragStart(MapMarker mapMarker) {
+            Log.i(TAG, "onMarkerDragStart: " + mapMarker.getTitle() + " -> " +mapMarker
+                    .getCoordinate());
+        }
+    }
 }
