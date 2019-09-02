@@ -18,6 +18,8 @@ package com.here.android.example.map.basic;
 
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.OnEngineInitListener;
+import com.here.android.mpa.common.PositionSimulator;
+import com.here.android.mpa.common.PositioningManager;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.SupportMapFragment;
 
@@ -94,7 +96,19 @@ public class MapFragmentView {
                              * Please refer to the user guide for how to get the real-time location.
                              */
 
-                            m_map.setCenter(new GeoCoordinate(49.258576, -123.008268), Map.Animation.NONE);
+                            m_map.setCenter(new GeoCoordinate(37.405722, -122.107008), Map.Animation.NONE);
+                            m_map.setZoomLevel(18);
+
+                            PositioningManager.getInstance().start(
+                                    PositioningManager.LocationMethod.GPS_NETWORK);
+
+                            m_map.getPositionIndicator().setVisible(true);
+
+                            PositionSimulator simulator = new PositionSimulator();
+                            String dataPath = Environment.getExternalStorageDirectory()+"/log.gpx" ;
+                            Log.d("GPX_TEST", "datapath: " + dataPath);
+                            PositionSimulator.PlaybackError err = simulator.startPlayback(dataPath);
+                            Log.d("GPX_TEST", "Error for playback: " + err);
                         } else {
                             Toast.makeText(m_activity,
                                     "ERROR: Cannot initialize Map with error " + error,
