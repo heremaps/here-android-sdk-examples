@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">AutoSuggestion</string>
+    <string name="search_title">Search query</string>
+</resources>

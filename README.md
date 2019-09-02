@@ -27,7 +27,7 @@ This set of individual, use-case based projects is designed to be cloned by deve
 
 7. Replace the instances of the `{YOUR_APP_ID}`, `{YOUR_APP_CODE}` and `{YOUR_LICENSE_KEY}` placeholders in the example's `AndroidManifest.xml` with your obtained values. Yet again looking at the *map-rendering* examples, this would be [here](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering/app/src/main/AndroidManifest.xml#L29), [here](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering/app/src/main/AndroidManifest.xml#L32) and [here](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering/app/src/main/AndroidManifest.xml#L35).
 
-8. Replace the instances of the `{YOUR_LABEL_NAME}` and `{YOUR_INTENT_NAME}` placeholders in the example's `AndroidManifest.xml` with your own custom values. Do not reuse HERE SDK defaults. 
+8. Replace the instances of the `{YOUR_LABEL_NAME}` and `{YOUR_INTENT_NAME}` placeholders in the example's `AndroidManifest.xml` with your own custom values. Do not reuse HERE SDK defaults.
 
 9. Launch [Android Studio](https://developer.android.com/studio/) and import the example's `build.gradle` file..
 
@@ -39,7 +39,7 @@ Unless otherwise noted in `LICENSE` files for specific files or directories, the
 
 ## Android Premium SDK
 
-All of the following projects use **version 3.10** of the Android Premium SDK
+All of the following projects use latest version(currently 3.12) of the Android Premium SDK
 
 * [3D Model](3DModel) - Show 3D model on the map
 * [3D Venues](3d-venues-and-indoor-routing) - Show venues in 3D mode
@@ -56,4 +56,5 @@ All of the following projects use **version 3.10** of the Android Premium SDK
 * [Venue Positioning](positioning-venues-and-logging) - Use HERE location data source in venue
 * [Positioning](positioning) - Use HERE location data source
 * [Search](search) - Send different types of search requests
+* [AutoSuggest](autoSuggest) - Send different types of AutoSuggest requests
 * [Turn-by-Turn Navigation](turn-by-turn-navigation) - Trigger a turn-by-turn navigation from HERE Burnaby office to Langley BC
