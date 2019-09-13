@@ -312,8 +312,8 @@ public class Venue3dActivity extends FragmentActivity
         }
     }
 
-    // Google has deprecated android.app.Fragment class. It is used in current SDK implementation.
-    // Will be fixed in future SDK version.
+    // Google has deprecated android.app.Fragment class. It is used in current HERE Mobile SDK
+    // implementation. Will be fixed in future HERE Mobile SDK version.
     @SuppressWarnings("deprecation")
     private VenueMapFragment getMapFragment() {
         return (VenueMapFragment) getFragmentManager().findFragmentById(R.id.map_fragment);

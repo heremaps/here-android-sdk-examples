@@ -137,7 +137,7 @@ public class MapFragmentView {
         RoutePlan routePlan = new RoutePlan();
 
         /*
-         * Initialize a RouteOption.HERE SDK allow users to define their own parameters for the
+         * Initialize a RouteOption. HERE Mobile SDK allow users to define their own parameters for the
          * route calculation,including transport modes,route types and route restrictions etc.Please
          * refer to API doc for full list of APIs
          */
@@ -307,7 +307,7 @@ public class MapFragmentView {
          * Set the map update mode to ROADVIEW.This will enable the automatic map movement based on
          * the current location.If user gestures are expected during the navigation, it's
          * recommended to set the map update mode to NONE first. Other supported update mode can be
-         * found in HERE Android SDK API doc
+         * found in HERE Mobile SDK for Android (Premium) API doc
          */
         m_navigationManager.setMapUpdateMode(NavigationManager.MapUpdateMode.ROADVIEW);
 
