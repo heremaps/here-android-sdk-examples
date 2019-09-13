@@ -18,15 +18,15 @@ In order to do that, lets create a HERE account and sign up for a [Freemium plan
 
 After signing up, we land on the project details page, where we can generate credentials for the platforms that 
 we want to develop on.  
-In our case, we are interested in the Premium SDK for Android.  
+In our case, we are interested in the HERE Mobile SDK for Android (Premium).
 After entering a package name we can download the SDK.
 
-*This flow is also described with other Android SDK examples on [Github](https://github.com/heremaps/here-android-sdk-examples).*
+*This flow is also described with other HERE Mobile SDK for Android examples on [Github](https://github.com/heremaps/here-android-sdk-examples).*
 
 ### Project creation
 
 Please follow the steps described on our [documentation](https://developer.here.com/documentation/android-premium/dev_guide/topics/app-simple-android-studio.html) 
-to create a template for our app with the HERE SDK.
+to create a template for our app with the HERE Mobile SDK.
 
 ## Step 1. Update of AndroidManifest.xml
 
@@ -69,11 +69,11 @@ The last snippet that we will add to the `AndroidManifest.xml` file, is the defi
 
 *Please read more about the service and and isolated or shared disk caches [here](https://developer.here.com/documentation/android-premium/dev_guide/topics/map-service.html)*
 
-## Step 2. Initializing HERE SDK 
+## Step 2. Initializing HERE Mobile SDK
 
 The documentation section, that we used for [creating simple app](https://developer.here.com/documentation/android-premium/dev_guide/topics/app-create-simple.html) also describes how to initialize the Map Fragment.
 
-As our application will not need a Map Fragment rendered on the UI, we will use [`MapEngine Class`](https://developer.here.com/documentation/android-premium/dev_guide/topics/class-map-engine.html), which is another way of initializing the HERE SDK. 
+As our application will not need a Map Fragment rendered on the UI, we will use [`MapEngine Class`](https://developer.here.com/documentation/android-premium/dev_guide/topics/class-map-engine.html), which is another way of initializing the HERE Mobile SDK.
 
 Go to your `MainActivity` class and implement the `onCreate` method:
 
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 
 ## Step 3. Initializing Positioning and Navigation Managers
 
-The HERE SDK is now initialized, so we can enable some functionality that our application will rely on. 
+The HERE Mobile SDK is now initialized, so we can enable some functionality that our application will rely on.
 First, lets import the required packages:
 
 ```java
@@ -128,7 +128,7 @@ import com.here.android.mpa.common.PositioningManager;
 import com.here.android.mpa.guidance.NavigationManager;
 ```
 
-*More detailed information about both packages can be found in the HERE Android SDK [API reference](https://developer.here.com/documentation/android-premium/api_reference_java/index.html)*
+*More detailed information about both packages can be found in the HERE Mobile SDK for Android (Premium) [API reference](https://developer.here.com/documentation/android-premium/api_reference_java/index.html)*
 
 ```java
     private void startPositioningManager() {
@@ -149,7 +149,7 @@ import com.here.android.mpa.guidance.NavigationManager;
     }
 ```
 
-At the end, when we know SDK was initialized properly, lets call both methods :
+At the end, when we know HERE Mobile SDK was initialized properly, lets call both methods :
 
 ```java
 
@@ -200,8 +200,8 @@ To make this happen, we will define `PositioningManager.OnPositionChangedListene
         };
 ```
 
-Adding `listener` to `PositioningManager` must happen when the HERE SDK is ready.  
-We could add `listener` into the `onCreate` method of our `Fragment` and create it programmatically when `MainActivity` knows that the HERE SDK is ready, but to keep our example simple we will define `Fragment` directly in the template and expose the method to `MainActivity` that will be responsible for adding `listener`.
+Adding `listener` to `PositioningManager` must happen when the HERE Mobile SDK is ready.
+We could add `listener` into the `onCreate` method of our `Fragment` and create it programmatically when `MainActivity` knows that the HERE Mobile SDK is ready, but to keep our example simple we will define `Fragment` directly in the template and expose the method to `MainActivity` that will be responsible for adding `listener`.
 
 ```java
     public void startListeners() {
@@ -241,7 +241,7 @@ First, as mentioned already, we add the `fragment` into `activity_main.xml`
 
 *As we may want to use our application when driving, we added `android:keepScreenOn="true"` to our `Layout`*
   
-Now that we have the `fragment` in place, we will activate its listener from `MainActivity` when the HERE SDK is initialized.
+Now that we have the `fragment` in place, we will activate its listener from `MainActivity` when the HERE Mobile SDK is initialized.
 
 To do that, we will create a private method in `MainActivity`:
 ```java
@@ -255,7 +255,7 @@ To do that, we will create a private method in `MainActivity`:
     }
 ```
 
-And we will call it with our previously defined methods when the SDK is ready:
+And we will call it with our previously defined methods when the HERE Mobile SDK is ready:
 
 ```java
 
@@ -284,7 +284,7 @@ And we will call it with our previously defined methods when the SDK is ready:
 
 ## Step 6. Adding logic into the Fragment
 
-*As the goal of this tutorial is to explore the HERE SDK's functionality, we will skip the part responsible for the UI-related implementation of `SpeedLimitFragment`. However, the code is available in the repository.*
+*As the goal of this tutorial is to explore the HERE Mobile SDK's functionality, we will skip the part responsible for the UI-related implementation of `SpeedLimitFragment`. However, the code is available in the repository.*
 
 Let's come back to the `SpeedLimitFragment` code and the body of the `onPositionUpdated` method. 
 One of the params that will be passed into the method is `geoPosition`. 
@@ -383,7 +383,7 @@ This is how `onPositionUpdated` can look like:
 ## What next?
 
 This tutorial did not cover the application's life cycle and impact on used SDK objects. To learn more, read [here](https://developer.here.com/documentation/android-premium/dev_guide/topics/map-positioning.html).  
-We also did not focus on UI implementation - a simple version of it is in the [repository](https://github.com/heremaps/here-android-sdk-examples/tree/master/speed-limit-watcher) (tested with HERE Android SDK 3.8 and Android 5 and 7.1).
+We also did not focus on UI implementation - a simple version of it is in the [repository](https://github.com/heremaps/here-android-sdk-examples/tree/master/speed-limit-watcher) (tested with HERE Mobile SDK for Android (Premium) 3.12 and Android 5 and 7.1).
 
 
 

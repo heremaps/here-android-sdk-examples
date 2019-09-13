@@ -28,7 +28,7 @@ public class RouteUtil {
         final RoutePlan routePlan = new RoutePlan();
 
         /*
-         * Initialize a RouteOption.HERE SDK allow users to define their own parameters for the
+         * Initialize a RouteOption. HERE Mobile SDK allow users to define their own parameters for the
          * route calculation,including transport modes,route types and route restrictions etc.Please
          * refer to API doc for full list of APIs
          */

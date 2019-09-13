@@ -65,7 +65,7 @@ import static android.view.View.GONE;
 
 /**
  * This class encapsulates the properties and functionality of the Map view. It also implements 3
- * types of AutoSuggest requests that HERE Android SDK provides as example.
+ * types of AutoSuggest requests that HERE Mobile SDK for Android (Premium) provides as example.
  */
 public class MapFragmentView {
     public static List<DiscoveryResult> s_discoverResultList;
@@ -318,7 +318,7 @@ public class MapFragmentView {
          Creates new TextAutoSuggestionRequest with current map position as search center
          and selected collection size with applied filters and chosen locale.
          For more details how to use TextAutoSuggestionRequest
-         please see documentation for HERE SDK for Android.
+         please see documentation for HERE Mobile SDK for Android.
          */
         TextAutoSuggestionRequest textAutoSuggestionRequest = new TextAutoSuggestionRequest(query);
         textAutoSuggestionRequest.setSearchCenter(m_map.getCenter());

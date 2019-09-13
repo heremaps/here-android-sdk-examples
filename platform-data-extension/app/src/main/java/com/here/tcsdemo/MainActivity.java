@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 /*
                  * All permission requests are being handled.Create map fragment view.Please note
-                 * the HERE SDK requires all permissions defined above to operate properly.
+                 * the HERE Mobile SDK requires all permissions defined above to operate properly.
                  */
                 new MapFragmentView(this);
                 break;
