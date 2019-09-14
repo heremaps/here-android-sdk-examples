@@ -43,7 +43,7 @@
             android:value="{YOUR_LICENSE_KEY}" />
 
          <!--Developers should always provide custom values for each of {YOUR_LABEL_NAME} and {YOUR_INTENT_NAME}.
-         Do not reuse HERE SDK defaults.-->
+         Do not reuse HERE Mobile SDK defaults.-->
         <meta-data
             android:name="INTENT_NAME"
             android:value="{YOUR_INTENT_NAME}" />
@@ -57,13 +57,13 @@
         </service>
         <!--
             Embed the HERE Positioning Service.
-            For more information, see the HERE SDK Developer's Guide
+            For more information, see the HERE Mobile SDK Developer's Guide
         -->
         <service android:enabled="true" android:exported="false" android:name="com.here.services.internal.LocationService" android:process=":remote">
         </service>
         <!--
             HERE Location boot receiver definition.
-            For more information, see the HERE SDK Developer's Guide
+            For more information, see the HERE Mobile SDK Developer's Guide
         -->
         <receiver
             android:name="com.here.services.internal.BootReceiver"
