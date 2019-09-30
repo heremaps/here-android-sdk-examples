@@ -18,7 +18,7 @@ package com.here.android.example.autosuggest;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.text.Html;
+import android.support.v4.text.HtmlCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -63,7 +63,7 @@ public class AutoSuggestAdapter extends ArrayAdapter<AutoSuggest> {
 
         // set highlightedTitle
         tv = convertView.findViewById(R.id.highlightedTitle);
-        tv.setText(Html.fromHtml(autoSuggest.getHighlightedTitle()));
+        tv.setText(HtmlCompat.fromHtml(autoSuggest.getHighlightedTitle(), HtmlCompat.FROM_HTML_MODE_LEGACY));
 
         // set request URL
         tv = convertView.findViewById(R.id.url);
