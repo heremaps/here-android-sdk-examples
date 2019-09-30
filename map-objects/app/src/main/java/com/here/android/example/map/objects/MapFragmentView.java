@@ -20,7 +20,7 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -39,7 +39,7 @@ import com.here.android.mpa.mapping.MapCircle;
 import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapPolygon;
 import com.here.android.mpa.mapping.MapPolyline;
-import com.here.android.mpa.mapping.SupportMapFragment;
+import com.here.android.mpa.mapping.AndroidXMapFragment;
 
 import java.io.File;
 import java.io.IOException;
@@ -63,7 +63,7 @@ public class MapFragmentView {
     private static final int REMOVE_CIRCLE_MENU_ID = 7;
     private static final int NAVIGATE_TO_MENU_ID = 8;
 
-    private SupportMapFragment m_mapFragment;
+    private AndroidXMapFragment m_mapFragment;
     private AppCompatActivity m_activity;
     private Map m_map;
 
@@ -85,8 +85,8 @@ public class MapFragmentView {
         initMapFragment();
     }
 
-    private SupportMapFragment getMapFragment() {
-        return (SupportMapFragment) m_activity.getSupportFragmentManager().findFragmentById(R.id.mapfragment);
+    private AndroidXMapFragment getMapFragment() {
+        return (AndroidXMapFragment) m_activity.getSupportFragmentManager().findFragmentById(R.id.mapfragment);
     }
 
     private void initMapFragment() {
@@ -114,7 +114,7 @@ public class MapFragmentView {
             // Also, ensure the provided intent name does not match the default intent name.
         } else {
             if (m_mapFragment != null) {
-            /* Initialize the SupportMapFragment, results will be given via the called back. */
+            /* Initialize the AndroidXMapFragment, results will be given via the called back. */
                 m_mapFragment.init(new OnEngineInitListener() {
                     @Override
                     public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
