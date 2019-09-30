@@ -17,6 +17,7 @@
 package com.here.android.example.basicpositioningsolution;
 
 import android.Manifest;
+import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -24,8 +25,6 @@ import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
@@ -47,9 +46,6 @@ import com.here.android.positioning.StatusListener;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 
 public class BasicPositioningActivity extends AppCompatActivity implements PositioningManager.OnPositionChangedListener, Map.OnTransformListener {
@@ -235,8 +231,8 @@ public class BasicPositioningActivity extends AppCompatActivity implements Posit
         mapFragment = getMapFragment();
         mapFragment.setRetainInstance(false);
 
-        // Set path of isolated disk cache
-        String diskCacheRoot = Environment.getExternalStorageDirectory().getPath()
+        // Set path of disk cache
+        String diskCacheRoot = this.getFilesDir().getPath()
                 + File.separator + ".isolated-here-maps";
         // Retrieve intent name from manifest
         String intentName = "";

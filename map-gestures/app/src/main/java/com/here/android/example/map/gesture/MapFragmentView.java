@@ -33,7 +33,6 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
@@ -62,8 +61,8 @@ public class MapFragmentView {
         /* Locate the mapFragment UI element */
         m_mapFragment = getMapFragment();
 
-        // Set path of isolated disk cache
-        String diskCacheRoot = Environment.getExternalStorageDirectory().getPath()
+        // Set path of disk cache
+        String diskCacheRoot = m_activity.getFilesDir().getPath()
                 + File.separator + ".isolated-here-maps";
         // Retrieve intent name from manifest
         String intentName = "";

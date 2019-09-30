@@ -20,7 +20,6 @@ import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -165,8 +164,8 @@ public class MapFragmentView {
         m_mapFragment = getMapFragment();
         m_mapFragmentContainer = m_activity.findViewById(R.id.mapfragment);
 
-        // Set path of isolated disk cache
-        String diskCacheRoot = Environment.getExternalStorageDirectory().getPath()
+        // Set path of disk cache
+        String diskCacheRoot = m_activity.getFilesDir().getPath()
                 + File.separator + ".isolated-here-maps";
         // Retrieve intent name from manifest
         String intentName = "";
