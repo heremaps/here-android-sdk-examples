@@ -13,7 +13,7 @@
         <!-- Map Fragment embedded with the map object -->
         <fragment
             android:id="@+id/mapfragment"
-            class="com.here.android.mpa.mapping.SupportMapFragment"
+            class="com.here.android.mpa.mapping.AndroidXMapFragment"
             android:layout_width="match_parent"
             android:layout_height="match_parent"/>
 

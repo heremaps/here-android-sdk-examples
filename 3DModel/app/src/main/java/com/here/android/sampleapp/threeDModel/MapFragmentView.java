@@ -27,7 +27,7 @@ import com.here.android.mpa.common.Image;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.mapping.LocalMesh;
 import com.here.android.mpa.mapping.Map;
-import com.here.android.mpa.mapping.SupportMapFragment;
+import com.here.android.mpa.mapping.AndroidXMapFragment;
 import com.here.android.mpa.mapping.MapLocalModel;
 import com.here.android.mpa.mapping.MapModelObject;
 import com.owens.oobjloader.builder.Build;
@@ -37,12 +37,12 @@ import com.owens.oobjloader.builder.Group;
 import com.owens.oobjloader.builder.Material;
 import com.owens.oobjloader.parser.Parse;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -54,7 +54,7 @@ import android.widget.Toast;
  * it extracts data from the loader and convert it into what HERE Android SDK APIs accept.
  */
 public class MapFragmentView {
-    private SupportMapFragment m_mapFragment;
+    private AndroidXMapFragment m_mapFragment;
     private AppCompatActivity m_activity;
     private Map m_map;
     private Button m_displayButton;
@@ -66,8 +66,8 @@ public class MapFragmentView {
         initDisplayButton();
     }
 
-    private SupportMapFragment getMapFragment() {
-        return (SupportMapFragment) m_activity.getSupportFragmentManager().findFragmentById(R.id.mapfragment);
+    private AndroidXMapFragment getMapFragment() {
+        return (AndroidXMapFragment) m_activity.getSupportFragmentManager().findFragmentById(R.id.mapfragment);
     }
 
     private void initMapFragment() {
@@ -100,7 +100,7 @@ public class MapFragmentView {
             // Also, ensure the provided intent name does not match the default intent name.
         } else {
             if (m_mapFragment != null) {
-                /* Initialize the SupportMapFragment, results will be given via the called back. */
+                /* Initialize the AndroidXMapFragment, results will be given via the called back. */
                 m_mapFragment.init(new OnEngineInitListener() {
                     @Override
                     public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
