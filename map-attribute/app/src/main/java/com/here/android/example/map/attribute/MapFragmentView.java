@@ -19,13 +19,12 @@ package com.here.android.example.map.attribute;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.mapping.Map;
-import com.here.android.mpa.mapping.SupportMapFragment;
+import com.here.android.mpa.mapping.AndroidXMapFragment;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
@@ -38,7 +37,7 @@ import java.io.File;
  * This class encapsulates the properties and functionality of the Map view.
  */
 public class MapFragmentView {
-    private SupportMapFragment m_mapFragment;
+    private AndroidXMapFragment m_mapFragment;
     private Map m_map;
     private ImageButton m_settingsBtn;
     private SettingsPanel m_settingsPanel;
@@ -52,15 +51,15 @@ public class MapFragmentView {
         initSettingsPanel();
     }
 
-    private SupportMapFragment getMapFragment() {
-        return (SupportMapFragment) m_activity.getSupportFragmentManager().findFragmentById(R.id.mapfragment);
+    private AndroidXMapFragment getMapFragment() {
+        return (AndroidXMapFragment) m_activity.getSupportFragmentManager().findFragmentById(R.id.mapfragment);
 
     }
 
     private void initMapFragment() {
         m_mapFragment = getMapFragment();
-        // Set path of isolated disk cache
-        String diskCacheRoot = Environment.getExternalStorageDirectory().getPath()
+        // Set path of disk cache
+        String diskCacheRoot = m_activity.getFilesDir().getPath()
                 + File.separator + ".isolated-here-maps";
         // Retrieve intent name from manifest
         String intentName = "";
@@ -80,7 +79,7 @@ public class MapFragmentView {
             // Also, ensure the provided intent name does not match the default intent name.
         } else {
             if (m_mapFragment != null) {
-            /* Initialize the SupportMapFragment, results will be given via the called back. */
+            /* Initialize the AndroidXMapFragment, results will be given via the called back. */
                 m_mapFragment.init(new OnEngineInitListener() {
                     @Override
                     public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {

@@ -18,7 +18,7 @@ package com.here.tcsdemo;
 
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -34,7 +34,7 @@ import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapObject;
 import com.here.android.mpa.mapping.MapPolyline;
 import com.here.android.mpa.mapping.MapRoute;
-import com.here.android.mpa.mapping.SupportMapFragment;
+import com.here.android.mpa.mapping.AndroidXMapFragment;
 import com.here.android.mpa.pde.PlatformDataItem;
 import com.here.android.mpa.pde.PlatformDataItemCollection;
 import com.here.android.mpa.pde.PlatformDataRequest;
@@ -64,7 +64,7 @@ public class MapFragmentView {
     private final static int HIGH_COLOR = Color.GREEN;
     private final static int LOW_COLOR = Color.RED;
     private final Set<Long> pvids = new HashSet<>();
-    private SupportMapFragment mapFragment;
+    private AndroidXMapFragment mapFragment;
     private AppCompatActivity activity;
     private Map map;
 
@@ -78,8 +78,8 @@ public class MapFragmentView {
         initMapFragment();
     }
 
-    private SupportMapFragment getMapFragment() {
-        return (SupportMapFragment) activity
+    private AndroidXMapFragment getMapFragment() {
+        return (AndroidXMapFragment) activity
                 .getSupportFragmentManager().findFragmentById(R.id.mapfragment);
     }
 
