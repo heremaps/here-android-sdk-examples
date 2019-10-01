@@ -36,9 +36,9 @@
         <!--
             Embed the HERE Map Service. This will create and run the map service under the
             application's process making sure that the map data between this application
-            and others' using the HERE SDK are not shared. See BasicMapActivity.java on
+            and others' using the HERE Mobile SDK are not shared. See BasicMapActivity.java on
             details how to set the location of your map data cache.
-            For more information, see the HERE SDK Developer's Guide
+            For more information, see the HERE Mobile SDK Developer's Guide
         -->
         <service
             android:name="com.here.android.mpa.service.MapService"

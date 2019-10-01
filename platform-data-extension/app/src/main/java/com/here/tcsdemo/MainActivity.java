@@ -19,9 +19,9 @@ package com.here.tcsdemo;
 import android.Manifest;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 /*
                  * All permission requests are being handled.Create map fragment view.Please note
-                 * the HERE SDK requires all permissions defined above to operate properly.
+                 * the HERE Mobile SDK requires all permissions defined above to operate properly.
                  */
                 new MapFragmentView(this);
                 break;

@@ -1,16 +1,16 @@
 [![Build Status](https://travis-ci.org/heremaps/here-android-sdk-examples.svg?branch=master)](https://travis-ci.org/heremaps/here-android-sdk-examples)
 
-# HERE SDK for Android example projects
+# HERE Mobile SDK for Android example projects
 
 Copyright (c) 2011-2019 HERE Europe B.V.
 
-This repository holds a series of Java-based projects using the **HERE SDK for Android**. More information about the API can be found on the HERE Developer Portal's [Mobile SDKs](https://developer.here.com/develop/mobile-sdks) page.
+This repository holds a series of Java-based projects using the **HERE Mobile SDK for Android**. More information about the API can be found on the HERE Developer Portal's [Mobile SDKs](https://developer.here.com/develop/mobile-sdks) page.
 
 This set of individual, use-case based projects is designed to be cloned by developers for their own use.
 
-**Note:** In order to be able to build the examples, you have to [sign up](https://developer.here.com/develop/mobile-sdks?create=Evaluation&keepState=true&step=account) for a *90-day Free Trial*. After signing in with a *HERE account*, follow these steps to download the *Premium SDK*:
+**Note:** In order to be able to build the examples, you have to [sign up](https://developer.here.com/develop/mobile-sdks?create=Evaluation&keepState=true&step=account) for a *90-day Free Trial*. After signing in with a *HERE account*, follow these steps to download the *HERE Mobile SDK (Premium)*:
 
-1. Choose to *Generate App ID and App Code* for use with the *Android SDK*:
+1. Choose to *Generate App ID and App Code* for use with the *HERE Mobile SDK for Android*:
 ![Generate App ID and App Code](/.screenshots/Premium%20SDK%20-%20Generate%20App%20ID%20and%20App%20Code.png?raw=true)
 
 2. Enter the package name of the example you want to build, e.g. [com.here.android.example.map.basic](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering/app/src/main/AndroidManifest.xml#L3). **The package name entered here must match the name in your app**:
@@ -27,7 +27,7 @@ This set of individual, use-case based projects is designed to be cloned by deve
 
 7. Replace the instances of the `{YOUR_APP_ID}`, `{YOUR_APP_CODE}` and `{YOUR_LICENSE_KEY}` placeholders in the example's `AndroidManifest.xml` with your obtained values. Yet again looking at the *map-rendering* examples, this would be [here](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering/app/src/main/AndroidManifest.xml#L29), [here](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering/app/src/main/AndroidManifest.xml#L32) and [here](https://github.com/heremaps/here-android-sdk-examples/blob/master/map-rendering/app/src/main/AndroidManifest.xml#L35).
 
-8. Replace the instances of the `{YOUR_LABEL_NAME}` and `{YOUR_INTENT_NAME}` placeholders in the example's `AndroidManifest.xml` with your own custom values. Do not reuse HERE SDK defaults.
+8. Replace the instances of the `{YOUR_LABEL_NAME}` and `{YOUR_INTENT_NAME}` placeholders in the example's `AndroidManifest.xml` with your own custom values. Do not reuse HERE Mobile SDK defaults.
 
 9. Launch [Android Studio](https://developer.android.com/studio/) and import the example's `build.gradle` file..
 
@@ -37,14 +37,14 @@ This set of individual, use-case based projects is designed to be cloned by deve
 
 Unless otherwise noted in `LICENSE` files for specific files or directories, the [LICENSE](LICENSE) in the root applies to all content in this repository.
 
-## Android Premium SDK
+## HERE Mobile SDK for Android (Premium)
 
-All of the following projects use latest version(currently 3.12) of the Android Premium SDK
+All of the following projects use latest version(currently 3.12) of the HERE Mobile SDK for Android (Premium)
 
 * [3D Model](3DModel) - Show 3D model on the map
 * [3D Venues](3d-venues-and-indoor-routing) - Show venues in 3D mode
 * [Advanced Navigation](advanced-navigation) - Handle user interactions and position updates during navigation
-* [Geocoding and Reverse Gecoding](geocoder-and-reverse-geocoder) - Trigger a Geocode and Reverse Geocode request in HERE SDK
+* [Geocoding and Reverse Gecoding](geocoder-and-reverse-geocoder) - Trigger a Geocode and Reverse Geocode request in HERE Mobile SDK
 * [Map Attribute](map-attribute) - Map attributes manipulations
 * [Map Customization](map-customization) - Customize the map scheme
 * [Map Downloader](map-downloader) - Download offline map data
