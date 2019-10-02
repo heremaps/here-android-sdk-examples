@@ -17,7 +17,9 @@
 package com.here.android.example.venuesandlogging;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
@@ -1099,7 +1101,18 @@ public class BasicVenueActivity extends AppCompatActivity
                         setVenueServiceContent(true, true);// Private + public
                     }
                 } else {
-                    Log.e(TAG, "onEngineInitializationCompleted: %s", error);
+                    new AlertDialog.Builder(BasicVenueActivity.this).setMessage(
+                            "Error : " + error.name() + "\n\n" + error.getDetails())
+                            .setTitle(R.string.engine_init_error)
+                            .setNegativeButton(android.R.string.cancel,
+                                               new DialogInterface.OnClickListener() {
+                                                   @Override
+                                                   public void onClick(
+                                                           DialogInterface dialog,
+                                                           int which) {
+                                                       BasicVenueActivity.this.finish();
+                                                   }
+                                               }).create().show();
                 }
             }
         }, new VenueServiceListener() {

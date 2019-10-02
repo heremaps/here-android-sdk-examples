@@ -31,6 +31,9 @@ import com.here.android.mpa.search.ResultListener;
 import com.here.android.mpa.search.ReverseGeocodeRequest;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -82,8 +85,18 @@ public class MainView {
             MapEngine.getInstance().init(new ApplicationContext(m_activity), new OnEngineInitListener() {
                 @Override
                 public void onEngineInitializationCompleted(Error error) {
-                    Toast.makeText(m_activity, "Map Engine initialized with error code:" + error,
-                            Toast.LENGTH_SHORT).show();
+                    new AlertDialog.Builder(m_activity).setMessage(
+                            "Error : " + error.name() + "\n\n" + error.getDetails())
+                            .setTitle(R.string.engine_init_error)
+                            .setNegativeButton(android.R.string.cancel,
+                                               new DialogInterface.OnClickListener() {
+                                                   @Override
+                                                   public void onClick(
+                                                           DialogInterface dialog,
+                                                           int which) {
+                                                       m_activity.finish();
+                                                   }
+                                               }).create().show();
                 }
             });
         }

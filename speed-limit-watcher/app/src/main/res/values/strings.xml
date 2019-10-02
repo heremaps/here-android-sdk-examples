@@ -8,4 +8,6 @@
     <string name="navigation_speed_label_m">m/h</string>
 
     <string name="navigation_speed_limit_default">N/A</string>
+
+    <string name="engine_init_error">Map engine initialization</string>
 </resources>

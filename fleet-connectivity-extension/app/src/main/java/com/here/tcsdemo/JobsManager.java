@@ -20,6 +20,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 
 import com.here.android.mpa.common.GeoCoordinate;
+import com.here.android.mpa.common.MapEngine;
 import com.here.android.mpa.fce.FleetConnectivityError;
 import com.here.android.mpa.fce.FleetConnectivityEvent;
 import com.here.android.mpa.fce.FleetConnectivityJobCancelledEvent;
@@ -29,6 +30,7 @@ import com.here.android.mpa.fce.FleetConnectivityJobRejectedEvent;
 import com.here.android.mpa.fce.FleetConnectivityJobStartedEvent;
 import com.here.android.mpa.fce.FleetConnectivityMessage;
 import com.here.android.mpa.fce.FleetConnectivityService;
+import com.nokia.maps.MapsEngine;
 
 import org.joda.time.DateTime;
 
@@ -129,8 +131,12 @@ public class JobsManager {
      * @return true, if stopping the service was successful.
      */
     public synchronized boolean stop() {
-        final FleetConnectivityService service = FleetConnectivityService.getInstance();
-        return service.stop();
+        if (MapEngine.isInitialized()) {
+            final FleetConnectivityService service = FleetConnectivityService.getInstance();
+            return service.stop();
+        } else {
+            return false;
+        }
     }
 
     /**

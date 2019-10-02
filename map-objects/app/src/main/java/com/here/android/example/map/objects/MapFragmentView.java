@@ -16,6 +16,8 @@
 
 package com.here.android.example.map.objects;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -146,6 +148,18 @@ public class MapFragmentView {
                         } else {
                             Log.e(this.getClass().toString(), "onEngineInitializationCompleted: " +
                                     "ERROR=" + error.getDetails(), error.getThrowable());
+                            new AlertDialog.Builder(m_activity).setMessage(
+                                    "Error : " + error.name() + "\n\n" + error.getDetails())
+                                    .setTitle(R.string.engine_init_error)
+                                    .setNegativeButton(android.R.string.cancel,
+                                                       new DialogInterface.OnClickListener() {
+                                                           @Override
+                                                           public void onClick(
+                                                                   DialogInterface dialog,
+                                                                   int which) {
+                                                               m_activity.finish();
+                                                           }
+                                                       }).create().show();
                         }
                     }
                 });
