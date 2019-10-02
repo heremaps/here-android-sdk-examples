@@ -41,4 +41,6 @@
         <item name="indoorPositioningModeDraft">DRAFT</item>
     </string-array>
 
+    <string name="engine_init_error">Map engine initialization</string>
+
 </resources>

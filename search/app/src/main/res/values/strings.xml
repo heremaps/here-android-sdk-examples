@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Search</string>
+    <string name="engine_init_error">Map engine initialization</string>
 </resources>

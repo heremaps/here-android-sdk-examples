@@ -17,7 +17,9 @@
 package com.here.android.example.route.tta;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -207,8 +209,18 @@ public class MainActivity extends AppCompatActivity {
                             m_mapView.setMap(m_map);
                             m_calculateRouteBtn.setEnabled(true);
                         } else {
-                            Toast.makeText(getApplicationContext(), error.name(),
-                                    Toast.LENGTH_SHORT).show();
+                            new AlertDialog.Builder(MainActivity.this).setMessage(
+                                    "Error : " + error.name() + "\n\n" + error.getDetails())
+                                    .setTitle(R.string.engine_init_error)
+                                    .setNegativeButton(android.R.string.cancel,
+                                                       new DialogInterface.OnClickListener() {
+                                                           @Override
+                                                           public void onClick(
+                                                                   DialogInterface dialog,
+                                                                   int which) {
+                                                               MainActivity.this.finish();
+                                                           }
+                                                       }).create().show();
                         }
                     }
                 });

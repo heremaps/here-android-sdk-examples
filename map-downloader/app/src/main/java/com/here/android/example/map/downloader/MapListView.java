@@ -16,7 +16,9 @@
 
 package com.here.android.example.map.downloader;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -85,6 +87,18 @@ class MapListView {
                         getMapPackages();
                     } else {
                         Log.e(TAG, "Failed to initialize MapEngine: " + error);
+                        new AlertDialog.Builder(m_activity).setMessage(
+                                "Error : " + error.name() + "\n\n" + error.getDetails())
+                                .setTitle(R.string.engine_init_error)
+                                .setNegativeButton(android.R.string.cancel,
+                                                   new DialogInterface.OnClickListener() {
+                                                       @Override
+                                                       public void onClick(
+                                                               DialogInterface dialog,
+                                                               int which) {
+                                                           m_activity.finish();
+                                                       }
+                                                   }).create().show();
                     }
                 }
             });

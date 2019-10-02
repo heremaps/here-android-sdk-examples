@@ -29,6 +29,9 @@ import com.here.android.mpa.mapping.MapGesture;
 import com.here.android.mpa.mapping.MapScreenMarker;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
@@ -199,9 +202,18 @@ public class MapFragmentView {
                                         }
                                     }, 0, false);
                         } else {
-                            Toast.makeText(m_activity,
-                                    "ERROR: Cannot initialize Map with error " + error,
-                                    Toast.LENGTH_LONG).show();
+                            new AlertDialog.Builder(m_activity).setMessage(
+                                    "Error : " + error.name() + "\n\n" + error.getDetails())
+                                    .setTitle(R.string.engine_init_error)
+                                    .setNegativeButton(android.R.string.cancel,
+                                                       new DialogInterface.OnClickListener() {
+                                                           @Override
+                                                           public void onClick(
+                                                                   DialogInterface dialog,
+                                                                   int which) {
+                                                               m_activity.finish();
+                                                           }
+                                                       }).create().show();
                         }
                     }
                 });

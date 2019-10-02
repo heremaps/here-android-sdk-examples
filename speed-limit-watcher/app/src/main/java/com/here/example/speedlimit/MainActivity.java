@@ -1,7 +1,9 @@
 package com.here.example.speedlimit;
 
 import android.Manifest;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -83,6 +85,19 @@ public class MainActivity extends AppCompatActivity {
                 } else {
                     Log.e("MainActivity", " init error: " + error + ", " + error.getDetails(),
                             error.getThrowable());
+
+                    new AlertDialog.Builder(MainActivity.this).setMessage(
+                            "Error : " + error.name() + "\n\n" + error.getDetails())
+                            .setTitle(R.string.engine_init_error)
+                            .setNegativeButton(android.R.string.cancel,
+                                               new DialogInterface.OnClickListener() {
+                                                   @Override
+                                                   public void onClick(
+                                                           DialogInterface dialog,
+                                                           int which) {
+                                                       MainActivity.this.finish();
+                                                   }
+                                               }).create().show();
                 }
             }
         });

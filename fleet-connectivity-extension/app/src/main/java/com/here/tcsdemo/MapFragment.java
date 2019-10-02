@@ -16,6 +16,8 @@
 
 package com.here.tcsdemo;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.PointF;
 import android.os.Bundle;
 import android.util.Log;
@@ -273,6 +275,19 @@ public class MapFragment extends FleetConnectivityFragment {
                         Log.e(TAG, "ERROR: Cannot initialize Map Fragment: " + error);
                         Log.e(TAG, error.getDetails());
                         Log.e(TAG, error.getStackTrace());
+
+                        new AlertDialog.Builder(getActivity()).setMessage(
+                                "Error : " + error.name() + "\n\n" + error.getDetails())
+                                .setTitle(R.string.engine_init_error)
+                                .setNegativeButton(android.R.string.cancel,
+                                                   new DialogInterface.OnClickListener() {
+                                                       @Override
+                                                       public void onClick(
+                                                               DialogInterface dialog,
+                                                               int which) {
+                                                           getActivity().finish();
+                                                       }
+                                                   }).create().show();
                     }
                 }
             });
