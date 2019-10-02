@@ -118,9 +118,18 @@ public class MapFragmentView {
                          */
                             m_navigationManager = NavigationManager.getInstance();
                         } else {
-                            Toast.makeText(m_activity,
-                                    "ERROR: Cannot initialize Map with error " + error,
-                                    Toast.LENGTH_LONG).show();
+                            new AlertDialog.Builder(m_activity).setMessage(
+                                    "Error : " + error.name() + "\n\n" + error.getDetails())
+                                    .setTitle(R.string.engine_init_error)
+                                    .setNegativeButton(android.R.string.cancel,
+                                                       new DialogInterface.OnClickListener() {
+                                                           @Override
+                                                           public void onClick(
+                                                                   DialogInterface dialog,
+                                                                   int which) {
+                                                               m_activity.finish();
+                                                           }
+                                                       }).create().show();
                         }
                     }
                 });

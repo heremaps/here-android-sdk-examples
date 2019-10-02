@@ -333,8 +333,18 @@ public class BasicPositioningActivity extends AppCompatActivity implements Posit
                             finish();
                         }
                     } else {
-                        Toast.makeText(BasicPositioningActivity.this, "onEngineInitializationCompleted: error: " + error + ", exiting", Toast.LENGTH_LONG).show();
-                        finish();
+                        new AlertDialog.Builder(BasicPositioningActivity.this).setMessage(
+                                "Error : " + error.name() + "\n\n" + error.getDetails())
+                                .setTitle(R.string.engine_init_error)
+                                .setNegativeButton(android.R.string.cancel,
+                                                   new DialogInterface.OnClickListener() {
+                                                       @Override
+                                                       public void onClick(
+                                                               DialogInterface dialog,
+                                                               int which) {
+                                                           finish();
+                                                       }
+                                                   }).create().show();
                     }
                 }
             });

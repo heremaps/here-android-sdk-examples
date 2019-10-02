@@ -9,4 +9,5 @@
     <string name="Flow">FLOW</string>
     <string name="Incident">INCIDENT</string>
     <string name="Coverage">COVERAGE</string>
+    <string name="engine_init_error">Map engine initialization</string>
 </resources>

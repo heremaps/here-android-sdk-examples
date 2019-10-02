@@ -17,6 +17,9 @@
 package com.here.android.example.advanced.navigation;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.PointF;
@@ -27,6 +30,7 @@ import android.widget.Toast;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.GeoPosition;
 import com.here.android.mpa.common.Image;
+import com.here.android.mpa.common.MapEngine;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.common.PositioningManager;
 import com.here.android.mpa.common.ViewObject;
@@ -194,9 +198,18 @@ public class MapFragmentView {
                                 e.printStackTrace();
                             }
                         } else {
-                            Toast.makeText(m_activity,
-                                    "ERROR: Cannot initialize Map with error " + error,
-                                    Toast.LENGTH_LONG).show();
+                            new AlertDialog.Builder(m_activity).setMessage(
+                                    "Error : " + error.name() + "\n\n" + error.getDetails())
+                                    .setTitle(R.string.engine_init_error)
+                                    .setNegativeButton(android.R.string.cancel,
+                                                       new DialogInterface.OnClickListener() {
+                                                           @Override
+                                                           public void onClick(
+                                                                   DialogInterface dialog,
+                                                                   int which) {
+                                                               m_activity.finish();
+                                                           }
+                                                       }).create().show();
                         }
                     }
                 });
@@ -382,9 +395,13 @@ public class MapFragmentView {
     };
 
     public void onDestroy() {
-        m_map.removeMapObject(m_positionIndicatorFixed);
-        NavigationManager.getInstance().stop();
-        PositioningManager.getInstance().stop();
+        if (m_map != null) {
+            m_map.removeMapObject(m_positionIndicatorFixed);
+        }
+        if (MapEngine.isInitialized()) {
+            NavigationManager.getInstance().stop();
+            PositioningManager.getInstance().stop();
+        }
     }
 
     public void onBackPressed() {

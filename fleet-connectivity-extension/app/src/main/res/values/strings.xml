@@ -30,4 +30,5 @@
         <item quantity="one">%d job pending.</item>
         <item quantity="other">%d jobs pending.</item>
     </plurals>
+    <string name="engine_init_error">Map engine initialization</string>
 </resources>
