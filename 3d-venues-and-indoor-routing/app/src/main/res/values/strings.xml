@@ -3,4 +3,5 @@
     <string name="action_settings">Settings</string>
     <string name="tap_start_point">tap start point</string>
     <string name="tap_end_point">tap end point</string>
+    <string name="engine_init_error">Map engine initialization</string>
 </resources>

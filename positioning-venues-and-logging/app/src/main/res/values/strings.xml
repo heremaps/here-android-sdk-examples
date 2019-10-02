@@ -6,4 +6,5 @@
     <string name="action_follow_position">Go to position</string>
     <string name="action_add_indoor_to_position">Include indoor positioning</string>
     <string name="action_indoor_routing">Indoor routing</string>
+    <string name="engine_init_error">Map engine initialization</string>
 </resources>

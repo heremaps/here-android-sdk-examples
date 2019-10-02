@@ -16,6 +16,8 @@
 
 package com.here.tcsdemo;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import androidx.appcompat.app.AppCompatActivity;
@@ -133,6 +135,19 @@ public class MapFragmentView {
                             Log.e(TAG, "Error on map fragment initialization: " + error);
                             Log.e(TAG, error.getDetails());
                             Log.e(TAG, error.getStackTrace());
+
+                            new AlertDialog.Builder(activity).setMessage(
+                                    "Error : " + error.name() + "\n\n" + error.getDetails())
+                                    .setTitle(R.string.engine_init_error)
+                                    .setNegativeButton(android.R.string.cancel,
+                                                       new DialogInterface.OnClickListener() {
+                                                           @Override
+                                                           public void onClick(
+                                                                   DialogInterface dialog,
+                                                                   int which) {
+                                                               activity.finish();
+                                                           }
+                                                       }).create().show();
                         }
                     }
                 });

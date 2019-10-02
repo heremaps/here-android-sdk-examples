@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">AutoSuggestion</string>
     <string name="search_title">Search query</string>
+    <string name="engine_init_error">Map engine initialization</string>
 </resources>
