@@ -8,7 +8,7 @@ Update manifest file with proper license key as described above in root [README 
 
 Provides a basic idea how to organize navigation using HERE Mobile SDK. To find more details about available options and functions, please see [guidance documentation](https://developer.here.com/documentation/android-premium/dev_guide/topics/map-guidance.html) and use this app to play with.
 
-To build more sophisticated routes check [Routing Sample App](../routing/README.md).
+To build more sophisticated routes check [Routing Sample App](../routing).
 
 ## Example
 

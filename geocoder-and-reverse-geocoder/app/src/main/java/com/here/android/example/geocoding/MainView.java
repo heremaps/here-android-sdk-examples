@@ -85,18 +85,23 @@ public class MainView {
             MapEngine.getInstance().init(new ApplicationContext(m_activity), new OnEngineInitListener() {
                 @Override
                 public void onEngineInitializationCompleted(Error error) {
-                    new AlertDialog.Builder(m_activity).setMessage(
-                            "Error : " + error.name() + "\n\n" + error.getDetails())
-                            .setTitle(R.string.engine_init_error)
-                            .setNegativeButton(android.R.string.cancel,
-                                               new DialogInterface.OnClickListener() {
-                                                   @Override
-                                                   public void onClick(
-                                                           DialogInterface dialog,
-                                                           int which) {
-                                                       m_activity.finish();
-                                                   }
-                                               }).create().show();
+                    if (error != Error.NONE) {
+                        new AlertDialog.Builder(m_activity).setMessage(
+                                "Error : " + error.name() + "\n\n" + error.getDetails())
+                                .setTitle(R.string.engine_init_error)
+                                .setNegativeButton(android.R.string.cancel,
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(
+                                                    DialogInterface dialog,
+                                                    int which) {
+                                                m_activity.finish();
+                                            }
+                                        }).create().show();
+                    } else {
+                        Toast.makeText(m_activity, "Map Engine initialized without error",
+                                Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
