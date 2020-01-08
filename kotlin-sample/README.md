@@ -6,7 +6,7 @@ Update [MainActivity.kt](app/src/main/java/com/here/android/example/kotlin/MainA
 
 ## Purpose
 
-Simple app which displays map implemented using Kotlin:
+Simple app which displays map implemented using Kotlin.
 
 ## Example
 

@@ -48,7 +48,6 @@ class MainActivity : FragmentActivity() {
         Manifest.permission.ACCESS_WIFI_STATE,
         Manifest.permission.ACCESS_NETWORK_STATE)
 
-    private var mapFragment: AndroidXMapFragment? = null
     private var m_map: Map? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -129,7 +128,7 @@ class MainActivity : FragmentActivity() {
             return
         }
 
-        mapFragment = supportFragmentManager.findFragmentById(R.id.mapfragment) as AndroidXMapFragment?
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.mapfragment) as AndroidXMapFragment?
 
         val context = ApplicationContext(this).apply {
             // Set application credentials
