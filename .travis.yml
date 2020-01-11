@@ -7,9 +7,13 @@ android:
     - tools
     - platform-tools
     - tools
+    - build-tools-28.0.3
+    - android-29
+    - extra-android-m2repository
+    - extra-android-support
 
 jdk:
-  - oraclejdk11
+  - oraclejdk8
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
