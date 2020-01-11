@@ -6,8 +6,11 @@ android:
   components:
     - tools
     - platform-tools
-    - tools
-
+    - build-tools-28.0.3
+    - android-27
+    - extra-google-m2repository
+    - extra-android-m2repository
+    - extra-android-support
 jdk:
   - oraclejdk8
 
@@ -26,6 +29,11 @@ install:
   - mkdir -p $ANDROID_HOME/licenses
   - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55\nd56f5187479451eabf01fb78af6dfcb131a6481e\n24333f8a63b6825ea9c5514f83c2829b004d1fee" > $ANDROID_HOME/licenses/android-sdk-license
   - cat $ANDROID_HOME/licenses/android-sdk-license
+
+licenses:
+  - 'android-sdk-license-.+'
+  - 'google-gdk-license-.+'
+  - 'android-sdk-preview-license-.+'
 
 before_script:
   - travis_wait .ci/preInstall.sh
