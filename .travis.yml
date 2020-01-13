@@ -1,13 +1,13 @@
 language: android
-
+dist: xenial
 sudo: required
 
 android:
   components:
     - tools
     - platform-tools
-    - build-tools-28.0.3
-    - android-28
+    #- build-tools-28.0.3
+    #- android-28
 
 jdk:
   - oraclejdk8
