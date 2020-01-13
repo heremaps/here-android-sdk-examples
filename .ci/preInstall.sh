@@ -1,4 +1,4 @@
-#!/bin/bash -e
+#!/bin/bash -ex
 
 # Download and extract the HERE Mobile SDK.
 curl -s -S -o HERE_SDK.zip "$HERE_SDK_URL"
