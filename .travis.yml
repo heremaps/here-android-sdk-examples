@@ -31,6 +31,7 @@ before_script:
   - travis_wait .ci/preInstall.sh
 
 script:
+  - gradlew --version
   - WRAPPER=$(find . -type f -executable -name gradlew -print -quit)
   - $WRAPPER components # Dummy call to trigger Android SDK auto-download.
   #temporory fix for kotlin-sample build
