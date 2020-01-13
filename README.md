@@ -1,10 +1,10 @@
 [![Build Status](https://travis-ci.org/heremaps/here-android-sdk-examples.svg?branch=master)](https://travis-ci.org/heremaps/here-android-sdk-examples)
 
-# HERE Mobile SDK for Android example projects
+# HERE Mobile SDK 3.x for Android example projects
 
-Copyright (c) 2011-2019 HERE Europe B.V.
+Copyright (c) 2011-2020 HERE Europe B.V.
 
-This repository holds a series of Java-based projects using the **HERE Mobile SDK for Android**. More information about the API can be found on the HERE Developer Portal's [Mobile SDKs](https://developer.here.com/develop/mobile-sdks) page.
+This repository holds a series of Java-based projects using the **HERE Mobile SDK 3.x for Android**. More information about the API can be found on the HERE Developer Portal's [Mobile SDKs](https://developer.here.com/develop/mobile-sdks) page.
 
 This set of individual, use-case based projects is designed to be cloned by developers for their own use.
 
