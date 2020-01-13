@@ -1,7 +1,9 @@
-#language: android
-dist: xenial
+language: android
 sudo: required
-
+addons:
+  apt:
+    packages:
+      - gradlew
 android:
   components:
     - tools
