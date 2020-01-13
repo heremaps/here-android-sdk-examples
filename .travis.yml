@@ -1,4 +1,4 @@
-language: android
+#language: android
 dist: xenial
 sudo: required
 
