@@ -6,7 +6,8 @@ android:
   components:
     - tools
     - platform-tools
-    - tools
+    - build-tools-28.0.3
+    - android-28
 
 jdk:
   - oraclejdk8
@@ -31,6 +32,7 @@ before_script:
   - travis_wait .ci/preInstall.sh
 
 script:
+  - gradle --version
   - gradlew --version
   - WRAPPER=$(find . -type f -executable -name gradlew -print -quit)
   - $WRAPPER components # Dummy call to trigger Android SDK auto-download.
