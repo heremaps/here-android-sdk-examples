@@ -1,9 +1,5 @@
 language: android
 sudo: required
-addons:
-  apt:
-    packages:
-      - gradlew
 android:
   components:
     - tools
@@ -11,7 +7,7 @@ android:
     #- build-tools-28.0.3
     #- android-28
 
-#jdk: oraclejdk8
+jdk: oraclejdk8
 
 before_cache:
   - rm -f  $HOME/.gradle/caches/modules-2/modules-2.lock
@@ -34,9 +30,8 @@ before_script:
 
 script:
   - gradle --version
-  - gradlew --version
   - WRAPPER=$(find . -type f -executable -name gradlew -print -quit)
   - $WRAPPER components # Dummy call to trigger Android SDK auto-download.
   #temporory fix for kotlin-sample build
-  - cd kotlin-sample && gradle build && cd ..
+  - cd kotlin-sample && gradlew build && cd ..
   - $WRAPPER buildAll
