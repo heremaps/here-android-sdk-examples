@@ -33,5 +33,5 @@ script:
   - WRAPPER=$(find . -type f -executable -name gradlew -print -quit)
   - $WRAPPER components # Dummy call to trigger Android SDK auto-download.
   #temporory fix for kotlin-sample build
-  - cd kotlin-sample && gradlew build && cd ..
+  - cd kotlin-sample && ./gradlew build && cd ..
   - $WRAPPER buildAll
