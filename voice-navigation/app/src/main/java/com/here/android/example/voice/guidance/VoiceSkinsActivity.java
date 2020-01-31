@@ -77,7 +77,7 @@ public class VoiceSkinsActivity extends AppCompatActivity {
         m_voiceSkinsView.setAdapter(adapter);
     }
 
-    private class VoiceSkinsAdapter
+    private static class VoiceSkinsAdapter
             extends RecyclerView.Adapter<VoiceSkinsAdapter.VoiceViewHolder> {
         private List<VoiceSkin> m_voiceSkins;
         private LayoutInflater m_inflater;
@@ -88,8 +88,18 @@ public class VoiceSkinsActivity extends AppCompatActivity {
             m_inflater = LayoutInflater.from(context);
 
             // get the id of the currently selected voice skin
-            m_selectedId = NavigationManager.getInstance().getVoiceGuidanceOptions().getVoiceSkin()
-                    .getId();
+            VoiceSkin selectedVoiceSkin =
+                    NavigationManager.getInstance().getVoiceGuidanceOptions().getVoiceSkin();
+            if (selectedVoiceSkin != null) {
+                m_selectedId = selectedVoiceSkin.getId();
+            } else {
+                for (VoiceSkin voiceSkin : m_voiceSkins) {
+                    if (voiceSkin.getLanguage().equals("None")) {
+                        m_selectedId = voiceSkin.getId();
+                        break;
+                    }
+                }
+            }
         }
 
         @NonNull
@@ -124,7 +134,7 @@ public class VoiceSkinsActivity extends AppCompatActivity {
             return m_voiceSkins.size();
         }
 
-        private class VoiceViewHolder extends RecyclerView.ViewHolder {
+        private static class VoiceViewHolder extends RecyclerView.ViewHolder {
             RadioButton m_selectedView;
             TextView m_idView;
             TextView m_languageView;

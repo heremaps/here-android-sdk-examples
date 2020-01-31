@@ -85,12 +85,14 @@ public class VoicePackagesActivity extends AppCompatActivity {
         m_packagesView.setAdapter(new VoicePackagesAdapter(this));
     }
 
-    private class VoicePackagesAdapter
+    private static class VoicePackagesAdapter
             extends RecyclerView.Adapter<VoicePackagesAdapter.VoiceViewHolder> {
+        private Context m_context;
         private LayoutInflater m_inflater;
         private List<VoicePackage> m_packages;
 
         public VoicePackagesAdapter(Context context) {
+            m_context = context;
             m_inflater = LayoutInflater.from(context);
             // get a list of packages available for download
             m_packages = VoiceCatalog.getInstance().getCatalogList();
@@ -125,7 +127,7 @@ public class VoicePackagesActivity extends AppCompatActivity {
 
                     // Check if the package has been already downloaded
                     if (voicePackage.isLocal()) {
-                        new AlertDialog.Builder(VoicePackagesActivity.this)
+                        new AlertDialog.Builder(m_context)
                                 .setMessage(R.string.remove_package).setPositiveButton(
                                 android.R.string.ok, new DialogInterface.OnClickListener() {
                                     @Override
@@ -137,7 +139,7 @@ public class VoicePackagesActivity extends AppCompatActivity {
                                     }
                                 }).setNegativeButton(android.R.string.cancel, null).create().show();
                     } else {
-                        new AlertDialog.Builder(VoicePackagesActivity.this)
+                        new AlertDialog.Builder(m_context)
                                 .setMessage(R.string.install_package).setPositiveButton(
                                 android.R.string.ok, new DialogInterface.OnClickListener() {
                                     @Override
@@ -177,7 +179,7 @@ public class VoicePackagesActivity extends AppCompatActivity {
             return m_packages.size();
         }
 
-        private class VoiceViewHolder extends RecyclerView.ViewHolder {
+        private static class VoiceViewHolder extends RecyclerView.ViewHolder {
             CheckBox m_isDownloaded;
             TextView m_idView;
             TextView m_nameView;
