@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Voice Guidance</string>
+    <string name="start_navi">Start Navigation</string>
+    <string name="stop_navi">Stop Navigation</string>
+    <string name="engine_init_error">Map engine initialization</string>
+    <string name="voice_skins">Voice Skins</string>
+    <string name="download_voices">Download Voices…</string>
+    <string name="voice_packages">Voice Packages</string>
+    <string name="remove_package">Are you sure you want to delete the voice package?</string>
+    <string name="install_package">Are you sure you want to download the voice package?</string>
+</resources>
