@@ -39,6 +39,7 @@ import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.AndroidXMapFragment;
 import com.here.android.mpa.mapping.MapGesture;
 import com.here.android.mpa.mapping.MapMarker;
+import com.here.android.mpa.mapping.MapRoute;
 import com.here.android.mpa.mapping.MapState;
 import com.here.android.mpa.mapping.OnMapRenderListener;
 import com.here.android.mpa.routing.CoreRouter;
@@ -59,7 +60,7 @@ import java.util.List;
  * - using a MapMarker as position indicator and how to make the movements smooth and
  * synchronized with map movements.
  */
-public class MapFragmentView {
+class MapFragmentView {
     private AndroidXMapFragment m_mapFragment;
     private Map m_map;
 
@@ -68,8 +69,9 @@ public class MapFragmentView {
     private boolean m_returningToRoadViewMode = false;
     private double m_lastZoomLevelInRoadViewMode = 0.0;
     private AppCompatActivity m_activity;
+    private MapRoute m_currentRoute;
 
-    public MapFragmentView(AppCompatActivity activity) {
+    MapFragmentView(AppCompatActivity activity) {
         m_activity = activity;
         initMapFragment();
     }
@@ -130,6 +132,9 @@ public class MapFragmentView {
                                         if (routingError == RoutingError.NONE) {
                                             Route route = list.get(0).getRoute();
 
+                                            m_currentRoute = new MapRoute(route);
+                                            m_map.addMapObject(m_currentRoute);
+
                                             // move the map to the first waypoint which is starting point of
                                             // the route
                                             m_map.setCenter(routePlan.getWaypoint(0).getNavigablePosition(),
@@ -137,8 +142,10 @@ public class MapFragmentView {
 
                                             // setting MapUpdateMode to RoadView will enable automatic map
                                             // movements and zoom level adjustments
-                                            NavigationManager.getInstance().setMapUpdateMode
-                                                    (NavigationManager.MapUpdateMode.ROADVIEW);
+                                            NavigationManager navigationManager =
+                                                    NavigationManager.getInstance();
+                                            navigationManager.setMapUpdateMode(
+                                                    NavigationManager.MapUpdateMode.ROADVIEW);
 
                                             // adjust tilt to show 3D view
                                             m_map.setTilt(80);
@@ -165,21 +172,25 @@ public class MapFragmentView {
 
                                             m_mapFragment.getPositionIndicator().setVisible(false);
 
-                                            NavigationManager.getInstance().setMap(m_map);
+                                            navigationManager.setMap(m_map);
 
                                             // listen to real position updates. This is used when RoadView is
                                             // not active.
                                             PositioningManager.getInstance().addListener(
-                                                    new WeakReference<PositioningManager.OnPositionChangedListener>(
-                                                            mapPositionHandler));
+                                                    new WeakReference<>(mapPositionHandler));
 
                                             // listen to updates from RoadView which tells you where the map
                                             // center should be situated. This is used when RoadView is active.
-                                            NavigationManager.getInstance().getRoadView().addListener(new
-                                                    WeakReference<NavigationManager.RoadView.Listener>(roadViewListener));
+                                            navigationManager.getRoadView().addListener(
+                                                    new WeakReference<>(roadViewListener));
+
+                                            // listen to navigation manager events.
+                                            navigationManager.addNavigationManagerEventListener(
+                                                    new WeakReference<>(
+                                                            navigationManagerEventListener));
 
                                             // start navigation simulation travelling at 13 meters per second
-                                            NavigationManager.getInstance().simulate(route, 13);
+                                            navigationManager.simulate(route, 13);
 
                                         } else {
                                             Toast.makeText(m_activity,
@@ -386,15 +397,24 @@ public class MapFragmentView {
             if (m_returningToRoadViewMode) {
                 NavigationManager.getInstance().setMapUpdateMode(NavigationManager.MapUpdateMode
                         .ROADVIEW);
-                NavigationManager.getInstance().getRoadView().addListener(new
-                        WeakReference<NavigationManager.RoadView.Listener>(roadViewListener));
+                NavigationManager.getInstance().getRoadView()
+                        .addListener(new WeakReference<>(roadViewListener));
                 m_returningToRoadViewMode = false;
             }
         }
-
     };
 
-    public void onDestroy() {
+    final private NavigationManager.NavigationManagerEventListener navigationManagerEventListener =
+            new NavigationManager.NavigationManagerEventListener() {
+                @Override
+                public void onRouteUpdated(Route route) {
+                    m_map.removeMapObject(m_currentRoute);
+                    m_currentRoute = new MapRoute(route);
+                    m_map.addMapObject(m_currentRoute);
+                }
+            };
+
+    void onDestroy() {
         if (m_map != null) {
             m_map.removeMapObject(m_positionIndicatorFixed);
         }
@@ -404,7 +424,7 @@ public class MapFragmentView {
         }
     }
 
-    public void onBackPressed() {
+    void onBackPressed() {
         if (NavigationManager.getInstance().getMapUpdateMode().equals(NavigationManager
                 .MapUpdateMode.NONE)) {
             resumeRoadView();
