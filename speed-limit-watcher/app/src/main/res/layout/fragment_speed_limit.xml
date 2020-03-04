@@ -14,14 +14,13 @@
         android:padding="5dp">
 
         <TextView
+            android:id="@+id/currentSpeedLimit"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:textAlignment="center"
-            android:text="@string/navigation_speed_limit_default"
             android:background="@drawable/no_limit_circle_background"
+            android:gravity="center_horizontal|center_vertical"
+            android:text="@string/navigation_speed_limit_default"
             android:textColor="@color/noLimitText"
-            android:gravity="center_vertical"
-            android:id="@+id/currentSpeedLimit"
             android:textStyle="bold" />
 
         <LinearLayout
@@ -33,11 +32,10 @@
             android:id="@+id/currentSpeedContainer">
 
             <TextView
+                android:id="@+id/currentSpeed"
                 android:layout_width="45dp"
                 android:layout_height="50dp"
-                android:textAlignment="center"
-                android:gravity="center_vertical"
-                android:id="@+id/currentSpeed"
+                android:gravity="center_horizontal|center_vertical"
                 android:text=""
                 android:textStyle="bold" />
 
