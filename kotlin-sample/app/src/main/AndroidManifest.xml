@@ -23,10 +23,12 @@
             </intent-filter>
         </activity>
 
-        <service android:exported="false" android:label="{YOUR_LABEL_NAME}" android:name="com.here.android.mpa.service.MapService">
+        <service
+            android:exported="false"
+            android:label="{YOUR_LABEL_NAME}"
+            android:name="com.here.android.mpa.service.MapService">
             <intent-filter>
-                <action android:name="com.here.android.tutorial.MapService">
-                </action>
+                <action android:name="com.here.android.mpa.service.MapService.v3"></action>
             </intent-filter>
         </service>
     </application>

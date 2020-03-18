@@ -45,7 +45,7 @@
             android:label="HereMapService"
             android:exported="false">
             <intent-filter>
-                <action android:name="{YOUR_INTENT_NAME}">
+                <action android:name="com.here.android.mpa.service.MapService.v3">
                 </action>
             </intent-filter>
         </service>

@@ -116,7 +116,7 @@ class MainActivity : FragmentActivity() {
 
     private fun initMapFragmentView() {
         val success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
-            "/sdcard/.here-maps", "com.here.android.tutorial.MapService")
+            "/sdcard/.here-maps")
 
         if (!success) {
             /**

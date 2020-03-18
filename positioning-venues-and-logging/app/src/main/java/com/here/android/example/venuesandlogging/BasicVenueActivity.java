@@ -1065,18 +1065,9 @@ public class BasicVenueActivity extends AppCompatActivity
         // Set path of disk cache
         String diskCacheRoot = this.getFilesDir().getPath()
                 + File.separator + ".isolated-here-maps";
-        // Retrieve intent name from manifest
-        String intentName = "";
-        try {
-            ApplicationInfo ai = getPackageManager().getApplicationInfo(getPackageName(),
-                    PackageManager.GET_META_DATA);
-            Bundle bundle = ai.metaData;
-            intentName = bundle.getString("INTENT_NAME");
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.e(TAG, "Failed to find intent name, NameNotFound: " + e.getMessage());
-        }
+
         boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
-                diskCacheRoot, intentName);
+                diskCacheRoot);
         if (!success) {
             Toast.makeText(mActivity, "Operation 'setIsolatedDiskCacheRootPath' was not successful",
                     Toast.LENGTH_SHORT).show();

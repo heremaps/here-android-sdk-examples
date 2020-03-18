@@ -47,7 +47,7 @@
         -->
         <service android:exported="false" android:label="BasicMapSolutionMapService" android:name="com.here.android.mpa.service.MapService">
             <intent-filter>
-                <action android:name="{YOUR_INTENT_NAME}">
+                <action android:name="com.here.android.mpa.service.MapService.v3">
                 </action>
             </intent-filter>
         </service>
