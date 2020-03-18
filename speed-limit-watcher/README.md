@@ -54,15 +54,12 @@ you should insert the credentials that you generated into the `<application>` ta
 The last snippet that we will add to the `AndroidManifest.xml` file, is the definition of `MapService`.
 
 ```xml
-    <meta-data
-        android:name="INTENT_NAME"
-        android:value="{YOUR_INTENT_NAME}" />
     <service
         android:name="com.here.android.mpa.service.MapService"
         android:label="{YOUR_LABEL_NAME}"
         android:exported="false">
         <intent-filter>
-            <action android:name="{YOUR_INTENT_NAME}"></action>
+            <action android:name="com.here.android.mpa.service.MapService.v3"></action>
         </intent-filter>
     </service>
 ```
