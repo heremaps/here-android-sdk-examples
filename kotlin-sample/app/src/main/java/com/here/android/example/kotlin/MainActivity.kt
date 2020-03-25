@@ -43,7 +43,6 @@ class MainActivity : FragmentActivity() {
 
     private val RUNTIME_PERMISSIONS = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
         Manifest.permission.INTERNET,
         Manifest.permission.ACCESS_WIFI_STATE,
         Manifest.permission.ACCESS_NETWORK_STATE)
@@ -116,7 +115,7 @@ class MainActivity : FragmentActivity() {
 
     private fun initMapFragmentView() {
         val success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
-            "/sdcard/.here-maps")
+            dataDir.absolutePath + "/.internal-here-maps")
 
         if (!success) {
             /**
