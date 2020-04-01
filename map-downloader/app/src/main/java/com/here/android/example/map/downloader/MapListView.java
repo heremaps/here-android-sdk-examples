@@ -59,22 +59,12 @@ class MapListView {
         // Set path of disk cache
         String diskCacheRoot = m_activity.getFilesDir().getPath()
                 + File.separator + ".isolated-here-maps";
-        // Retrieve intent name from manifest
-        String intentName = "";
-        try {
-            ApplicationInfo ai = m_activity.getPackageManager().getApplicationInfo(m_activity.getPackageName(), PackageManager.GET_META_DATA);
-            Bundle bundle = ai.metaData;
-            intentName = bundle.getString("INTENT_NAME");
-        } catch (PackageManager.NameNotFoundException e) {
-            Log.e(this.getClass().toString(), "Failed to find intent name, NameNotFound: " + e.getMessage());
-        }
 
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot, intentName);
+        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot);
         if (!success) {
             // Setting the isolated disk cache was not successful, please check if the path is valid and
             // ensure that it does not match the default location
             // (getExternalStorageDirectory()/.here-maps).
-            // Also, ensure the provided intent name does not match the default intent name.
         } else {
             MapEngine.getInstance().init(new ApplicationContext(m_activity), new OnEngineInitListener() {
                 @Override

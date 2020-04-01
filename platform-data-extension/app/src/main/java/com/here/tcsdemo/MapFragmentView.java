@@ -92,14 +92,12 @@ public class MapFragmentView {
         mapFragment = getMapFragment();
 
         boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
-                activity.getApplicationContext().getExternalFilesDir(null) + File.separator + ".here-maps",
-                "{YOUR_INTENT_NAME}");
+                activity.getApplicationContext().getExternalFilesDir(null) + File.separator + ".here-maps");
 
         if (!success) {
             // Setting the isolated disk cache was not successful, please check if the path is valid and
             // ensure that it does not match the default location
             // (getExternalStorageDirectory()/.here-maps).
-            // Also, ensure the provided intent name does not match the default intent name.
         } else {
             if (mapFragment != null) {
                 /*
