@@ -239,7 +239,7 @@ public class MapFragment extends FleetConnectivityFragment {
 
     private void initMapEngine() {
         boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
-                getActivity().getApplicationContext().getExternalFilesDir(null) + File.separator + ".here-maps");
+                getActivity().getApplicationContext().getExternalFilesDir(null) + File.separator + ".external-here-maps");
 
         if (!success) {
             // Setting the isolated disk cache was not successful, please check if the path is valid and

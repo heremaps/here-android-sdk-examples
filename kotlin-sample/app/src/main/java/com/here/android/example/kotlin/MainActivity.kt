@@ -115,7 +115,7 @@ class MainActivity : FragmentActivity() {
 
     private fun initMapFragmentView() {
         val success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
-            applicationContext.getExternalFilesDir(null)?.absolutePath + "/.internal-here-maps")
+            applicationContext.getExternalFilesDir(null)?.absolutePath + "/.external-here-maps")
 
         if (!success) {
             /**
