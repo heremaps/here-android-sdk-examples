@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">BasicPositioningSolution</string>
+
+    <string name="notificationChannelName">HERE SDK</string>
+    <string name="notificationChannelDescription">HERE SDK notification channel.</string>
+    <string name="errorServiceBindFailedMessage">Failure in binding foreground service. Application will be closed.</string>
+
+    <string name="notificationTitle">HERE SDK</string>
+    <string name="notificationServiceStarted">Service started.</string>
+    <string name="notificationMapEngineReady">Map engine ready.</string>
+    <string name="notificationBgPositioningStarted">Background positioning started.</string>
+
+    <string name="message">Tap button to start positioning</string>
+    <string name="toggleButtonStart">Start Updates</string>
+    <string name="toggleButtonStop">Stop Updates</string>
+</resources>
