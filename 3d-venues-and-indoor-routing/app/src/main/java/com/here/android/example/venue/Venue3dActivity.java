@@ -354,75 +354,75 @@ public class Venue3dActivity extends FragmentActivity
         String diskCacheRoot = m_activity.getFilesDir().getPath()
                 + File.separator + ".isolated-here-maps";
 
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot);
-        if (!success) {
-            // Setting the isolated disk cache was not successful, please check if the path is valid and
-            // ensure that it does not match the default location
-            // (getExternalStorageDirectory()/.here-maps).
-        } else {
-            // initialise the Map Fragment to have a map created and attached to
-            // the fragment
-            m_mapFragment.init(new OnEngineInitListener() {
-                @Override
-                public void onEngineInitializationCompleted(Error error) {
-                    if (error == Error.NONE) {
-                        // retrieve a reference of the map from the map fragment
-                        m_map = m_mapFragment.getMap();
-                        // Set the map center, zoom level, orientation and tilt
-                        m_map.setCenter(new GeoCoordinate(49.196261, -123.004773, 0.0),
-                                Map.Animation.NONE);
-                    } else {
-                        System.out.println("ERROR: Cannot initialize Map Fragment" + error.toString());
-                        new AlertDialog.Builder(m_activity).setMessage(
-                                "Error : " + error.name() + "\n\n" + error.getDetails())
-                                .setTitle(R.string.engine_init_error)
-                                .setNegativeButton(android.R.string.cancel,
-                                                   new DialogInterface.OnClickListener() {
-                                                       @Override
-                                                       public void onClick(
-                                                               DialogInterface dialog,
-                                                               int which) {
-                                                           m_activity.finish();
-                                                       }
-                                                   }).create().show();
-                    }
+        // This will use external storage to save map cache data, it is also possible to set
+        // private app's path
+        String path = new File(getExternalFilesDir(null), ".here-map-data")
+                .getAbsolutePath();
+        // This method will throw IllegalArgumentException if provided path is not writable
+        com.here.android.mpa.common.MapSettings.setDiskCacheRootPath(path);
+
+        // Initialise the Map Fragment to have a map created and attached to
+        // the fragment
+        m_mapFragment.init(new OnEngineInitListener() {
+            @Override
+            public void onEngineInitializationCompleted(Error error) {
+                if (error == Error.NONE) {
+                    // retrieve a reference of the map from the map fragment
+                    m_map = m_mapFragment.getMap();
+                    // Set the map center, zoom level, orientation and tilt
+                    m_map.setCenter(new GeoCoordinate(49.196261, -123.004773, 0.0),
+                            Map.Animation.NONE);
+                } else {
+                    System.out.println("ERROR: Cannot initialize Map Fragment" + error.toString());
+                    new AlertDialog.Builder(m_activity).setMessage(
+                            "Error : " + error.name() + "\n\n" + error.getDetails())
+                            .setTitle(R.string.engine_init_error)
+                            .setNegativeButton(android.R.string.cancel,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(
+                                                DialogInterface dialog,
+                                                int which) {
+                                            m_activity.finish();
+                                        }
+                                    }).create().show();
                 }
-            }, new VenueServiceListener() {
-                @Override
-                public void onInitializationCompleted(InitStatus result) {
-                    if (result == InitStatus.ONLINE_SUCCESS || result == InitStatus.OFFLINE_SUCCESS) {
-                        // Register the activity class as VenueMapFragment.VenueListener
-                        m_mapFragment.addListener(m_activity);
-                        // Set animations on for floor change and venue entering
-                        m_mapFragment.setFloorChangingAnimation(true);
-                        m_mapFragment.setVenueEnteringAnimation(true);
-                        // Ask notification when venue visible; this notification is
-                        // part of VenueMapFragment.VenueListener
-                        m_mapFragment.setVenuesInViewportCallback(true);
+            }
+        }, new VenueServiceListener() {
+            @Override
+            public void onInitializationCompleted(InitStatus result) {
+                if (result == InitStatus.ONLINE_SUCCESS || result == InitStatus.OFFLINE_SUCCESS) {
+                    // Register the activity class as VenueMapFragment.VenueListener
+                    m_mapFragment.addListener(m_activity);
+                    // Set animations on for floor change and venue entering
+                    m_mapFragment.setFloorChangingAnimation(true);
+                    m_mapFragment.setVenueEnteringAnimation(true);
+                    // Ask notification when venue visible; this notification is
+                    // part of VenueMapFragment.VenueListener
+                    m_mapFragment.setVenuesInViewportCallback(true);
 
-                        // Add listener for onCombinedRouteCompleted.
-                        m_mapFragment.getRoutingController().addListener(m_activity);
+                    // Add listener for onCombinedRouteCompleted.
+                    m_mapFragment.getRoutingController().addListener(m_activity);
 
-                        // Add listener for map gesture.
-                        m_mapFragment.getMapGesture().addOnGestureListener(m_activity, 0, false);
+                    // Add listener for map gesture.
+                    m_mapFragment.getMapGesture().addOnGestureListener(m_activity, 0, false);
 
-                        // Create floor change widget
-                        m_floorsController = new VenueFloorsController(m_activity, m_mapFragment,
-                                (ListView) findViewById(R.id.floorListView), R.layout.floor_item,
-                                R.id.floorName, R.id.floorGroundSep);
-                        m_initCompleted.set(true);
+                    // Create floor change widget
+                    m_floorsController = new VenueFloorsController(m_activity, m_mapFragment,
+                            (ListView) findViewById(R.id.floorListView), R.layout.floor_item,
+                            R.id.floorName, R.id.floorGroundSep);
+                    m_initCompleted.set(true);
 
-                        // Start position tracking
-                        PositioningManager positioningManager = PositioningManager.getInstance();
-                        positioningManager.start(PositioningManager.LocationMethod.GPS_NETWORK_INDOOR);
+                    // Start position tracking
+                    PositioningManager positioningManager = PositioningManager.getInstance();
+                    positioningManager.start(PositioningManager.LocationMethod.GPS_NETWORK_INDOOR);
 
-                        // Set positioning indicator visible
-                        PositionIndicator positionIndicator = m_mapFragment.getPositionIndicator();
-                        positionIndicator.setVisible(true);
-                    }
+                    // Set positioning indicator visible
+                    PositionIndicator positionIndicator = m_mapFragment.getPositionIndicator();
+                    positionIndicator.setVisible(true);
                 }
-            });
-        }
+            }
+        });
     }
 
     /**

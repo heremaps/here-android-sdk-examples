@@ -33,6 +33,7 @@ import com.here.android.mpa.common.OnEngineInitListener
 import com.here.android.mpa.common.Version
 import com.here.android.mpa.mapping.AndroidXMapFragment
 import com.here.android.mpa.mapping.Map
+import java.io.File
 
 /**
  * Main activity which launches map view and handles Android run-time requesting permission.
@@ -114,18 +115,13 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun initMapFragmentView() {
-        val success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
-            applicationContext.getExternalFilesDir(null)?.absolutePath + "/.external-here-maps")
 
-        if (!success) {
-            /**
-             * Setting the isolated disk cache was not successful, please check if the path is valid
-             * and ensure that it does not match the default location
-             * (getExternalStorageDirectory()/.here-maps).
-             * Also, ensure the provided intent name does not match the default intent name.
-             */
-            return
-        }
+        // This will use external storage to save map cache data, it is also possible to set
+        // private app's path
+        val path = File(getExternalFilesDir(null), ".here-map-data")
+                .getAbsolutePath()
+        // This method will throw IllegalArgumentException if provided path is not writable
+        com.here.android.mpa.common.MapSettings.setDiskCacheRootPath(path)
 
         val mapFragment = supportFragmentManager.findFragmentById(R.id.mapfragment) as AndroidXMapFragment?
 

@@ -85,43 +85,32 @@ public class MapFragmentView {
         /* Locate the mapFragment UI element */
         m_mapFragment = getMapFragment();
 
-        // Set path of disk cache
-        String diskCacheRoot = m_activity.getFilesDir().getPath()
-                + File.separator + ".isolated-here-maps";
-
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot);
-        if (!success) {
-            // Setting the isolated disk cache was not successful, please check if the path is valid and
-            // ensure that it does not match the default location
-            // (getExternalStorageDirectory()/.here-maps).
-        } else {
-            if (m_mapFragment != null) {
+        if (m_mapFragment != null) {
             /* Initialize the AndroidXMapFragment, results will be given via the called back. */
-                m_mapFragment.init(new OnEngineInitListener() {
-                    @Override
-                    public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
-                        if (error == Error.NONE) {
-                            m_map = m_mapFragment.getMap();
-                            m_map.setCenter(new GeoCoordinate(49.259149, -123.008555),
-                                    Map.Animation.NONE);
-                            m_map.setZoomLevel(13.2);
-                        } else {
-                            new AlertDialog.Builder(m_activity).setMessage(
-                                    "Error : " + error.name() + "\n\n" + error.getDetails())
-                                    .setTitle(R.string.engine_init_error)
-                                    .setNegativeButton(android.R.string.cancel,
-                                                       new DialogInterface.OnClickListener() {
-                                                           @Override
-                                                           public void onClick(
-                                                                   DialogInterface dialog,
-                                                                   int which) {
-                                                               m_activity.finish();
-                                                           }
-                                                       }).create().show();
-                        }
+            m_mapFragment.init(new OnEngineInitListener() {
+                @Override
+                public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
+                    if (error == Error.NONE) {
+                        m_map = m_mapFragment.getMap();
+                        m_map.setCenter(new GeoCoordinate(49.259149, -123.008555),
+                                Map.Animation.NONE);
+                        m_map.setZoomLevel(13.2);
+                    } else {
+                        new AlertDialog.Builder(m_activity).setMessage(
+                                "Error : " + error.name() + "\n\n" + error.getDetails())
+                                .setTitle(R.string.engine_init_error)
+                                .setNegativeButton(android.R.string.cancel,
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(
+                                                    DialogInterface dialog,
+                                                    int which) {
+                                                m_activity.finish();
+                                            }
+                                        }).create().show();
                     }
-                });
-            }
+                }
+            });
         }
     }
 

@@ -37,15 +37,5 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--Developers should always provide custom values for each of {YOUR_LABEL_NAME}.
-         Do not reuse HERE Mobile SDK defaults.-->
-        <service
-            android:name="com.here.android.mpa.service.MapService"
-            android:label="{YOUR_LABEL_NAME}"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.here.android.mpa.service.MapService.v3"></action>
-            </intent-filter>
-        </service>
     </application>
 </manifest>

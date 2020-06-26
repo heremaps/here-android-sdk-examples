@@ -83,51 +83,46 @@ class MapFragmentView {
         /* Locate the mapFragment UI element */
         m_mapFragment = getMapFragment();
 
-        // Set path of disk cache
-        String diskCacheRoot = m_activity.getFilesDir().getPath()
-                + File.separator + ".isolated-here-maps";
+        // This will use external storage to save map cache data, it is also possible to set
+        // private app's path
+        String path = new File(m_activity.getExternalFilesDir(null), ".here-map-data")
+                .getAbsolutePath();
+        // This method will throw IllegalArgumentException if provided path is not writable
+        com.here.android.mpa.common.MapSettings.setDiskCacheRootPath(path);
+        if (m_mapFragment != null) {
+            /* Initialize the AndroidXMapFragment, results will be given via the called back. */
+            m_mapFragment.init(new OnEngineInitListener() {
+                @Override
+                public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
 
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot);
-        if (!success) {
-            // Setting the isolated disk cache was not successful, please check if the path is valid and
-            // ensure that it does not match the default location
-            // (getExternalStorageDirectory()/.here-maps).
-        } else {
-            if (m_mapFragment != null) {
-                /* Initialize the AndroidXMapFragment, results will be given via the called back. */
-                m_mapFragment.init(new OnEngineInitListener() {
-                    @Override
-                    public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
-
-                        if (error == Error.NONE) {
-                            m_map = m_mapFragment.getMap();
-                            m_map.setCenter(new GeoCoordinate(49.259149, -123.008555),
-                                            Map.Animation.NONE);
-                            //Put this call in Map.onTransformListener if the animation(Linear/Bow)
-                            //is used in setCenter()
-                            m_map.setZoomLevel(13.2);
-                            /*
-                             * Get the NavigationManager instance.It is responsible for providing voice
-                             * and visual instructions while driving and walking
-                             */
-                            m_navigationManager = NavigationManager.getInstance();
-                        } else {
-                            new AlertDialog.Builder(m_activity).setMessage(
-                                    "Error : " + error.name() + "\n\n" + error.getDetails())
-                                    .setTitle(R.string.engine_init_error)
-                                    .setNegativeButton(android.R.string.cancel,
-                                                       new DialogInterface.OnClickListener() {
-                                                           @Override
-                                                           public void onClick(
-                                                                   DialogInterface dialog,
-                                                                   int which) {
-                                                               m_activity.finish();
-                                                           }
-                                                       }).create().show();
-                        }
+                    if (error == Error.NONE) {
+                        m_map = m_mapFragment.getMap();
+                        m_map.setCenter(new GeoCoordinate(49.259149, -123.008555),
+                                Map.Animation.NONE);
+                        //Put this call in Map.onTransformListener if the animation(Linear/Bow)
+                        //is used in setCenter()
+                        m_map.setZoomLevel(13.2);
+                        /*
+                         * Get the NavigationManager instance.It is responsible for providing voice
+                         * and visual instructions while driving and walking
+                         */
+                        m_navigationManager = NavigationManager.getInstance();
+                    } else {
+                        new AlertDialog.Builder(m_activity).setMessage(
+                                "Error : " + error.name() + "\n\n" + error.getDetails())
+                                .setTitle(R.string.engine_init_error)
+                                .setNegativeButton(android.R.string.cancel,
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(
+                                                    DialogInterface dialog,
+                                                    int which) {
+                                                m_activity.finish();
+                                            }
+                                        }).create().show();
                     }
-                });
-            }
+                }
+            });
         }
     }
 

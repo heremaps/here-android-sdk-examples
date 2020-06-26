@@ -238,58 +238,56 @@ public class MapFragment extends FleetConnectivityFragment {
     }
 
     private void initMapEngine() {
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
-                getActivity().getApplicationContext().getExternalFilesDir(null) + File.separator + ".external-here-maps");
+        // This will use external storage to save map cache data, it is also possible to set
+        // private app's path
+        String path = new File(getActivity().getExternalFilesDir(null), ".here-map-data")
+                .getAbsolutePath();
+        // This method will throw IllegalArgumentException if provided path is not writable
+        com.here.android.mpa.common.MapSettings.setDiskCacheRootPath(path);
 
-        if (!success) {
-            // Setting the isolated disk cache was not successful, please check if the path is valid and
-            // ensure that it does not match the default location
-            // (getExternalStorageDirectory()/.here-maps).
-        } else {
             // Initializing the MapEngine.
-            MapEngine.getInstance().init(new ApplicationContext(getActivity()), new OnEngineInitListener() {
-                @Override
-                public void onEngineInitializationCompleted(
-                        Error error) {
-                    if (error == Error.NONE) {
-                        mMap = new Map();
-                        mMapView.setMap(mMap);
-                        mMapView.getMapGesture().addOnGestureListener(mOnGestureListener, 0, false);
-                        mMap.setCenter(new GeoCoordinate(52.531027, 13.3827493, 0.0), Map.Animation.NONE);
-                        mMap.setZoomLevel((mMap.getMaxZoomLevel() + mMap.getMinZoomLevel()) / 2);
-                        // Switching to Truck Day map scheme.
-                        mMap.setMapScheme(Map.Scheme.TRUCK_DAY);
-                        // Enabling truck restrictions.
-                        mMap.setFleetFeaturesVisible(EnumSet.allOf(Map.FleetFeature.class));
-                        // Enabling traffic info.
-                        mMap.setTrafficInfoVisible(true);
-                        onEngineInitialized();
-                        // Starting JobsManager.
-                        if (!getBridge().getJobsManager().start(getActivity())) {
-                            Log.e(TAG, "Could not start the service!");
-                            Toast.makeText(getActivity(), R.string.service_start_failure, Toast.LENGTH_LONG).show();
-                        }
-                    } else {
-                        Log.e(TAG, "ERROR: Cannot initialize Map Fragment: " + error);
-                        Log.e(TAG, error.getDetails());
-                        Log.e(TAG, error.getStackTrace());
-
-                        new AlertDialog.Builder(getActivity()).setMessage(
-                                "Error : " + error.name() + "\n\n" + error.getDetails())
-                                .setTitle(R.string.engine_init_error)
-                                .setNegativeButton(android.R.string.cancel,
-                                                   new DialogInterface.OnClickListener() {
-                                                       @Override
-                                                       public void onClick(
-                                                               DialogInterface dialog,
-                                                               int which) {
-                                                           getActivity().finish();
-                                                       }
-                                                   }).create().show();
+        MapEngine.getInstance().init(new ApplicationContext(getActivity()), new OnEngineInitListener() {
+            @Override
+            public void onEngineInitializationCompleted(
+                    Error error) {
+                if (error == Error.NONE) {
+                    mMap = new Map();
+                    mMapView.setMap(mMap);
+                    mMapView.getMapGesture().addOnGestureListener(mOnGestureListener, 0, false);
+                    mMap.setCenter(new GeoCoordinate(52.531027, 13.3827493, 0.0), Map.Animation.NONE);
+                    mMap.setZoomLevel((mMap.getMaxZoomLevel() + mMap.getMinZoomLevel()) / 2);
+                    // Switching to Truck Day map scheme.
+                    mMap.setMapScheme(Map.Scheme.TRUCK_DAY);
+                    // Enabling truck restrictions.
+                    mMap.setFleetFeaturesVisible(EnumSet.allOf(Map.FleetFeature.class));
+                    // Enabling traffic info.
+                    mMap.setTrafficInfoVisible(true);
+                    onEngineInitialized();
+                    // Starting JobsManager.
+                    if (!getBridge().getJobsManager().start(getActivity())) {
+                        Log.e(TAG, "Could not start the service!");
+                        Toast.makeText(getActivity(), R.string.service_start_failure, Toast.LENGTH_LONG).show();
                     }
+                } else {
+                    Log.e(TAG, "ERROR: Cannot initialize Map Fragment: " + error);
+                    Log.e(TAG, error.getDetails());
+                    Log.e(TAG, error.getStackTrace());
+
+                    new AlertDialog.Builder(getActivity()).setMessage(
+                            "Error : " + error.name() + "\n\n" + error.getDetails())
+                            .setTitle(R.string.engine_init_error)
+                            .setNegativeButton(android.R.string.cancel,
+                                               new DialogInterface.OnClickListener() {
+                                                   @Override
+                                                   public void onClick(
+                                                           DialogInterface dialog,
+                                                           int which) {
+                                                       getActivity().finish();
+                                                   }
+                                               }).create().show();
                 }
-            });
-        }
+            }
+        });
     }
 
     /**

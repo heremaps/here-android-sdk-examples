@@ -56,43 +56,39 @@ class MapListView {
     }
 
     private void initMapEngine() {
-        // Set path of disk cache
-        String diskCacheRoot = m_activity.getFilesDir().getPath()
-                + File.separator + ".isolated-here-maps";
+        // This will use external storage to save map cache data, it is also possible to set
+        // private app's path
+        String path = new File(m_activity.getExternalFilesDir(null), ".here-map-data")
+                .getAbsolutePath();
+        // This method will throw IllegalArgumentException if provided path is not writable
+        com.here.android.mpa.common.MapSettings.setDiskCacheRootPath(path);
 
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot);
-        if (!success) {
-            // Setting the isolated disk cache was not successful, please check if the path is valid and
-            // ensure that it does not match the default location
-            // (getExternalStorageDirectory()/.here-maps).
-        } else {
-            MapEngine.getInstance().init(new ApplicationContext(m_activity), new OnEngineInitListener() {
-                @Override
-                public void onEngineInitializationCompleted(Error error) {
-                    if (error == Error.NONE) {
+        MapEngine.getInstance().init(new ApplicationContext(m_activity), new OnEngineInitListener() {
+            @Override
+            public void onEngineInitializationCompleted(Error error) {
+                if (error == Error.NONE) {
                     /*
                      * Similar to other HERE Android SDK objects, the MapLoader can only be
                      * instantiated after the MapEngine has been initialized successfully.
                      */
-                        getMapPackages();
-                    } else {
-                        Log.e(TAG, "Failed to initialize MapEngine: " + error);
-                        new AlertDialog.Builder(m_activity).setMessage(
-                                "Error : " + error.name() + "\n\n" + error.getDetails())
-                                .setTitle(R.string.engine_init_error)
-                                .setNegativeButton(android.R.string.cancel,
-                                                   new DialogInterface.OnClickListener() {
-                                                       @Override
-                                                       public void onClick(
-                                                               DialogInterface dialog,
-                                                               int which) {
-                                                           m_activity.finish();
-                                                       }
-                                                   }).create().show();
-                    }
+                    getMapPackages();
+                } else {
+                    Log.e(TAG, "Failed to initialize MapEngine: " + error);
+                    new AlertDialog.Builder(m_activity).setMessage(
+                            "Error : " + error.name() + "\n\n" + error.getDetails())
+                            .setTitle(R.string.engine_init_error)
+                            .setNegativeButton(android.R.string.cancel,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(
+                                                DialogInterface dialog,
+                                                int which) {
+                                            m_activity.finish();
+                                        }
+                                    }).create().show();
                 }
-            });
-        }
+            }
+        });
     }
 
     private void initUIElements() {

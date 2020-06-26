@@ -177,18 +177,6 @@ public class MainActivity extends AppCompatActivity {
      * Also in callback check if initialization completed successfully
      */
     private void initMap() {
-        // Set path of disk cache
-        String diskCacheRoot = this.getFilesDir().getPath()
-                + File.separator + ".isolated-here-maps";
-
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot);
-        if (!success) {
-            // Setting the isolated disk cache was not successful, please check if the path is valid and
-            // ensure that it does not match the default location
-            // (getExternalStorageDirectory()/.here-maps).
-            return;
-        }
-
         MapEngine.getInstance().init(new ApplicationContext(getApplicationContext()),
                 new OnEngineInitListener() {
                     @Override
