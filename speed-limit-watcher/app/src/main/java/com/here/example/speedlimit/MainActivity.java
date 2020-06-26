@@ -50,18 +50,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initSDK() {
-        // Set path of disk cache
-        String diskCacheRoot = this.getFilesDir().getPath()
-                + File.separator + ".isolated-here-maps";
-
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
-                diskCacheRoot);
-        if (!success) {
-            Toast.makeText(this, "Operation 'setIsolatedDiskCacheRootPath' was not successful",
-                    Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         ApplicationContext appContext = new ApplicationContext(this);
         MapEngine.getInstance().init(appContext, new OnEngineInitListener() {
             @Override

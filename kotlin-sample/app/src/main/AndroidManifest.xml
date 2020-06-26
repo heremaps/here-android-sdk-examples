@@ -22,15 +22,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <service
-            android:exported="false"
-            android:label="{YOUR_LABEL_NAME}"
-            android:name="com.here.android.mpa.service.MapService">
-            <intent-filter>
-                <action android:name="com.here.android.mpa.service.MapService.v3"></action>
-            </intent-filter>
-        </service>
     </application>
 
 </manifest>

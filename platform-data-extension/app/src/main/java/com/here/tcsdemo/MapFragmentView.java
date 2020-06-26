@@ -91,65 +91,56 @@ public class MapFragmentView {
          */
         mapFragment = getMapFragment();
 
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
-                activity.getApplicationContext().getExternalFilesDir(null) + File.separator + ".external-here-maps");
+        if (mapFragment != null) {
+            /*
+             * Initialize the MapFragment, results will be given via the called back.
+             */
+            mapFragment.init(new OnEngineInitListener() {
+                @Override
+                public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
+                    if (error == Error.NONE) {
+                        /*
+                         * If no error returned from map fragment initialization, the map will be
+                         * rendered on screen at this moment.Further actions on map can be provided
+                         * by calling Map APIs.
+                         */
+                        map = mapFragment.getMap();
+                        /*
+                         * Set the map center to Berlin Germany.
+                         */
+                        map.setCenter(new GeoCoordinate(52.517031, 13.389015),
+                                Map.Animation.NONE);
 
-        if (!success) {
-            // Setting the isolated disk cache was not successful, please check if the path is valid and
-            // ensure that it does not match the default location
-            // (getExternalStorageDirectory()/.here-maps).
-        } else {
-            if (mapFragment != null) {
-                /*
-                 * Initialize the MapFragment, results will be given via the called back.
-                 */
-                mapFragment.init(new OnEngineInitListener() {
-                    @Override
-                    public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
-                        if (error == Error.NONE) {
-                            /*
-                             * If no error returned from map fragment initialization, the map will be
-                             * rendered on screen at this moment.Further actions on map can be provided
-                             * by calling Map APIs.
-                             */
-                            map = mapFragment.getMap();
-                            /*
-                             * Set the map center to Berlin Germany.
-                             */
-                            map.setCenter(new GeoCoordinate(52.517031, 13.389015),
-                                    Map.Animation.NONE);
+                        /*
+                         * Set the zoom level.
+                         */
+                        map.setZoomLevel(3.95);
 
-                            /*
-                             * Set the zoom level.
-                             */
-                            map.setZoomLevel(3.95);
+                        initCapitalsButton();
+                        initRoadSlopesButton();
+                    } else {
+                        /*
+                         * Process errors during initialization.
+                         */
+                        Log.e(TAG, "Error on map fragment initialization: " + error);
+                        Log.e(TAG, error.getDetails());
+                        Log.e(TAG, error.getStackTrace());
 
-                            initCapitalsButton();
-                            initRoadSlopesButton();
-                        } else {
-                            /*
-                             * Process errors during initialization.
-                             */
-                            Log.e(TAG, "Error on map fragment initialization: " + error);
-                            Log.e(TAG, error.getDetails());
-                            Log.e(TAG, error.getStackTrace());
-
-                            new AlertDialog.Builder(activity).setMessage(
-                                    "Error : " + error.name() + "\n\n" + error.getDetails())
-                                    .setTitle(R.string.engine_init_error)
-                                    .setNegativeButton(android.R.string.cancel,
-                                                       new DialogInterface.OnClickListener() {
-                                                           @Override
-                                                           public void onClick(
-                                                                   DialogInterface dialog,
-                                                                   int which) {
-                                                               activity.finish();
-                                                           }
-                                                       }).create().show();
-                        }
+                        new AlertDialog.Builder(activity).setMessage(
+                                "Error : " + error.name() + "\n\n" + error.getDetails())
+                                .setTitle(R.string.engine_init_error)
+                                .setNegativeButton(android.R.string.cancel,
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(
+                                                    DialogInterface dialog,
+                                                    int which) {
+                                                activity.finish();
+                                            }
+                                        }).create().show();
                     }
-                });
-            }
+                }
+            });
         }
     }
 

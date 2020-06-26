@@ -64,150 +64,146 @@ public class MapFragmentView {
         /* Locate the mapFragment UI element */
         m_mapFragment = getMapFragment();
 
-        // Set path of disk cache
-        String diskCacheRoot = m_activity.getFilesDir().getPath()
-                + File.separator + ".isolated-here-maps";
+        // This will use external storage to save map cache data, it is also possible to set
+        // private app's path
+        String path = new File(m_activity.getExternalFilesDir(null), ".here-map-data")
+                .getAbsolutePath();
+        // This method will throw IllegalArgumentException if provided path is not writable
+        com.here.android.mpa.common.MapSettings.setDiskCacheRootPath(path);
 
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot);
-        if (!success) {
-            // Setting the isolated disk cache was not successful, please check if the path is valid and
-            // ensure that it does not match the default location
-            // (getExternalStorageDirectory()/.here-maps).
-        } else {
-            if (m_mapFragment != null) {
-            /* Initialize the AndroidXMapFragment, results will be given via the called back. */
-                m_mapFragment.init(new OnEngineInitListener() {
-                    @Override
-                    public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
+        if (m_mapFragment != null) {
+        /* Initialize the AndroidXMapFragment, results will be given via the called back. */
+            m_mapFragment.init(new OnEngineInitListener() {
+                @Override
+                public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
 
-                        if (error == Error.NONE) {
-                        /*
-                         * If no error returned from map fragment initialization, the map will be
-                         * rendered on screen at this moment.Further actions on map can be provided
-                         * by calling Map APIs.
-                         */
-                            m_map = m_mapFragment.getMap();
-                        /* create an image to mark coordinate when tap event happens */
-                            m_marker_image = new Image();
+                    if (error == Error.NONE) {
+                    /*
+                     * If no error returned from map fragment initialization, the map will be
+                     * rendered on screen at this moment.Further actions on map can be provided
+                     * by calling Map APIs.
+                     */
+                        m_map = m_mapFragment.getMap();
+                    /* create an image to mark coordinate when tap event happens */
+                        m_marker_image = new Image();
 
-                            try {
-                                m_marker_image.setImageResource(R.drawable.marker);
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
-
-                            m_mapFragment.getMapGesture()
-                                    .addOnGestureListener(new MapGesture.OnGestureListener() {
-                                        @Override
-                                        public void onPanStart() {
-                                            showMsg("onPanStart");
-                                        }
-
-                                        @Override
-                                        public void onPanEnd() {
-                                        /* show toast message for onPanEnd gesture callback */
-                                            showMsg("onPanEnd");
-                                        }
-
-                                        @Override
-                                        public void onMultiFingerManipulationStart() {
-
-                                        }
-
-                                        @Override
-                                        public void onMultiFingerManipulationEnd() {
-
-                                        }
-
-                                        @Override
-                                        public boolean onMapObjectsSelected(List<ViewObject> list) {
-                                            return false;
-                                        }
-
-                                        @Override
-                                        public boolean onTapEvent(PointF pointF) {
-                                        /* show toast message for onPanEnd gesture callback */
-                                            showMsg("onTapEvent");
-                                        /*
-                                         * add map screen marker at coordinates of gesture. if map
-                                         * screen marker already exists, change to new coordinate
-                                         */
-                                            if (m_tap_marker == null) {
-                                                m_tap_marker = new MapScreenMarker(pointF,
-                                                        m_marker_image);
-                                                m_map.addMapObject(m_tap_marker);
-
-                                            } else {
-                                                m_tap_marker.setScreenCoordinate(pointF);
-                                            }
-
-                                            return false;
-                                        }
-
-                                        @Override
-                                        public boolean onDoubleTapEvent(PointF pointF) {
-                                            return false;
-                                        }
-
-                                        @Override
-                                        public void onPinchLocked() {
-
-                                        }
-
-                                        @Override
-                                        public boolean onPinchZoomEvent(float v, PointF pointF) {
-                                            return false;
-                                        }
-
-                                        @Override
-                                        public void onRotateLocked() {
-
-                                        }
-
-                                        @Override
-                                        public boolean onRotateEvent(float v) {
-                                        /* show toast message for onRotateEvent gesture callback */
-                                            showMsg("onRotateEvent");
-                                            return false;
-                                        }
-
-                                        @Override
-                                        public boolean onTiltEvent(float v) {
-                                            return false;
-                                        }
-
-                                        @Override
-                                        public boolean onLongPressEvent(PointF pointF) {
-                                            return false;
-                                        }
-
-                                        @Override
-                                        public void onLongPressRelease() {
-
-                                        }
-
-                                        @Override
-                                        public boolean onTwoFingerTapEvent(PointF pointF) {
-                                            return false;
-                                        }
-                                    }, 0, false);
-                        } else {
-                            new AlertDialog.Builder(m_activity).setMessage(
-                                    "Error : " + error.name() + "\n\n" + error.getDetails())
-                                    .setTitle(R.string.engine_init_error)
-                                    .setNegativeButton(android.R.string.cancel,
-                                                       new DialogInterface.OnClickListener() {
-                                                           @Override
-                                                           public void onClick(
-                                                                   DialogInterface dialog,
-                                                                   int which) {
-                                                               m_activity.finish();
-                                                           }
-                                                       }).create().show();
+                        try {
+                            m_marker_image.setImageResource(R.drawable.marker);
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
+
+                        m_mapFragment.getMapGesture()
+                                .addOnGestureListener(new MapGesture.OnGestureListener() {
+                                    @Override
+                                    public void onPanStart() {
+                                        showMsg("onPanStart");
+                                    }
+
+                                    @Override
+                                    public void onPanEnd() {
+                                    /* show toast message for onPanEnd gesture callback */
+                                        showMsg("onPanEnd");
+                                    }
+
+                                    @Override
+                                    public void onMultiFingerManipulationStart() {
+
+                                    }
+
+                                    @Override
+                                    public void onMultiFingerManipulationEnd() {
+
+                                    }
+
+                                    @Override
+                                    public boolean onMapObjectsSelected(List<ViewObject> list) {
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public boolean onTapEvent(PointF pointF) {
+                                    /* show toast message for onPanEnd gesture callback */
+                                        showMsg("onTapEvent");
+                                    /*
+                                     * add map screen marker at coordinates of gesture. if map
+                                     * screen marker already exists, change to new coordinate
+                                     */
+                                        if (m_tap_marker == null) {
+                                            m_tap_marker = new MapScreenMarker(pointF,
+                                                    m_marker_image);
+                                            m_map.addMapObject(m_tap_marker);
+
+                                        } else {
+                                            m_tap_marker.setScreenCoordinate(pointF);
+                                        }
+
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public boolean onDoubleTapEvent(PointF pointF) {
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public void onPinchLocked() {
+
+                                    }
+
+                                    @Override
+                                    public boolean onPinchZoomEvent(float v, PointF pointF) {
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public void onRotateLocked() {
+
+                                    }
+
+                                    @Override
+                                    public boolean onRotateEvent(float v) {
+                                    /* show toast message for onRotateEvent gesture callback */
+                                        showMsg("onRotateEvent");
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public boolean onTiltEvent(float v) {
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public boolean onLongPressEvent(PointF pointF) {
+                                        return false;
+                                    }
+
+                                    @Override
+                                    public void onLongPressRelease() {
+
+                                    }
+
+                                    @Override
+                                    public boolean onTwoFingerTapEvent(PointF pointF) {
+                                        return false;
+                                    }
+                                }, 0, false);
+                    } else {
+                        new AlertDialog.Builder(m_activity).setMessage(
+                                "Error : " + error.name() + "\n\n" + error.getDetails())
+                                .setTitle(R.string.engine_init_error)
+                                .setNegativeButton(android.R.string.cancel,
+                                                   new DialogInterface.OnClickListener() {
+                                                       @Override
+                                                       public void onClick(
+                                                               DialogInterface dialog,
+                                                               int which) {
+                                                           m_activity.finish();
+                                                       }
+                                                   }).create().show();
                     }
-                });
-            }
+                }
+            });
         }
     }
 

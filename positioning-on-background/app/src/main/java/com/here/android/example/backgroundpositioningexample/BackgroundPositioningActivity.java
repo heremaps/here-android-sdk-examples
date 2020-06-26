@@ -222,10 +222,6 @@ public class BackgroundPositioningActivity extends AppCompatActivity implements 
             }
         });
         updateButtons();
-        // Set path of disk cache
-        String diskCacheRoot = this.getFilesDir().getPath()
-                + File.separator + ".isolated-here-maps";
-        com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot);
         startForegroundService();
     }
 

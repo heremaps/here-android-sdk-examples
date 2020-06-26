@@ -53,55 +53,49 @@ public class MapFragmentView {
     private void initMapFragment() {
         /* Locate the mapFragment UI element */
         m_mapFragment = getMapFragment();
-
-        // Set path of disk cache
-        String diskCacheRoot = m_activity.getFilesDir().getPath()
-                + File.separator + ".isolated-here-maps";
-
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot);
-        if (!success) {
-            // Setting the isolated disk cache was not successful, please check if the path is valid and
-            // ensure that it does not match the default location
-            // (getExternalStorageDirectory()/.here-maps).
-        } else {
-            if (m_mapFragment != null) {
+        // This will use external storage to save map cache data, it is also possible to set
+        // private app's path
+        String path = new File(m_activity.getExternalFilesDir(null), ".here-map-data")
+                .getAbsolutePath();
+        // This method will throw IllegalArgumentException if provided path is not writable
+        com.here.android.mpa.common.MapSettings.setDiskCacheRootPath(path);
+        if (m_mapFragment != null) {
             /* Initialize the AndroidXMapFragment, results will be given via the called back. */
-                m_mapFragment.init(new OnEngineInitListener() {
-                    @Override
-                    public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
+            m_mapFragment.init(new OnEngineInitListener() {
+                @Override
+                public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
 
-                        if (error == Error.NONE) {
+                    if (error == Error.NONE) {
                         /*
                          * If no error returned from map fragment initialization, the map will be
                          * rendered on screen at this moment.Further actions on map can be provided
                          * by calling Map APIs.
                          */
-                            m_map = m_mapFragment.getMap();
+                        m_map = m_mapFragment.getMap();
 
-                            /*
-                             * Map center can be set to a desired location at this point.
-                             * It also can be set to the current location ,which needs to be delivered by the PositioningManager.
-                             * Please refer to the user guide for how to get the real-time location.
-                             */
+                        /*
+                         * Map center can be set to a desired location at this point.
+                         * It also can be set to the current location ,which needs to be delivered by the PositioningManager.
+                         * Please refer to the user guide for how to get the real-time location.
+                         */
 
-                            m_map.setCenter(new GeoCoordinate(49.258576, -123.008268), Map.Animation.NONE);
-                        } else {
-                            new AlertDialog.Builder(m_activity).setMessage(
-                                    "Error : " + error.name() + "\n\n" + error.getDetails())
-                                    .setTitle(R.string.engine_init_error)
-                                    .setNegativeButton(android.R.string.cancel,
-                                                       new DialogInterface.OnClickListener() {
-                                                           @Override
-                                                           public void onClick(
-                                                                   DialogInterface dialog,
-                                                                   int which) {
-                                                               m_activity.finish();
-                                                           }
-                                                       }).create().show();
-                        }
+                        m_map.setCenter(new GeoCoordinate(49.258576, -123.008268), Map.Animation.NONE);
+                    } else {
+                        new AlertDialog.Builder(m_activity).setMessage(
+                                "Error : " + error.name() + "\n\n" + error.getDetails())
+                                .setTitle(R.string.engine_init_error)
+                                .setNegativeButton(android.R.string.cancel,
+                                        new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(
+                                                    DialogInterface dialog,
+                                                    int which) {
+                                                m_activity.finish();
+                                            }
+                                        }).create().show();
                     }
-                });
-            }
+                }
+            });
         }
     }
 }

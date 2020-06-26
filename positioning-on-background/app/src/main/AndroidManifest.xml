@@ -44,19 +44,6 @@
         <meta-data
             android:name="com.here.android.maps.license.key"
             android:value="{YOUR_LICENSE_KEY}" />
-
-        <!--
-            Developers should always provide custom values for each of {YOUR_LABEL_NAME}.
-            Do not reuse HERE Mobile SDK defaults.
-        -->
-        <service
-            android:name="com.here.android.mpa.service.MapService"
-            android:label="{YOUR_LABEL_NAME}"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.here.android.mpa.service.MapService.v3"></action>
-            </intent-filter>
-        </service>
         <!--
             Embed the HERE Positioning Service.
             For more information, see the HERE Mobile SDK Developer's Guide

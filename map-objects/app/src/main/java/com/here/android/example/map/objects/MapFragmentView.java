@@ -95,65 +95,61 @@ public class MapFragmentView {
         /* Locate the mapFragment UI element */
         m_mapFragment = getMapFragment();
 
-        // Set path of disk cache
-        String diskCacheRoot = m_activity.getFilesDir().getPath()
-                + File.separator + ".isolated-here-maps";
+        // This will use external storage to save map cache data, it is also possible to set
+        // private app's path
+        String path = new File(m_activity.getExternalFilesDir(null), ".here-map-data")
+                .getAbsolutePath();
+        // This method will throw IllegalArgumentException if provided path is not writable
+        com.here.android.mpa.common.MapSettings.setDiskCacheRootPath(path);
 
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot);
-        if (!success) {
-            // Setting the isolated disk cache was not successful, please check if the path is valid and
-            // ensure that it does not match the default location
-            // (getExternalStorageDirectory()/.here-maps).
-        } else {
-            if (m_mapFragment != null) {
-            /* Initialize the AndroidXMapFragment, results will be given via the called back. */
-                m_mapFragment.init(new OnEngineInitListener() {
-                    @Override
-                    public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
+        if (m_mapFragment != null) {
+        /* Initialize the AndroidXMapFragment, results will be given via the called back. */
+            m_mapFragment.init(new OnEngineInitListener() {
+                @Override
+                public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
 
-                        if (error == Error.NONE) {
-                        /*
-                         * If no error returned from map fragment initialization, the map will be
-                         * rendered on screen at this moment.Further actions on map can be provided
-                         * by calling Map APIs.
-                         */
-                            m_map = m_mapFragment.getMap();
+                    if (error == Error.NONE) {
+                    /*
+                     * If no error returned from map fragment initialization, the map will be
+                     * rendered on screen at this moment.Further actions on map can be provided
+                     * by calling Map APIs.
+                     */
+                        m_map = m_mapFragment.getMap();
 
-                        /*
-                         * Set the map center to the 4350 Still Creek Dr Burnaby BC (no animation).
-                         */
-                            m_map.setCenter(new GeoCoordinate(49.259149, -123.008555, 0.0),
-                                    Map.Animation.NONE);
+                    /*
+                     * Set the map center to the 4350 Still Creek Dr Burnaby BC (no animation).
+                     */
+                        m_map.setCenter(new GeoCoordinate(49.259149, -123.008555, 0.0),
+                                Map.Animation.NONE);
 
-                        /* Set the zoom level to the average between min and max zoom level. */
-                            m_map.setZoomLevel(14);
+                    /* Set the zoom level to the average between min and max zoom level. */
+                        m_map.setZoomLevel(14);
 
-                            m_activity.supportInvalidateOptionsMenu();
+                        m_activity.supportInvalidateOptionsMenu();
 
-                         /*
-                          * Set up a handler for handling MapMarker drag events.
-                          */
-                            m_mapFragment.setMapMarkerDragListener(new OnDragListenerHandler());
+                     /*
+                      * Set up a handler for handling MapMarker drag events.
+                      */
+                        m_mapFragment.setMapMarkerDragListener(new OnDragListenerHandler());
 
-                        } else {
-                            Log.e(this.getClass().toString(), "onEngineInitializationCompleted: " +
-                                    "ERROR=" + error.getDetails(), error.getThrowable());
-                            new AlertDialog.Builder(m_activity).setMessage(
-                                    "Error : " + error.name() + "\n\n" + error.getDetails())
-                                    .setTitle(R.string.engine_init_error)
-                                    .setNegativeButton(android.R.string.cancel,
-                                                       new DialogInterface.OnClickListener() {
-                                                           @Override
-                                                           public void onClick(
-                                                                   DialogInterface dialog,
-                                                                   int which) {
-                                                               m_activity.finish();
-                                                           }
-                                                       }).create().show();
-                        }
+                    } else {
+                        Log.e(this.getClass().toString(), "onEngineInitializationCompleted: " +
+                                "ERROR=" + error.getDetails(), error.getThrowable());
+                        new AlertDialog.Builder(m_activity).setMessage(
+                                "Error : " + error.name() + "\n\n" + error.getDetails())
+                                .setTitle(R.string.engine_init_error)
+                                .setNegativeButton(android.R.string.cancel,
+                                                   new DialogInterface.OnClickListener() {
+                                                       @Override
+                                                       public void onClick(
+                                                               DialogInterface dialog,
+                                                               int which) {
+                                                           m_activity.finish();
+                                                       }
+                                                   }).create().show();
                     }
-                });
-            }
+                }
+            });
         }
     }
 
