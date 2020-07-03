@@ -57,44 +57,40 @@ public class MainView {
     }
 
     private void initMapEngine() {
-        // Set path of disk cache
-        String diskCacheRoot = m_activity.getFilesDir().getPath()
-                + File.separator + ".isolated-here-maps";
+        // This will use external storage to save map cache data, it is also possible to set
+        // private app's path
+        String path = new File(m_activity.getExternalFilesDir(null), ".here-map-data")
+                .getAbsolutePath();
+        // This method will throw IllegalArgumentException if provided path is not writable
+        com.here.android.mpa.common.MapSettings.setDiskCacheRootPath(path);
 
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(diskCacheRoot);
-        if (!success) {
-            // Setting the isolated disk cache was not successful, please check if the path is valid and
-            // ensure that it does not match the default location
-            // (getExternalStorageDirectory()/.here-maps).
-        } else {
-            /*
-             * Even though we don't display a map view in this application, in order to access any
-             * services that HERE Android SDK provides, the MapEngine must be initialized as the
-             * prerequisite.
-             */
-            MapEngine.getInstance().init(new ApplicationContext(m_activity), new OnEngineInitListener() {
-                @Override
-                public void onEngineInitializationCompleted(Error error) {
-                    if (error != Error.NONE) {
-                        new AlertDialog.Builder(m_activity).setMessage(
-                                "Error : " + error.name() + "\n\n" + error.getDetails())
-                                .setTitle(R.string.engine_init_error)
-                                .setNegativeButton(android.R.string.cancel,
-                                        new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(
-                                                    DialogInterface dialog,
-                                                    int which) {
-                                                m_activity.finish();
-                                            }
-                                        }).create().show();
-                    } else {
-                        Toast.makeText(m_activity, "Map Engine initialized without error",
-                                Toast.LENGTH_SHORT).show();
-                    }
+        /*
+         * Even though we don't display a map view in this application, in order to access any
+         * services that HERE Android SDK provides, the MapEngine must be initialized as the
+         * prerequisite.
+         */
+        MapEngine.getInstance().init(new ApplicationContext(m_activity), new OnEngineInitListener() {
+            @Override
+            public void onEngineInitializationCompleted(Error error) {
+                if (error != Error.NONE) {
+                    new AlertDialog.Builder(m_activity).setMessage(
+                            "Error : " + error.name() + "\n\n" + error.getDetails())
+                            .setTitle(R.string.engine_init_error)
+                            .setNegativeButton(android.R.string.cancel,
+                                    new DialogInterface.OnClickListener() {
+                                        @Override
+                                        public void onClick(
+                                                DialogInterface dialog,
+                                                int which) {
+                                            m_activity.finish();
+                                        }
+                                    }).create().show();
+                } else {
+                    Toast.makeText(m_activity, "Map Engine initialized without error",
+                            Toast.LENGTH_SHORT).show();
                 }
-            });
-        }
+            }
+        });
     }
 
     private void initUIElements() {

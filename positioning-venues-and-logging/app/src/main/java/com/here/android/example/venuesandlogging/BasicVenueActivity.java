@@ -1062,18 +1062,6 @@ public class BasicVenueActivity extends AppCompatActivity
         mVenueMapFragment = getMapFragment();
         mLocationInfo = (TextView) findViewById(R.id.textViewLocationInfo);
 
-        // Set path of disk cache
-        String diskCacheRoot = this.getFilesDir().getPath()
-                + File.separator + ".isolated-here-maps";
-
-        boolean success = com.here.android.mpa.common.MapSettings.setIsolatedDiskCacheRootPath(
-                diskCacheRoot);
-        if (!success) {
-            Toast.makeText(mActivity, "Operation 'setIsolatedDiskCacheRootPath' was not successful",
-                    Toast.LENGTH_SHORT).show();
-            return;
-        }
-
         mVenueMapFragment.init(new OnEngineInitListener() {
             @Override
             public void onEngineInitializationCompleted(Error error) {
