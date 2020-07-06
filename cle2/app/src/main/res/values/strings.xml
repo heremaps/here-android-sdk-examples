@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">CLE2 example</string>
+    <string name="engine_init_error">Map engine initialization</string>
+    <string name="cle_layer_name_label">CLE Layer Name</string>
+    <string name="cle_layer_default_name">CLE_TEST</string>
+    <string name="upload_button_text">Upload layer</string>
+    <string name="download_button_text">Download layer</string>
+    <string name="add_geometry_button_text">Add geometry</string>
+    <string name="clear_map_button_text">Clear map</string>
+    <string name="purge_button_text">Purge local storage</string>
+    <string name="search_radius_label_text">Search radius</string>
+    <string name="connectivity_mode_label_text">Connectivity mode</string>
+    <string name="search_button_text">Proximity Search</string>
+</resources>

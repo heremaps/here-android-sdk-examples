@@ -44,6 +44,7 @@ All of the following projects use latest version(currently 3.12) of the HERE Mob
 * [3D Model](3DModel) - Show 3D model on the map
 * [3D Venues](3d-venues-and-indoor-routing) - Show venues in 3D mode
 * [Advanced Navigation](advanced-navigation) - Handle user interactions and position updates during navigation
+* [CLE2](cle2) - Use custom location extensions
 * [Geocoding and Reverse Gecoding](geocoder-and-reverse-geocoder) - Trigger a Geocode and Reverse Geocode request in HERE Mobile SDK
 * [Map Attribute](map-attribute) - Map attributes manipulations
 * [Map Customization](map-customization) - Customize the map scheme
