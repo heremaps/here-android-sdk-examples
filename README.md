@@ -19,9 +19,9 @@ This set of individual, use-case based projects is designed to be cloned by deve
 3. Click on *GENERATE* to obtain the App ID, App Code, and License Key:
 ![Enter package name](/.screenshots/Premium%20SDK%20-%20Generated%20license.png?raw=true)
 
-4. CLick on *Download SDK* to get a files named like `HERE_Android_SDK_Premium_v3.3.1_205.zip` (your version number might differ).
+4. Click on *Download SDK* to get a files named like `HERE_Android_SDK_Premium_v3.16.2_101.zip` (your version number might differ).
 
-5. Extract `HERE_Android_SDK_Premium_v3.3.1_205.zip` as well as the contained `HERE-sdk.zip`.
+5. Extract `HERE_Android_SDK_Premium_v3.16.2_101.zip` as well as the contained `HERE-sdk.zip`.
 
 6. Copy the contained `HERE-sdk/libs/HERE-sdk.aar` file to your example's `libs` directory. Again taking the *map-rendering* example, the `libs` directory would be [here](https://github.com/heremaps/here-android-sdk-examples/tree/master/map-rendering/app/libs).
 
@@ -39,7 +39,7 @@ Unless otherwise noted in `LICENSE` files for specific files or directories, the
 
 ## HERE Mobile SDK for Android (Premium)
 
-All of the following projects use latest version(currently 3.12) of the HERE Mobile SDK for Android (Premium)
+All of the following projects use latest version(currently 3.16) of the HERE Mobile SDK for Android (Premium)
 
 * [3D Model](3DModel) - Show 3D model on the map
 * [3D Venues](3d-venues-and-indoor-routing) - Show venues in 3D mode
