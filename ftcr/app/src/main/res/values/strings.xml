@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">Basic Routing</string>
+    <string name="app_name">FTCR</string>
     <string name="engine_init_error">Map engine initialization</string>
 </resources>
