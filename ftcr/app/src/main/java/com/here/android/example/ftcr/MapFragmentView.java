@@ -69,11 +69,11 @@ public class MapFragmentView {
 
     private static final String URL_UPLOAD_ROUTE =
             "https://fleet.api.here.com/2/overlays/upload.json";
-    public static final String DEFAULT_OVERLAY = "OVERLAY_EXAMPLE";
+    public static final String OVERLAY_NAME = "OVERLAY-EXAMPLE";
 
     private String m_appId;
     private String m_appToken;
-    private String m_overlayName = DEFAULT_OVERLAY;
+    private String m_overlayName = OVERLAY_NAME;
     private FTCRRouter m_router;
     private FTCRRouter.CancellableTask m_routeTask;
 
@@ -177,15 +177,20 @@ public class MapFragmentView {
             @Override
             public void onResponse(final String message) {
                 Log.i(TAG, "Response: \n" + message);
-                if (!message.contains("error")) {
-                    m_activity.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            m_calculateRouteButton.setEnabled(true);
-                        }
-                    });
+                final String userMessage;
+                if (message.contains("error")) {
+                    userMessage = "Could not upload layer on the server\n" + message;
+                } else {
+                    userMessage = "Layer successfully uploaded on the server";
                 }
 
+                m_activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(m_activity, userMessage, Toast.LENGTH_LONG).show();
+                        m_calculateRouteButton.setEnabled(true);
+                    }
+                });
             }
         });
     }
@@ -215,7 +220,7 @@ public class MapFragmentView {
           Set the name of the map overlay. It has to be the same that is used for uploading
           the custom roads to the fleet telematics server.
          */
-        routePlan.setOverlay(DEFAULT_OVERLAY);
+        routePlan.setOverlay(OVERLAY_NAME);
         if (m_routeTask != null) {
             m_routeTask.cancel();
         }
@@ -248,7 +253,8 @@ public class MapFragmentView {
                 } else {
                     Toast.makeText(m_activity,
                             "Error:route calculation returned error code: "
-                                    + errorResponse.getErrorCode(),
+                                    + errorResponse.getErrorCode()
+                                    + ",\nmessage: " + errorResponse.getMessage(),
                             Toast.LENGTH_LONG).show();
                 }
             }
@@ -256,6 +262,10 @@ public class MapFragmentView {
     }
 
     // Sends the fake route into the server and displays on the map.
+    // Note, layer uploading functionality is not part of the Mobile SDK 3.X, this was added
+    // added for demo purposes.
+    // Refer to the  official fleet telematics documentation to properly implement uploading
+    // layer on the server.
     private void addFakeRoute() {
         m_fakeRoute = new GeoCoordinate[]
                 {
