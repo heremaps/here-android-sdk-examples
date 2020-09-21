@@ -16,16 +16,16 @@
 
 package com.here.android.example.advanced.navigation;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
 import android.graphics.PointF;
-import android.os.Bundle;
 import android.util.Log;
+import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.GeoPosition;
@@ -33,10 +33,12 @@ import com.here.android.mpa.common.Image;
 import com.here.android.mpa.common.MapEngine;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.common.PositioningManager;
+import com.here.android.mpa.common.RoadElement;
 import com.here.android.mpa.common.ViewObject;
+import com.here.android.mpa.guidance.LaneInformation;
 import com.here.android.mpa.guidance.NavigationManager;
-import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.AndroidXMapFragment;
+import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapGesture;
 import com.here.android.mpa.mapping.MapMarker;
 import com.here.android.mpa.mapping.MapRoute;
@@ -70,6 +72,7 @@ class MapFragmentView {
     private double m_lastZoomLevelInRoadViewMode = 0.0;
     private AppCompatActivity m_activity;
     private MapRoute m_currentRoute;
+    private LinearLayout m_laneInfoView;
 
     MapFragmentView(AppCompatActivity activity) {
         m_activity = activity;
@@ -82,6 +85,7 @@ class MapFragmentView {
 
     private void initMapFragment() {
         m_mapFragment = getMapFragment();
+        m_laneInfoView = m_activity.findViewById(R.id.laneInfoLayout);
         // This will use external storage to save map cache data, it is also possible to set
         // private app's path
         String path = new File(m_activity.getExternalFilesDir(null), ".here-map-data")
@@ -107,8 +111,8 @@ class MapFragmentView {
                         final RoutePlan routePlan = new RoutePlan();
 
                         // these two waypoints cover suburban roads
-                        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(48.98382, 2.50292)));
-                        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(48.95602, 2.45939)));
+                        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(48.960497, 2.47351)));
+                        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(48.976, 2.49162)));
 
                         try {
                             // calculate a route for navigation
@@ -176,6 +180,9 @@ class MapFragmentView {
                                         navigationManager.addNavigationManagerEventListener(
                                                 new WeakReference<>(
                                                         navigationManagerEventListener));
+
+                                        navigationManager.addLaneInformationListener(
+                                                new WeakReference<>(m_laneInformationListener));
 
                                         // start navigation simulation travelling at 13 meters per second
                                         navigationManager.simulate(route, 13);
@@ -401,6 +408,15 @@ class MapFragmentView {
                 }
             };
 
+    final private NavigationManager.LaneInformationListener
+            m_laneInformationListener = new NavigationManager.LaneInformationListener() {
+        @Override
+        public void onLaneInformation(@NonNull List<LaneInformation> items,
+                                      @Nullable RoadElement roadElement) {
+            LaneInfoUtils.displayLaneInformation(m_laneInfoView, items);
+        }
+    };
+
     void onDestroy() {
         if (m_map != null) {
             m_map.removeMapObject(m_positionIndicatorFixed);
@@ -409,6 +425,10 @@ class MapFragmentView {
             NavigationManager.getInstance().stop();
             PositioningManager.getInstance().stop();
         }
+
+        NavigationManager.getInstance().removeLaneInformationListener(m_laneInformationListener);
+        NavigationManager.getInstance()
+                .removeNavigationManagerEventListener(navigationManagerEventListener);
     }
 
     void onBackPressed() {
