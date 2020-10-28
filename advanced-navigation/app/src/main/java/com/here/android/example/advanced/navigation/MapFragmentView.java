@@ -20,6 +20,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.PointF;
 import android.util.Log;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -108,101 +109,7 @@ class MapFragmentView {
                         m_map.addTransformListener(onTransformListener);
 
                         PositioningManager.getInstance().start(PositioningManager.LocationMethod.GPS_NETWORK);
-                        final RoutePlan routePlan = new RoutePlan();
 
-                        // these two waypoints cover suburban roads
-                        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(48.960497, 2.47351)));
-                        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(48.976, 2.49162)));
-
-                        try {
-                            // calculate a route for navigation
-                            CoreRouter coreRouter = new CoreRouter();
-                            coreRouter.calculateRoute(routePlan, new CoreRouter.Listener() {
-                                @Override
-                                public void onCalculateRouteFinished(List<RouteResult> list,
-                                                                     RoutingError routingError) {
-                                    if (routingError == RoutingError.NONE) {
-                                        Route route = list.get(0).getRoute();
-
-                                        m_currentRoute = new MapRoute(route);
-                                        m_map.addMapObject(m_currentRoute);
-
-                                        // move the map to the first waypoint which is starting point of
-                                        // the route
-                                        m_map.setCenter(routePlan.getWaypoint(0).getNavigablePosition(),
-                                                Map.Animation.NONE);
-
-                                        // setting MapUpdateMode to RoadView will enable automatic map
-                                        // movements and zoom level adjustments
-                                        NavigationManager navigationManager =
-                                                NavigationManager.getInstance();
-                                        navigationManager.setMapUpdateMode(
-                                                NavigationManager.MapUpdateMode.ROADVIEW);
-
-                                        // adjust tilt to show 3D view
-                                        m_map.setTilt(80);
-
-                                        // adjust transform center for navigation experience in portrait
-                                        // view
-                                        m_mapTransformCenter = new PointF(m_map.getTransformCenter().x, (m_map
-                                                .getTransformCenter().y * 85 / 50));
-                                        m_map.setTransformCenter(m_mapTransformCenter);
-
-                                        // create a map marker to show current position
-                                        Image icon = new Image();
-                                        m_positionIndicatorFixed = new MapMarker();
-                                        try {
-                                            icon.setImageResource(R.drawable.gps_position);
-                                            m_positionIndicatorFixed.setIcon(icon);
-                                        } catch (IOException e) {
-                                            e.printStackTrace();
-                                        }
-
-                                        m_positionIndicatorFixed.setVisible(true);
-                                        m_positionIndicatorFixed.setCoordinate(m_map.getCenter());
-                                        m_map.addMapObject(m_positionIndicatorFixed);
-
-                                        m_mapFragment.getPositionIndicator().setVisible(false);
-
-                                        navigationManager.setMap(m_map);
-
-                                        // listen to real position updates. This is used when RoadView is
-                                        // not active.
-                                        PositioningManager.getInstance().addListener(
-                                                new WeakReference<>(mapPositionHandler));
-
-                                        // listen to updates from RoadView which tells you where the map
-                                        // center should be situated. This is used when RoadView is active.
-                                        navigationManager.getRoadView().addListener(
-                                                new WeakReference<>(roadViewListener));
-
-                                        // listen to navigation manager events.
-                                        navigationManager.addNavigationManagerEventListener(
-                                                new WeakReference<>(
-                                                        navigationManagerEventListener));
-
-                                        navigationManager.addLaneInformationListener(
-                                                new WeakReference<>(m_laneInformationListener));
-
-                                        // start navigation simulation travelling at 13 meters per second
-                                        navigationManager.simulate(route, 13);
-
-                                    } else {
-                                        Toast.makeText(m_activity,
-                                                "Error:route calculation returned error code: " + routingError,
-                                                Toast.LENGTH_LONG).show();
-
-                                    }
-                                }
-
-                                @Override
-                                public void onProgress(int i) {
-
-                                }
-                            });
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
                     } else {
                         new AlertDialog.Builder(m_activity).setMessage(
                                 "Error : " + error.name() + "\n\n" + error.getDetails())
@@ -255,6 +162,116 @@ class MapFragmentView {
                 }
             });
         }
+
+        m_activity.findViewById(R.id.calculate).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                calculateAndStartNavigation();
+            }
+        });
+    }
+
+    private void calculateAndStartNavigation() {
+        if (m_map == null) {
+            Toast.makeText(m_activity, "Map is not ready yet", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (NavigationManager.getInstance().getRunningState()
+                == NavigationManager.NavigationState.RUNNING) {
+            Toast.makeText(m_activity, "Navigation is currently running", Toast.LENGTH_SHORT)
+                    .show();
+            return;
+        }
+        final RoutePlan routePlan = new RoutePlan();
+        // these two waypoints cover suburban roads
+        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(48.960497, 2.47351)));
+        routePlan.addWaypoint(new RouteWaypoint(new GeoCoordinate(48.976, 2.49162)));
+
+        // calculate a route for navigation
+        CoreRouter coreRouter = new CoreRouter();
+        coreRouter.calculateRoute(routePlan, new CoreRouter.Listener() {
+            @Override
+            public void onCalculateRouteFinished(List<RouteResult> list,
+                                                 RoutingError routingError) {
+                if (routingError == RoutingError.NONE) {
+                    Route route = list.get(0).getRoute();
+
+                    m_currentRoute = new MapRoute(route);
+                    m_map.addMapObject(m_currentRoute);
+
+                    // move the map to the first waypoint which is starting point of
+                    // the route
+                    m_map.setCenter(routePlan.getWaypoint(0).getNavigablePosition(),
+                            Map.Animation.NONE);
+
+                    // setting MapUpdateMode to RoadView will enable automatic map
+                    // movements and zoom level adjustments
+                    NavigationManager navigationManager =
+                            NavigationManager.getInstance();
+                    navigationManager.setMapUpdateMode(
+                            NavigationManager.MapUpdateMode.ROADVIEW);
+
+                    // adjust tilt to show 3D view
+                    m_map.setTilt(80);
+
+                    // adjust transform center for navigation experience in portrait
+                    // view
+                    m_mapTransformCenter = new PointF(m_map.getTransformCenter().x, (m_map
+                            .getTransformCenter().y * 85 / 50));
+                    m_map.setTransformCenter(m_mapTransformCenter);
+
+                    // create a map marker to show current position
+                    Image icon = new Image();
+                    m_positionIndicatorFixed = new MapMarker();
+                    try {
+                        icon.setImageResource(R.drawable.gps_position);
+                        m_positionIndicatorFixed.setIcon(icon);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                    m_positionIndicatorFixed.setVisible(true);
+                    m_positionIndicatorFixed.setCoordinate(m_map.getCenter());
+                    m_map.addMapObject(m_positionIndicatorFixed);
+
+                    m_mapFragment.getPositionIndicator().setVisible(false);
+
+                    navigationManager.setMap(m_map);
+
+                    // listen to real position updates. This is used when RoadView is
+                    // not active.
+                    PositioningManager.getInstance().addListener(
+                            new WeakReference<>(mapPositionHandler));
+
+                    // listen to updates from RoadView which tells you where the map
+                    // center should be situated. This is used when RoadView is active.
+                    navigationManager.getRoadView().addListener(
+                            new WeakReference<>(roadViewListener));
+
+                    // listen to navigation manager events.
+                    navigationManager.addNavigationManagerEventListener(
+                            new WeakReference<>(
+                                    navigationManagerEventListener));
+
+                    navigationManager.addLaneInformationListener(
+                            new WeakReference<>(m_laneInformationListener));
+
+                    // start navigation simulation travelling at 13 meters per second
+                    navigationManager.simulate(route, 13);
+
+                } else {
+                    Toast.makeText(m_activity,
+                            "Error:route calculation returned error code: " + routingError,
+                            Toast.LENGTH_LONG).show();
+
+                }
+            }
+
+            @Override
+            public void onProgress(int i) {
+
+            }
+        });
     }
 
     // listen for positioning events

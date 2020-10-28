@@ -262,6 +262,9 @@ public class MapFragmentView {
         m_naviControlButton.setText(R.string.stop_navi);
         /* Configure Navigation manager to launch navigation on current map */
         m_navigationManager.setMap(m_map);
+        // show position indicator
+        // note, it is also possible to change icon for the position indicator
+        m_mapFragment.getPositionIndicator().setVisible(true);
 
         /*
          * Start the turn-by-turn navigation.Please note if the transport mode of the passed-in
