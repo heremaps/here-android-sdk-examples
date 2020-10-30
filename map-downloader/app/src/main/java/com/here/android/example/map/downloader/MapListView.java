@@ -17,7 +17,6 @@
 package com.here.android.example.map.downloader;
 
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
@@ -39,10 +38,11 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("deprecation")// hide warning for ListActivity
 class MapListView {
     private static final String TAG = MapListView.class.getSimpleName();
 
-    private ListActivity m_activity;
+    private android.app.ListActivity m_activity;
     private TextView m_progressTextView;
     private MapLoader m_mapLoader;
     private MapListAdapter m_listAdapter;
@@ -50,7 +50,7 @@ class MapListView {
                                                      // package list currently being displayed on
                                                      // screen
 
-    MapListView(ListActivity activity) {
+    MapListView(android.app.ListActivity activity) {
         m_activity = activity;
         initMapEngine();
     }
