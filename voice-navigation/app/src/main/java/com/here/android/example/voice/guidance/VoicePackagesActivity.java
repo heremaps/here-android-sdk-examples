@@ -85,7 +85,7 @@ public class VoicePackagesActivity extends AppCompatActivity {
         m_packagesView.setAdapter(new VoicePackagesAdapter(this));
     }
 
-    private static class VoicePackagesAdapter
+    static class VoicePackagesAdapter
             extends RecyclerView.Adapter<VoicePackagesAdapter.VoiceViewHolder> {
         private Context m_context;
         private LayoutInflater m_inflater;

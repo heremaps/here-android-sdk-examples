@@ -1,12 +1,12 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 30
 
     defaultConfig {
         applicationId 'com.here.tcsdemo'
         minSdkVersion 23
-        targetSdkVersion 29
+        targetSdkVersion 30
     }
 
     buildTypes {
@@ -25,6 +25,6 @@ repositories {
 
 dependencies {
     implementation(name: 'HERE-sdk', ext: 'aar')
-    implementation 'androidx.appcompat:appcompat:1.0.2'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.code.gson:gson:2.8.2'
 }

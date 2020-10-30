@@ -286,6 +286,7 @@ class MapFragmentView {
         /* Configure Navigation manager to launch navigation on current map */
         m_navigationManager.setMap(m_map);
 
+        m_mapFragment.getPositionIndicator().setVisible(true);
         /*
          * Start the turn-by-turn navigation.Please note if the transport mode of the passed-in
          * route is pedestrian, the NavigationManager automatically triggers the guidance which is
