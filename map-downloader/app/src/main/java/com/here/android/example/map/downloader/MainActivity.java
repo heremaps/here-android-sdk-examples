@@ -17,7 +17,6 @@
 package com.here.android.example.map.downloader;
 
 import android.Manifest;
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -32,7 +31,8 @@ import android.widget.Toast;
  * Main activity which launches the map list view and handles Android run-time requesting
  * permission.
  */
-public class MainActivity extends ListActivity {
+@SuppressWarnings("deprecation")// hide warning for ListActivity
+public class MainActivity extends android.app.ListActivity {
     private static final int REQUEST_CODE_ASK_PERMISSIONS = 1;
     private static final String[] RUNTIME_PERMISSIONS = {
             Manifest.permission.ACCESS_FINE_LOCATION,
