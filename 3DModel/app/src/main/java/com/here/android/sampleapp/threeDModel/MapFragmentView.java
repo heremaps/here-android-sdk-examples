@@ -43,7 +43,6 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import android.util.Log;
@@ -119,6 +118,7 @@ public class MapFragmentView {
         m_displayButton = (Button) m_activity.findViewById(R.id.displayButton);
         m_displayButton.setOnClickListener(new View.OnClickListener() {
             @Override
+            @SuppressWarnings("deprecation")// hide warning for execute
             public void onClick(View view) {
                 // Trigger a 3D model loader task by specifying the name of the OBJ file
                 new Handle3DModelTask().execute("lexus_hs.obj");
@@ -127,7 +127,9 @@ public class MapFragmentView {
 
     }
 
-    private class Handle3DModelTask extends AsyncTask<String, Void, ArrayList<MapLocalModel>> {
+    @SuppressWarnings("deprecation")// hide warning for AsyncTask
+    private class Handle3DModelTask
+            extends android.os.AsyncTask<String, Void, ArrayList<MapLocalModel>> {
 
         @Override
         protected void onPreExecute() {

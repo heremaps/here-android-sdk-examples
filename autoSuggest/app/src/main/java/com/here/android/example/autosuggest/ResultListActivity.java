@@ -24,7 +24,6 @@ import com.here.android.mpa.search.PlaceLink;
 import com.here.android.mpa.search.PlaceRequest;
 import com.here.android.mpa.search.ResultListener;
 
-import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -34,7 +33,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 /*A list view to present DiscoveryResult */
-public class ResultListActivity extends ListActivity {
+@SuppressWarnings("deprecation")// hide warning for ListActivity
+public class ResultListActivity extends android.app.ListActivity {
     private LinearLayout m_placeDetailLayout;
     private TextView m_placeName;
     private TextView m_placeLocation;

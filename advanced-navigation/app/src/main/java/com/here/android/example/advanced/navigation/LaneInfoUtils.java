@@ -58,7 +58,8 @@ public class LaneInfoUtils {
                 continue;
             }
 
-            laneDirectionsView.setImageDrawable(context.getResources().getDrawable(resourceId));
+            laneDirectionsView.setImageDrawable(context.getResources()
+                    .getDrawable(resourceId, null));
             laneDirectionsView.setColorFilter(Color.parseColor("#FFC4C4C4"));
 
             switch (lane.getRecommendationState()) {
@@ -96,7 +97,8 @@ public class LaneInfoUtils {
 
         ImageView matchedDirection = new ImageView(laneView.getContext());
         try {
-            matchedDirection.setImageDrawable(laneView.getResources().getDrawable(resourceId));
+            matchedDirection.setImageDrawable(laneView.getResources()
+                    .getDrawable(resourceId, null));
         } catch (Resources.NotFoundException e) {
             // Currently, we don't have assets for all possible combinations of lane directions
             return;
