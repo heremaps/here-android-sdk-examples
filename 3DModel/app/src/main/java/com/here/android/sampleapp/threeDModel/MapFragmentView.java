@@ -41,12 +41,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.os.AsyncTask;
-import android.os.Bundle;
 import androidx.annotation.NonNull;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -115,6 +110,7 @@ public class MapFragmentView {
         }
     }
 
+    @SuppressWarnings("deprecation")
     private void initDisplayButton() {
         m_displayButton = (Button) m_activity.findViewById(R.id.displayButton);
         m_displayButton.setOnClickListener(new View.OnClickListener() {
@@ -127,7 +123,8 @@ public class MapFragmentView {
 
     }
 
-    private class Handle3DModelTask extends AsyncTask<String, Void, ArrayList<MapLocalModel>> {
+    @SuppressWarnings("deprecation")
+    private class Handle3DModelTask extends android.os.AsyncTask<String, Void, ArrayList<MapLocalModel>> {
 
         @Override
         protected void onPreExecute() {
