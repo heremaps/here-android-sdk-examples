@@ -19,6 +19,7 @@ package com.here.android.example.advanced.navigation;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -32,6 +33,10 @@ import java.util.List;
 
 public class LaneInfoUtils {
 
+    @SuppressWarnings("deprecation")
+    private static Drawable getDrawable(int resourceId, Context context) {
+        return context.getResources().getDrawable(resourceId);
+    }
     public static void displayLaneInformation(ViewGroup container, List<LaneInformation> lanes) {
         container.removeAllViews();
         if (lanes.isEmpty()) {
@@ -58,7 +63,7 @@ public class LaneInfoUtils {
                 continue;
             }
 
-            laneDirectionsView.setImageDrawable(context.getResources().getDrawable(resourceId));
+            laneDirectionsView.setImageDrawable(getDrawable(resourceId, context));
             laneDirectionsView.setColorFilter(Color.parseColor("#FFC4C4C4"));
 
             switch (lane.getRecommendationState()) {
@@ -96,7 +101,7 @@ public class LaneInfoUtils {
 
         ImageView matchedDirection = new ImageView(laneView.getContext());
         try {
-            matchedDirection.setImageDrawable(laneView.getResources().getDrawable(resourceId));
+            matchedDirection.setImageDrawable(getDrawable(resourceId, laneView.getContext()));
         } catch (Resources.NotFoundException e) {
             // Currently, we don't have assets for all possible combinations of lane directions
             return;
