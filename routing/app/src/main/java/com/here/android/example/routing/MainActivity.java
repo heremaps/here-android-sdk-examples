@@ -24,6 +24,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 /**
@@ -109,5 +112,22 @@ public class MainActivity extends AppCompatActivity {
         // All permission requests are being handled. Create map fragment view. Please note
         // the HERE Mobile SDK requires all permissions defined above to operate properly.
         m_mapFragmentView = new MapFragmentView(this);
+        invalidateOptionsMenu();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (m_mapFragmentView == null) {
+            return false;
+        }
+        return m_mapFragmentView.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (m_mapFragmentView == null) {
+            return false;
+        }
+        return m_mapFragmentView.onOptionsItemSelected(item);
     }
 }
