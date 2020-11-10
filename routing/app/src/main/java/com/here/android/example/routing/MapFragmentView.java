@@ -16,45 +16,50 @@
 
 package com.here.android.example.routing;
 
-import java.io.File;
-import java.util.List;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.here.android.mpa.common.GeoBoundingBox;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.OnEngineInitListener;
-import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.AndroidXMapFragment;
+import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapRoute;
 import com.here.android.mpa.routing.CoreRouter;
+import com.here.android.mpa.routing.Route;
 import com.here.android.mpa.routing.RouteOptions;
 import com.here.android.mpa.routing.RoutePlan;
 import com.here.android.mpa.routing.RouteResult;
 import com.here.android.mpa.routing.RouteWaypoint;
 import com.here.android.mpa.routing.Router;
 import com.here.android.mpa.routing.RoutingError;
+import com.here.android.mpa.routing.RoutingZone;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.List;
 
 /**
  * This class encapsulates the properties and functionality of the Map view.A route calculation from
- * HERE Burnaby office to Langley BC is also being handled in this class
+ * south of Berlin to the north of Berlin.
  */
 public class MapFragmentView {
+    private static final int ITEM_ID_SHOW_ZONES = 1;
+    private static final int ITEM_ID_EXCLUDE_IN_ROUTING = 2;
     private AndroidXMapFragment m_mapFragment;
     private Button m_createRouteButton;
     private AppCompatActivity m_activity;
     private Map m_map;
     private MapRoute m_mapRoute;
+    private boolean m_isExcludeRoutingZones;
 
     public MapFragmentView(AppCompatActivity activity) {
         m_activity = activity;
@@ -84,9 +89,9 @@ public class MapFragmentView {
                         m_map = m_mapFragment.getMap();
 
                         /*
-                         * Set the map center to the 4350 Still Creek Dr Burnaby BC (no animation).
+                         * Set the map center to the south of Berlin.
                          */
-                        m_map.setCenter(new GeoCoordinate(49.259149, -123.008555, 0.0),
+                        m_map.setCenter(new GeoCoordinate(52.406425, 13.193975, 0.0),
                                 Map.Animation.NONE);
 
                         /* Set the zoom level to the average between min and max zoom level. */
@@ -116,31 +121,15 @@ public class MapFragmentView {
         m_createRouteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*
-                 * Clear map if previous results are still on map,otherwise proceed to creating
-                 * route
-                 */
-                if (m_map != null && m_mapRoute != null) {
-                    m_map.removeMapObject(m_mapRoute);
-                    m_mapRoute = null;
-                } else {
-                    /*
-                     * The route calculation requires local map data.Unless there is pre-downloaded
-                     * map data on device by utilizing MapLoader APIs, it's not recommended to
-                     * trigger the route calculation immediately after the MapEngine is
-                     * initialized.The INSUFFICIENT_MAP_DATA error code may be returned by
-                     * CoreRouter in this case.
-                     *
-                     */
-                    createRoute();
-                }
+                m_map.removeMapObject(m_mapRoute);
+                m_mapRoute = null;
+                createRoute(Collections.<RoutingZone>emptyList());
             }
         });
 
     }
 
-    /* Creates a route from 4350 Still Creek Dr to Langley BC with highways disallowed */
-    private void createRoute() {
+    private void createRoute(final List<RoutingZone> excludedRoutingZones) {
         /* Initialize a CoreRouter */
         CoreRouter coreRouter = new CoreRouter();
 
@@ -161,14 +150,18 @@ public class MapFragmentView {
         routeOptions.setRouteType(RouteOptions.Type.SHORTEST);
         /* Calculate 1 route. */
         routeOptions.setRouteCount(1);
+        /* Exclude routing zones. */
+        if (!excludedRoutingZones.isEmpty()) {
+            routeOptions.excludeRoutingZones(toStringIds(excludedRoutingZones));
+        }
         /* Finally set the route option */
         routePlan.setRouteOptions(routeOptions);
 
         /* Define waypoints for the route */
-        /* START: 4350 Still Creek Dr */
-        RouteWaypoint startPoint = new RouteWaypoint(new GeoCoordinate(49.259149, -123.008555));
-        /* END: Langley BC */
-        RouteWaypoint destination = new RouteWaypoint(new GeoCoordinate(49.073640, -122.559549));
+        /* START: South of Berlin */
+        RouteWaypoint startPoint = new RouteWaypoint(new GeoCoordinate(52.406425, 13.193975));
+        /* END: North of Berlin */
+        RouteWaypoint destination = new RouteWaypoint(new GeoCoordinate(52.638623, 13.441998));
 
         /* Add both waypoints to the route plan */
         routePlan.addWaypoint(startPoint);
@@ -187,9 +180,16 @@ public class MapFragmentView {
                             RoutingError routingError) {
                         /* Calculation is done. Let's handle the result */
                         if (routingError == RoutingError.NONE) {
-                            if (routeResults.get(0).getRoute() != null) {
+                            Route route = routeResults.get(0).getRoute();
+
+                            if (m_isExcludeRoutingZones && excludedRoutingZones.isEmpty()) {
+                                // Here we exclude all available routing zones in the route.
+                                // Also RoutingZoneRestrictionsChecker can be used to get
+                                // available routing zones for specific RoadElement.
+                                createRoute(route.getRoutingZones());
+                            } else {
                                 /* Create a MapRoute so that it can be placed on the map */
-                                m_mapRoute = new MapRoute(routeResults.get(0).getRoute());
+                                m_mapRoute = new MapRoute(route);
 
                                 /* Show the maneuver number on top of the route */
                                 m_mapRoute.setManeuverNumberVisible(true);
@@ -201,14 +201,8 @@ public class MapFragmentView {
                                  * We may also want to make sure the map view is orientated properly
                                  * so the entire route can be easily seen.
                                  */
-                                GeoBoundingBox gbb = routeResults.get(0).getRoute()
-                                        .getBoundingBox();
-                                m_map.zoomTo(gbb, Map.Animation.NONE,
+                                m_map.zoomTo(route.getBoundingBox(), Map.Animation.NONE,
                                         Map.MOVE_PRESERVE_ORIENTATION);
-                            } else {
-                                Toast.makeText(m_activity,
-                                        "Error:route results returned is not valid",
-                                        Toast.LENGTH_LONG).show();
                             }
                         } else {
                             Toast.makeText(m_activity,
@@ -217,5 +211,43 @@ public class MapFragmentView {
                         }
                     }
                 });
+    }
+
+    public boolean onOptionsItemSelected(MenuItem item) {
+        item.setChecked(!item.isChecked());
+        if (item.getItemId() == ITEM_ID_SHOW_ZONES) {
+            EnumSet<Map.FleetFeature> features;
+            if (item.isChecked()) {
+                features = EnumSet.of(Map.FleetFeature.ENVIRONMENTAL_ZONES);
+            } else {
+                features = EnumSet.noneOf(Map.FleetFeature.class);
+
+            }
+            m_map.setFleetFeaturesVisible(features);
+        } else if (item.getItemId() == ITEM_ID_EXCLUDE_IN_ROUTING) {
+            m_isExcludeRoutingZones = item.isChecked();
+            if (m_mapRoute != null) {
+                Toast.makeText(m_activity, "Please recalculate the route to apply this setting",
+                        Toast.LENGTH_SHORT).show();
+            }
+        }
+        return true;
+    }
+
+    public boolean onCreateOptionsMenu(Menu menu) {
+        menu.add(0, ITEM_ID_SHOW_ZONES, Menu.NONE, "Show environmental zones")
+                .setCheckable(true);
+        menu.add(0, ITEM_ID_EXCLUDE_IN_ROUTING, Menu.NONE, "Exclude all zones in routing")
+                .setCheckable(true);
+
+        return true;
+    }
+
+    static List<String> toStringIds(List<RoutingZone> excludedRoutingZones) {
+        ArrayList<String> ids = new ArrayList<>();
+        for (RoutingZone zone : excludedRoutingZones) {
+            ids.add(zone.getId());
+        }
+        return ids;
     }
 }
