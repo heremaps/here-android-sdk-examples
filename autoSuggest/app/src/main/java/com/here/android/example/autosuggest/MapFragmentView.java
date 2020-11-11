@@ -18,12 +18,11 @@ package com.here.android.example.autosuggest;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.ApplicationInfo;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
+
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import android.util.Log;
+
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -35,13 +34,13 @@ import android.widget.ListView;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapObject;
 import com.here.android.mpa.mapping.AndroidXMapFragment;
+import com.here.android.mpa.search.AddressFilter;
 import com.here.android.mpa.search.AutoSuggest;
 import com.here.android.mpa.search.AutoSuggestPlace;
 import com.here.android.mpa.search.AutoSuggestQuery;
@@ -78,12 +77,258 @@ public class MapFragmentView {
     private SearchListener m_searchListener;
     private List<MapObject> m_mapObjectList = new ArrayList<>();
     private Spinner m_localeSpinner;
+    private Spinner m_countryCodeSpinner;
     private AutoSuggestAdapter m_autoSuggestAdapter;
     private List<AutoSuggest> m_autoSuggests;
     private ListView m_resultsListView;
     private TextView m_collectionSizeTextView;
     private LinearLayout m_filterOptionsContainer;
     private CheckBox m_useFilteringCheckbox;
+
+    private static final String[] COUNTRY_CODES = {
+            "",
+            "ALB",
+            "AND",
+            "ANT",
+            "ARE",
+            "ARG",
+            "ARM",
+            "ASM",
+            "ATA",
+            "ATF",
+            "ATG",
+            "AUS",
+            "AUT",
+            "AZE",
+            "BDI",
+            "BEL",
+            "BEN",
+            "BFA",
+            "BGD",
+            "BGR",
+            "BHR",
+            "BHS",
+            "BIH",
+            "BLM",
+            "BLR",
+            "BLZ",
+            "BMU",
+            "BOL",
+            "BRA",
+            "BRB",
+            "BRN",
+            "BTN",
+            "BVT",
+            "BWA",
+            "CAF",
+            "CAN",
+            "CCK",
+            "CHE",
+            "CHL",
+            "CHN",
+            "CIV",
+            "CMR",
+            "COD",
+            "COG",
+            "COK",
+            "COL",
+            "COM",
+            "CPV",
+            "CRI",
+            "CUB",
+            "CXR",
+            "CYM",
+            "CYP",
+            "CZE",
+            "DEU",
+            "DJI",
+            "DMA",
+            "DNK",
+            "DOM",
+            "DZA",
+            "ECU",
+            "EGY",
+            "ERI",
+            "ESH",
+            "ESP",
+            "EST",
+            "ETH",
+            "FIN",
+            "FJI",
+            "FLK",
+            "FRA",
+            "FRO",
+            "FSM",
+            "GAB",
+            "GBR",
+            "GEO",
+            "GGY",
+            "GHA",
+            "GIB",
+            "GIN",
+            "GLP",
+            "GMB",
+            "GNB",
+            "GNQ",
+            "GRC",
+            "GRD",
+            "GRL",
+            "GTM",
+            "GUF",
+            "GUM",
+            "GUY",
+            "HKG",
+            "HMD",
+            "HND",
+            "HRV",
+            "HTI",
+            "HUN",
+            "IDN",
+            "IMN",
+            "IND",
+            "IOT",
+            "IRL",
+            "IRN",
+            "IRQ",
+            "ISL",
+            "ISR",
+            "ITA",
+            "JAM",
+            "JEY",
+            "JOR",
+            "JPN",
+            "KAZ",
+            "KEN",
+            "KGZ",
+            "KHM",
+            "KIR",
+            "KNA",
+            "KOR",
+            "KWT",
+            "LAO",
+            "LBN",
+            "LBR",
+            "LBY",
+            "LCA",
+            "LIE",
+            "LKA",
+            "LSO",
+            "LTU",
+            "LUX",
+            "LVA",
+            "MAC",
+            "MAF",
+            "MAR",
+            "MCO",
+            "MDA",
+            "MDG",
+            "MDV",
+            "MEX",
+            "MHL",
+            "MKD",
+            "MLI",
+            "MLT",
+            "MMR",
+            "MNE",
+            "MNG",
+            "MNP",
+            "MOZ",
+            "MRT",
+            "MSR",
+            "MTQ",
+            "MUS",
+            "MWI",
+            "MYS",
+            "MYT",
+            "NAM",
+            "NCL",
+            "NER",
+            "NFK",
+            "NGA",
+            "NIC",
+            "NIU",
+            "NLD",
+            "NOR",
+            "NPL",
+            "NRU",
+            "NZL",
+            "OMN",
+            "PAK",
+            "PAN",
+            "PCN",
+            "PER",
+            "PHL",
+            "PLW",
+            "PNG",
+            "POL",
+            "PRI",
+            "PRK",
+            "PRT",
+            "PRY",
+            "PSE",
+            "PYF",
+            "QAT",
+            "REU",
+            "ROU",
+            "RUS",
+            "RWA",
+            "SAU",
+            "SDN",
+            "SEN",
+            "SGP",
+            "SGS",
+            "SHN",
+            "SJM",
+            "SLB",
+            "SLE",
+            "SLV",
+            "SMR",
+            "SOM",
+            "SPM",
+            "SRB",
+            "STP",
+            "SUR",
+            "SVK",
+            "SVN",
+            "SWE",
+            "SWZ",
+            "SYC",
+            "SYR",
+            "TCA",
+            "TCD",
+            "TGO",
+            "THA",
+            "TJK",
+            "TKL",
+            "TKM",
+            "TLS",
+            "TON",
+            "TTO",
+            "TUN",
+            "TUR",
+            "TUV",
+            "TWN",
+            "TZA",
+            "UGA",
+            "UKR",
+            "UMI",
+            "URY",
+            "USA",
+            "UZB",
+            "VAT",
+            "VCT",
+            "VEN",
+            "VGB",
+            "VIR",
+            "VNM",
+            "VUT",
+            "WLF",
+            "WSM",
+            "YEM",
+            "ZAF",
+            "ZMB",
+            "ZWE",
+    };
 
     private static final String[] AVAILABLE_LOCALES = {
             "",
@@ -212,6 +457,12 @@ public class MapFragmentView {
 
         m_localeSpinner.setAdapter(localeAdapter);
 
+        m_countryCodeSpinner = m_activity.findViewById(R.id.countryCodeSpinner);
+        ArrayAdapter<CharSequence> countryCodeAdapter = new ArrayAdapter<CharSequence>(
+                m_activity, android.R.layout.simple_spinner_item, COUNTRY_CODES);
+        countryCodeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        m_countryCodeSpinner.setAdapter(countryCodeAdapter);
+
         m_resultsListView = m_activity.findViewById(R.id.resultsListViev);
         m_autoSuggestAdapter = new AutoSuggestAdapter(m_activity,
                 android.R.layout.simple_list_item_1, m_autoSuggests);
@@ -287,6 +538,14 @@ public class MapFragmentView {
         }
     }
 
+    private String getSelectedCountryCode() {
+        if (m_countryCodeSpinner.getSelectedItemPosition() == 0) {
+            return null;
+        } else {
+            return COUNTRY_CODES[m_countryCodeSpinner.getSelectedItemPosition()];
+        }
+    }
+
     private class SearchListener implements SearchView.OnQueryTextListener {
 
         @Override
@@ -321,6 +580,15 @@ public class MapFragmentView {
         if (locale != null) {
             textAutoSuggestionRequest.setLocale(locale);
         }
+
+        String countryCode = getSelectedCountryCode();
+        if (!TextUtils.isEmpty(countryCode)) {
+            AddressFilter addressFilter = new AddressFilter();
+            // Also available filtering by state code, county, district, city and zip code
+            addressFilter.setCountryCode(countryCode);
+            textAutoSuggestionRequest.setAddressFilter(addressFilter);
+        }
+
         /*
            The textAutoSuggestionRequest returns its results to non-UI thread.
            So, we have to pass the UI update with returned results to UI thread.
