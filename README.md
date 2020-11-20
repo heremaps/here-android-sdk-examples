@@ -29,7 +29,7 @@ This set of individual, use-case based projects is designed to be cloned by deve
 
 8. Replace the instances of the `{YOUR_LABEL_NAME}` placeholders in the example's `AndroidManifest.xml` with your own custom values. Do not reuse HERE Mobile SDK defaults.
 
-9. Launch [Android Studio](https://developer.android.com/studio/) and import the example's `build.gradle` file..
+9. Launch [Android Studio](https://developer.android.com/studio/) and import the example's `build.gradle` file.
 
 10. Run the app.
 
