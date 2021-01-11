@@ -26,13 +26,16 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.here.android.mpa.common.GeoBoundingBox;
 import com.here.android.mpa.common.GeoCoordinate;
+import com.here.android.mpa.common.GeoPolygon;
 import com.here.android.mpa.common.OnEngineInitListener;
+import com.here.android.mpa.common.RoadElement;
 import com.here.android.mpa.mapping.AndroidXMapFragment;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapRoute;
 import com.here.android.mpa.routing.CoreRouter;
+import com.here.android.mpa.routing.DrivingDirection;
+import com.here.android.mpa.routing.DynamicPenalty;
 import com.here.android.mpa.routing.Route;
 import com.here.android.mpa.routing.RouteOptions;
 import com.here.android.mpa.routing.RoutePlan;
@@ -43,6 +46,7 @@ import com.here.android.mpa.routing.RoutingError;
 import com.here.android.mpa.routing.RoutingZone;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
@@ -54,12 +58,14 @@ import java.util.List;
 public class MapFragmentView {
     private static final int ITEM_ID_SHOW_ZONES = 1;
     private static final int ITEM_ID_EXCLUDE_IN_ROUTING = 2;
+    private static final int ITEM_ID_ADD_AVOIDED_AREAS = 3;
     private AndroidXMapFragment m_mapFragment;
     private Button m_createRouteButton;
     private AppCompatActivity m_activity;
     private Map m_map;
     private MapRoute m_mapRoute;
     private boolean m_isExcludeRoutingZones;
+    private boolean m_addAvoidedAreas;
 
     public MapFragmentView(AppCompatActivity activity) {
         m_activity = activity;
@@ -154,6 +160,28 @@ public class MapFragmentView {
         if (!excludedRoutingZones.isEmpty()) {
             routeOptions.excludeRoutingZones(toStringIds(excludedRoutingZones));
         }
+
+        if (m_addAvoidedAreas) {
+            DynamicPenalty dynamicPenalty = new DynamicPenalty();
+            // There are two option to avoid certain areas during routing
+            // 1. Add banned area using addBannedArea API
+            GeoPolygon geoPolygon = new GeoPolygon();
+            geoPolygon.add(Arrays.asList(new GeoCoordinate(52.631692, 13.437591),
+                    new GeoCoordinate(52.631905, 13.437787),
+                    new GeoCoordinate(52.632577, 13.438357)));
+            // Note, the maximum supported number of banned areas is 20.
+            dynamicPenalty.addBannedArea(geoPolygon);
+
+            // 1. Add banned road link using addRoadPenalty API
+            // Note, map data needs to be present to get RoadElement by the GeoCoordinate.
+            RoadElement roadElement = RoadElement
+                    .getRoadElement(new GeoCoordinate(52.406611, 13.194916), "MAC");
+            if (roadElement != null) {
+                dynamicPenalty.addRoadPenalty(roadElement, DrivingDirection.DIR_BOTH,
+                        0/*new speed*/);
+            }
+            coreRouter.setDynamicPenalty(dynamicPenalty);
+        }
         /* Finally set the route option */
         routePlan.setRouteOptions(routeOptions);
 
@@ -230,6 +258,12 @@ public class MapFragmentView {
                 Toast.makeText(m_activity, "Please recalculate the route to apply this setting",
                         Toast.LENGTH_SHORT).show();
             }
+        } else if (item.getItemId() == ITEM_ID_ADD_AVOIDED_AREAS) {
+            m_addAvoidedAreas = item.isChecked();
+            if (m_mapRoute != null) {
+                Toast.makeText(m_activity, "Please recalculate the route to apply this setting",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
         return true;
     }
@@ -238,6 +272,9 @@ public class MapFragmentView {
         menu.add(0, ITEM_ID_SHOW_ZONES, Menu.NONE, "Show environmental zones")
                 .setCheckable(true);
         menu.add(0, ITEM_ID_EXCLUDE_IN_ROUTING, Menu.NONE, "Exclude all zones in routing")
+                .setCheckable(true);
+
+        menu.add(0, ITEM_ID_ADD_AVOIDED_AREAS, Menu.NONE, "Add avoided areas")
                 .setCheckable(true);
 
         return true;
