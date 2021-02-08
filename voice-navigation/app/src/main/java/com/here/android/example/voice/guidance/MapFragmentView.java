@@ -321,6 +321,13 @@ class MapFragmentView {
          * found in HERE Mobile SDK for Android (Premium) API doc
          */
         m_navigationManager.setMapUpdateMode(NavigationManager.MapUpdateMode.ROADVIEW);
+        
+        /*
+         * Sets the measuring unit system that is used by voice guidance.
+         * Check VoicePackage.getCustomAttributes() to see whether selected package has needed
+         * unit system.
+         */
+        m_navigationManager.setDistanceUnit(NavigationManager.UnitSystem.METRIC);
 
         /*
          * NavigationManager contains a number of listeners which we can use to monitor the
