@@ -7,7 +7,7 @@ android {
         // Developers must replace this with their own application's package name, which matches
         // their HERE application ID.
         applicationId "com.here.android.example.basicpositioningsolution"
-        minSdkVersion 17
+        minSdkVersion 19
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
