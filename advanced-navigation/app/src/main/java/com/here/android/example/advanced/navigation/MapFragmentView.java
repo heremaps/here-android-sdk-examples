@@ -138,8 +138,10 @@ class MapFragmentView {
                                 // when road view is active, we set the position indicator to align
                                 // with the current map transform center to synchronize map and map
                                 // marker movements.
-                                m_positionIndicatorFixed
-                                        .setCoordinate(m_map.pixelToGeo(m_mapTransformCenter));
+                                GeoCoordinate geoCoordinate = m_map.pixelToGeo(m_mapTransformCenter);
+                                if (geoCoordinate != null && geoCoordinate.isValid()) {
+                                    m_positionIndicatorFixed.setCoordinate(geoCoordinate);
+                                }
                             }
                         }
                     }
