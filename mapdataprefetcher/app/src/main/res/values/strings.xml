@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">MapDataPrefetcher</string>
+
+    <!--Buttons-->
+    <string name="prefetch_geo_box">Prefetch map by geo box</string>
+    <string name="prefetch_route">Prefetch map along the route</string>
+    <string name="calculate_route">Calculate route in offline</string>
+    <string name="simulate_navigation">Simulate route in offline</string>
+    <string name="stop_navigation">Stop navigation</string>
+
+    <!--Errors-->
+    <string name="simulation_error">\"Simulation error: \"</string>
+    <string name="error_null_route">Error occurred: Route is null</string>
+    <string name="change_map_error">You can\'t change map when simulation is running.</string>
+    <string name="error_occurred">\"Error occurred: \"</string>
+    <string name="error_map_size">Error occurred: map data size is bigger than expected</string>
+    <string name="prefetching_map">Prefetching map</string>
+    <string name="show_area">Show area</string>
+    <string name="show_route">Show route</string>
+</resources>
