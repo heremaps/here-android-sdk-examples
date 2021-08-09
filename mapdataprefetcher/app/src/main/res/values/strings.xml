@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">MapDataPrefetcher</string>
+    <string name="prefetch_map">Prefetch Map</string>
+    <string name="calculate_route">Calculate route</string>
+    <string name="simulate_navigation">Simulate navigation</string>
+    <string name="stop_navigation">Stop navigation</string>
+</resources>
