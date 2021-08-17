@@ -24,7 +24,7 @@ install:
   - cat $ANDROID_HOME/licenses/android-sdk-license
 
 before_script:
-  - travis_wait .ci/preInstall.sh
+  - .ci/preInstall.sh
 
 script:
   - gradle --version
