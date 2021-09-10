@@ -1,0 +1,23 @@
+<resources>
+    <string name="app_name">Routing-Kotlin</string>
+
+    <!--    Dialog captions-->
+    <string name="caption_dialog_add_waypoint">Do you want to add this waypoint to the route?</string>
+    <string name="caption_dialog_add_allowed_road">Add/remove allowed road</string>
+
+    <!--    dialog_add_or_remove_restrictions.xml-->
+    <string name="dialog_allowed_captionPvid">Pvid:</string>
+    <string name="dialog_allowed_hintPvid">Pvid value (integer value)</string>
+    <string name="dialog_allowed_captionCenter">Center:</string>
+    <string name="dialog_allowed_hintCenter">Geo center, (format=lat,lng)</string>
+    <string name="dialog_allowed_captionApplyInRadius">Apply in radius</string>
+    <string name="dialog_allowed_valueApplyInRadius">In meters</string>
+    <string name="dialog_allowed_textApplyInRadius">50</string>
+
+    <!--Buttons-->
+    <string name="btn_caption_calculateRoute">Calculate Truck route</string>
+    <string name="btn_caption_addOrRemAllowedRoad">Add allowed roads</string>
+    <string name="btn_caption_backToRoute">Back</string>
+    <string name="btn_caption_removeAllAllowedRoad">Remove allowed roads</string>
+
+</resources>

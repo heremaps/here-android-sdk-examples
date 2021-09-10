@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="4dp"
+    android:orientation="vertical"
+    android:padding="4dp">
+
+    <RadioGroup
+        android:id="@+id/chooseWayToAddAllowedRoad"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <RadioButton
+            android:id="@+id/roadElement"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Use Road element" />
+
+        <RadioButton
+            android:id="@+id/pvid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Use Pvid identifier" />
+    </RadioGroup>
+
+    <LinearLayout
+        android:id="@+id/roadElementLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/applyInRadius"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/dialog_allowed_captionApplyInRadius" />
+
+        <EditText
+            android:id="@+id/valueApplyInRadius"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:hint="@string/dialog_allowed_valueApplyInRadius"
+            android:inputType="number"
+            android:paddingStart="10dp"
+            android:text="@string/dialog_allowed_textApplyInRadius" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pvidIdLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="@string/dialog_allowed_captionPvid" />
+
+        <EditText
+            android:id="@+id/valuePvid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:hint="@string/dialog_allowed_hintPvid"
+            android:inputType="number"
+            android:paddingStart="10dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/pvidCenterLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/dialog_allowed_captionCenter" />
+
+        <EditText
+            android:id="@+id/valueCenter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:hint="@string/dialog_allowed_hintCenter"
+            android:paddingStart="10dp" />
+    </LinearLayout>
+</LinearLayout>
