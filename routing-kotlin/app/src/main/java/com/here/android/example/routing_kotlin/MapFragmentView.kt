@@ -36,8 +36,8 @@ class MapFragmentView(activity: AppCompatActivity) {
     var isRestrictionsActive = false
 
     fun MapPolyline.setLineWidthDp(width: Int) =
-        setLineWidth(width * 160/ (activity.resources.displayMetrics.densityDpi))
-
+        setLineWidth(width * DisplayMetrics.DENSITY_DEFAULT/ (activity.resources.displayMetrics.densityDpi))
+    
     init {
         initViews()
         initMapFragment()
