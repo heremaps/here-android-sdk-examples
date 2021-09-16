@@ -5,7 +5,7 @@
     <string name="caption_dialog_add_waypoint">Do you want to add this waypoint to the route?</string>
     <string name="caption_dialog_add_allowed_road">Add/remove allowed road</string>
 
-    <!--    dialog_add_or_remove_restrictions.xml-->
+    <!--    dialog_add_allowed_road.xml-->
     <string name="dialog_allowed_captionPvid">Pvid:</string>
     <string name="dialog_allowed_hintPvid">Pvid value (integer value)</string>
     <string name="dialog_allowed_captionCenter">Center:</string>
@@ -19,5 +19,4 @@
     <string name="btn_caption_addOrRemAllowedRoad">Add allowed roads</string>
     <string name="btn_caption_backToRoute">Back</string>
     <string name="btn_caption_removeAllAllowedRoad">Remove allowed roads</string>
-
 </resources>
