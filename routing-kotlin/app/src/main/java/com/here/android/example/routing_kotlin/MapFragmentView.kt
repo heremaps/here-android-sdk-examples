@@ -1,7 +1,9 @@
 package com.here.android.example.routing_kotlin
 
 import android.content.DialogInterface
-import android.content.Intent
+import com.here.android.mpa.routing.DynamicPenalty
+import com.here.android.mpa.routing.DynamicPenalty.*
+import com.here.android.example.routing_kotlin.MapFragmentView.RoadPermission.*
 import android.graphics.Color
 import android.graphics.PointF
 import android.util.DisplayMetrics
@@ -12,31 +14,51 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.here.android.mpa.common.*
+import com.here.android.mpa.guidance.TruckRestrictionsChecker
 import com.here.android.mpa.mapping.*
 import com.here.android.mpa.mapping.Map
 import com.here.android.mpa.mapping.MapGesture.OnGestureListener.OnGestureListenerAdapter
 import com.here.android.mpa.routing.*
 import java.io.File
-import java.io.Serializable
 import java.text.DecimalFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.collections.HashMap
 
 class MapFragmentView(activity: AppCompatActivity) {
-    val activity = activity
-    val m_mapFragment = getAndroidXMapFragment()
-    lateinit var m_map: Map
-    lateinit var m_dynamicPenalty: DynamicPenalty
-    val userWaypoints = ArrayList<GeoCoordinate>()
-    lateinit var buttonRoute: Button
-    lateinit var buttonRestrictions: Button
+    private val MIN_ROUTE_WAYPOINTS_COUNT = 2
+    private val MAP_POLYLINE_WIDTH = 30
+    private val MAX_PERMITTED_SPEED = 50
 
-    lateinit var roadPermission: RoadPermission
+    val activity = activity
+    private val mapFragment = getAndroidXMapFragment()
+    lateinit var map: Map
+    private lateinit var dynamicPenalty: DynamicPenalty
+    private val userWaypointsList = ArrayList<GeoCoordinate>()
+    private val allowedRoadsList = HashMap<RoadElement, MapObject>()
+    private val allowedPvidRoadsList = HashMap<Long, MapObject>()
+    private val restrictedRoadsList = HashMap<Long, MapObject>()
+    private lateinit var buttonRoute: Button
+    private lateinit var buttonRestrictions: Button
+
+    enum class RoadPermission {
+        ALLOWED_ROAD_ELEMENT, ALLOWED_PVID, RESTRICTED_ROAD
+    }
+
+    private lateinit var roadPermission: RoadPermission
     var isRouteReady = false
     var isRestrictionsActive = false
 
-    fun MapPolyline.setLineWidthDp(width: Int) =
-        setLineWidth(width * 160/ (activity.resources.displayMetrics.densityDpi))
+    private fun MapPolyline.setLineWidthDp(width: Int) =
+        setLineWidth(width * DisplayMetrics.DENSITY_DEFAULT / (activity.resources.displayMetrics.densityDpi))
+    private fun Map.removeMapObjects(allowedRoadsList: HashMap<RoadElement, MapObject>) {
+        val values: List<MapObject> = allowedRoadsList.values.toList()
+        removeMapObjects(values)
+    }
+    private fun Map.removeMapPvidObjects(allowedRoadsList: HashMap<Long, MapObject>) {
+        val values: List<MapObject> = allowedRoadsList.values.toList()
+        removeMapObjects(values)
+    }
 
     init {
         initViews()
@@ -48,7 +70,7 @@ class MapFragmentView(activity: AppCompatActivity) {
                 as AndroidXMapFragment
 
     private fun initViews() {
-        roadPermission = RoadPermission.ROAD_ELEMENT
+        roadPermission = ALLOWED_ROAD_ELEMENT
         buttonRoute = activity.findViewById(R.id.btnRoute)
         buttonRoute.setOnClickListener {
             when (isRestrictionsActive) {
@@ -56,14 +78,20 @@ class MapFragmentView(activity: AppCompatActivity) {
                     isRestrictionsActive = false
                     changeButtonsAppointment()
                 }
-                false, userWaypoints.size >= 2 -> calculateRoute(userWaypoints)
+                false, userWaypointsList.size >= 2 -> calculateRoute(userWaypointsList)
             }
         }
 
         buttonRestrictions = activity.findViewById(R.id.btnAllowedRoads)
         buttonRestrictions.setOnClickListener {
             when (isRestrictionsActive) {
-                true -> m_dynamicPenalty.clearAllAllowedRoadElements()
+                true -> {
+                    map.removeMapObjects(allowedRoadsList)
+                    map.removeMapPvidObjects(allowedPvidRoadsList)
+                    map.removeMapPvidObjects(restrictedRoadsList)
+                    dynamicPenalty.clearAllRoadPenalties()
+                    dynamicPenalty.clearAllAllowedRoadElements()
+                }
                 false -> {
                     isRestrictionsActive = true
                     addOrRemoveAllowedRoad()
@@ -75,8 +103,8 @@ class MapFragmentView(activity: AppCompatActivity) {
     private fun addAppCredentials(): ApplicationContext =
         ApplicationContext(activity).apply {
             // Set application credentials
-            setAppIdCode("3BB1TRFCHg8KnzBw6yCs", "GUkhoasO18lh5ZUHMIaxOg")
-            setLicenseKey("NKjz8taBG2qvviobojfLgORLfGSO3MUamOK6cuaj+9HRlDSuH7I4QhlFGwD5kCRzwKbwaqcTUss/lACy5bk+e92oNIt/kLaKRfNw5XPNvRcIfEELiYoj3woDYvcHTjwAa7sCEGRsYamD/XOaeTYzx77Genesuo1iXyhY7+yKPqVfkX44kILZJYxJrh4THZdUtZUQJ3NXua8V0ZHAmeQa7ZzrM8Ry5OE5fHlOMYHSpltGzYiuuJP1SE8Y62mahIj4gZuD5zidyecrni8+toN5PxyIF1s86Dey2WJB6dPdS4L+YeqfXvsuIj+BqeSS78KpRLefcwE6PX0cO5bUpM3AvB3mmfCk6quxOy/tL1L6XV1uo0HnhPyYPwo/H5aB+XXMjmVSDmTV0C40A5VlyEM4267vRGpgQQ4pjew3z2c3jn02094GQrcjuOnFdgTDt2uNgRFnWUxGHKVEneRsDDuBnx+0BPEJcuOIKQAyG6SlFYJ9Vc25T5Qg6srZNmL8bizGqt/LOa1IZSXsggizoPCh4hvXKnSxV88zLrTxNP+PRdh6LDw6Fs0eG9JzJe7Qt/V35VylfY3ZRrmabMx9latVc+aOVdZ7eBp+B5G/BfY3bOiwvORq/4OpBm7UqZFaYkMq/qUJ5uc7jeo7eUY6iBJkIiEhxhJWRPCsPzMMkosXFs8=")
+            setAppIdCode(activity.getString(R.string.credentials_app_id), activity.getString(R.string.credentials_app_code))
+            setLicenseKey(activity.getString(R.string.credentials_app_license_key))
         }
 
     private fun initMapFragment() {
@@ -85,19 +113,17 @@ class MapFragmentView(activity: AppCompatActivity) {
         val path = File(activity.getExternalFilesDir(null), ".here-map-data")
             .absolutePath
         // This method will throw IllegalArgumentException if provided path is not writable
-        com.here.android.mpa.common.MapSettings.setDiskCacheRootPath(path)
+        MapSettings.setDiskCacheRootPath(path)
 
-        val applicationContext: ApplicationContext = ApplicationContext(activity)
-
-        m_mapFragment.init(addAppCredentials()) { error ->
+        mapFragment.init(addAppCredentials()) { error ->
             when (error) {
                 OnEngineInitListener.Error.NONE -> {
-                    m_map = m_mapFragment.map!!
+                    map = mapFragment.map!!
 
-                    m_map.fleetFeaturesVisible = showTruckRestrictions()
-                    m_dynamicPenalty = DynamicPenalty()
+                    map.fleetFeaturesVisible = showTruckRestrictions()
+                    dynamicPenalty = DynamicPenalty()
 
-                    m_mapFragment.mapGesture!!.addOnGestureListener(
+                    mapFragment.mapGesture!!.addOnGestureListener(
                         createGestureListener(),
                         0,
                         false
@@ -109,7 +135,8 @@ class MapFragmentView(activity: AppCompatActivity) {
         }
     }
 
-    fun showTruckRestrictions(): EnumSet<Map.FleetFeature> = EnumSet.of(Map.FleetFeature.TRUCK_RESTRICTIONS)
+    private fun showTruckRestrictions(): EnumSet<Map.FleetFeature> =
+        EnumSet.of(Map.FleetFeature.TRUCK_RESTRICTIONS)
 
     private fun createGestureListener(): MapGesture.OnGestureListener {
         return object : OnGestureListenerAdapter() {
@@ -118,9 +145,9 @@ class MapFragmentView(activity: AppCompatActivity) {
                     return false
                 }
 
-                val geoCoordinate = m_map.pixelToGeo(p)!!
+                val geoCoordinate = map.pixelToGeo(p)!!
                 if (isRestrictionsActive) {
-                    addOrRemoveTruckRestrictionsDialog(geoCoordinate)
+                    addRoadsStatusDialog(geoCoordinate)
                     return false
                 } else {
                     addWaypointDialog(geoCoordinate)
@@ -130,8 +157,8 @@ class MapFragmentView(activity: AppCompatActivity) {
         }
     }
 
-    fun calculateRoute(geoCoordinates: ArrayList<GeoCoordinate>) {
-        if (geoCoordinates.size >= 2) {
+    private fun calculateRoute(geoCoordinates: ArrayList<GeoCoordinate>) {
+        if (geoCoordinates.size >= MIN_ROUTE_WAYPOINTS_COUNT) {
             val routePlan = RoutePlan()
 
             for (waypoint in geoCoordinates) {
@@ -151,7 +178,7 @@ class MapFragmentView(activity: AppCompatActivity) {
             routePlan.routeOptions = routeOptions
 
             CoreRouter().apply {
-                setDynamicPenalty(m_dynamicPenalty)
+                setDynamicPenalty(dynamicPenalty)
                 calculateRoute(routePlan, RouterListener())
             }
 
@@ -169,12 +196,12 @@ class MapFragmentView(activity: AppCompatActivity) {
             routingError: RoutingError
         ) {
             if (routingError == RoutingError.NONE) {
-                m_map.addMapObject(MapRoute(routeCalculationResult[0].route))
+                map.addMapObject(MapRoute(routeCalculationResult[0].route))
 
                 isRouteReady = true
             } else {
                 Toast.makeText(
-                    activity, "Error occured: " +
+                    activity, activity.getString(R.string.error) +
                             routingError.toString(), Toast.LENGTH_LONG
                 ).show()
             }
@@ -195,111 +222,161 @@ class MapFragmentView(activity: AppCompatActivity) {
             .setView(addWaypointDialog)
             .setTitle(R.string.caption_dialog_add_waypoint)
             .setPositiveButton("Done") { dialog, which ->
-                userWaypoints.add(geoCoordinate)
-                m_map.addMapObject(MapMarker(geoCoordinate))
+                userWaypointsList.add(geoCoordinate)
+                map.addMapObject(MapMarker(geoCoordinate))
             }
             .setNegativeButton("Cancel", null)
             .create()
             .show()
     }
 
-    fun addOrRemoveTruckRestrictionsDialog(geoCoordinate: GeoCoordinate) {
-        val addRestrictionsDialog: View = LayoutInflater.from(activity)
-            .inflate(R.layout.dialog_add_or_remove_restrictions, null)
-
+    fun addRoadsStatusDialog(geoCoordinate: GeoCoordinate) {
         val roadElement = RoadElement.getRoadElement(geoCoordinate, "MAC")!!
+        val pvidIdentifier = roadElement.permanentLinkId
+        var dialogTitle = activity.getString(R.string.caption_dialog_add_allowed_road)
 
-        (addRestrictionsDialog.findViewById(R.id.chooseWayToAddAllowedRoad) as RadioGroup)
-            .setOnCheckedChangeListener { group, checkedId ->
-                when (checkedId) {
-                    R.id.roadElement -> {
-                        roadPermission = RoadPermission.ROAD_ELEMENT
-                        changeDialogContextVisibility(addRestrictionsDialog)
+        val addRoadPermissionsDialog: View
+        when (TruckRestrictionsChecker.getTruckRestrictions(roadElement).isEmpty()) {
+            true -> {
+                roadPermission = RESTRICTED_ROAD
+                addRoadPermissionsDialog = LayoutInflater.from(activity)
+                    .inflate(R.layout.dialog_add_waypoint, null)
+
+                (addRoadPermissionsDialog.findViewById(R.id.waypointLatitude) as TextView).text =
+                    "Latitude: ${geoCoordinate.latitude}"
+                (addRoadPermissionsDialog.findViewById(R.id.waypointLongitude) as TextView).text =
+                    "Latitude: ${geoCoordinate.longitude}"
+            }
+            false -> {
+                addRoadPermissionsDialog = LayoutInflater.from(activity)
+                    .inflate(R.layout.dialog_add_allowed_road, null)
+                dialogTitle =
+                    activity.getString(R.string.caption_dialog_add_restricted_road)
+
+                (addRoadPermissionsDialog.findViewById(R.id.chooseWayToAddAllowedRoad) as RadioGroup)
+                    .setOnCheckedChangeListener { group, checkedId ->
+                        when (checkedId) {
+                            R.id.roadElement -> {
+                                roadPermission = ALLOWED_ROAD_ELEMENT
+                                changeDialogContextVisibility(addRoadPermissionsDialog)
+                            }
+                            R.id.pvid -> {
+                                roadPermission = ALLOWED_PVID
+                                changeDialogContextVisibility(addRoadPermissionsDialog)
+
+                                (addRoadPermissionsDialog.findViewById(R.id.valuePvid) as EditText)
+                                    .setText(pvidIdentifier.toString())
+
+                                val decimalFormat = DecimalFormat("#0.00000")
+                                (addRoadPermissionsDialog.findViewById(R.id.valueCenter) as EditText)
+                                    .setText(
+                                        decimalFormat.format(geoCoordinate.latitude)
+                                                + "," + decimalFormat.format(geoCoordinate.longitude)
+                                    )
+                            }
+                        }
                     }
-                    R.id.pvid -> {
-                        roadPermission = RoadPermission.PVID
-                        changeDialogContextVisibility(addRestrictionsDialog)
+            }
+        }
 
-                        (addRestrictionsDialog.findViewById(R.id.valuePvid) as EditText)
-                            .setText(roadElement.permanentLinkId.toString())
+        val dialogButtonClickListener = DialogInterface.OnClickListener { dialog, which ->
+            val pvidRoadElementIdentifier = PvidRoadElementIdentifier.create(
+                pvidIdentifier,
+                geoCoordinate
+            )
 
-                        val decimalFormat = DecimalFormat("#0.00000")
-                        (addRestrictionsDialog.findViewById(R.id.valueCenter) as EditText)
-                            .setText(
-                                decimalFormat.format(geoCoordinate.latitude)
-                                        + "," + decimalFormat.format(geoCoordinate.longitude)
+            if (which == DialogInterface.BUTTON_POSITIVE) {
+                when (roadPermission) {
+                    ALLOWED_ROAD_ELEMENT -> {
+                        if ((addRoadPermissionsDialog.findViewById(R.id.applyInRadius) as CheckBox).isChecked) {
+                            val radiusValue =
+                                (addRoadPermissionsDialog.findViewById(R.id.valueApplyInRadius) as EditText)
+                                    .text.toString().toFloat()
+
+                            val roadElementsList = allowRoadsInRadius(geoCoordinate, radiusValue)
+                            if (!roadElementsList.contains(roadElement)) roadElementsList.add(
+                                roadElement
                             )
+                            for (element in roadElementsList) {
+                                dynamicPenalty.addAllowedRoadElement(roadElement)
+                            }
+                        }
+                        dynamicPenalty.addAllowedRoadElement(roadElement)
+                    }
+                    ALLOWED_PVID -> {
+                        dynamicPenalty.addAllowedPvidRoadElementIdentifier(
+                            pvidRoadElementIdentifier
+                        )
+                    }
+                    RESTRICTED_ROAD -> {
+                        dynamicPenalty.addRoadPenalty(
+                            PvidRoadElementIdentifier.create(
+                                pvidIdentifier,
+                                geoCoordinate
+                            ),
+                            DrivingDirection.DIR_BOTH,
+                            MAX_PERMITTED_SPEED
+                        )
                     }
                 }
-            }
-
-        val positiveButtonClick = DialogInterface.OnClickListener { dialog, which ->
-            when (roadPermission) {
-                RoadPermission.ROAD_ELEMENT -> {
-                    val roadElementsList: ArrayList<RoadElement>
-                    if ((addRestrictionsDialog.findViewById(R.id.applyInRadius) as CheckBox).isChecked) {
-                        val radiusValue =
-                            (addRestrictionsDialog.findViewById(R.id.valueApplyInRadius) as EditText)
-                                .text.toString().toFloat()
-
-                        roadElementsList = allowRoadsInRadius(geoCoordinate, radiusValue)
-                        if (!roadElementsList.contains(roadElement)) roadElementsList.add(
-                            roadElement
-                        )
-                        for (element in roadElementsList) {
-                            m_dynamicPenalty.addAllowedRoadElement(roadElement)
+                showChangedRoadStatusOnMap(pvidIdentifier, roadElement)
+            } else {
+                when (roadPermission) {
+                    ALLOWED_ROAD_ELEMENT -> {
+                        if (allowedRoadsList.contains(roadElement)) {
+                            map.removeMapObject(allowedRoadsList.remove(roadElement)!!)
+                        }
+                    }
+                    ALLOWED_PVID -> {
+                        if (allowedPvidRoadsList.contains(pvidIdentifier)) {
+                            map.removeMapObject(allowedPvidRoadsList.remove(pvidIdentifier)!!)
+                        }
+                    }
+                    RESTRICTED_ROAD -> {
+                        if (restrictedRoadsList.contains(pvidIdentifier)) {
+                            map.removeMapObject(restrictedRoadsList.remove(pvidIdentifier)!!)
                         }
                     }
                 }
-                RoadPermission.PVID -> ""
             }
-            showAllowedRoadOnMap(roadElement)
-//            if (which == DialogInterface.BUTTON_POSITIVE) {
-//                m_dynamicPenalty.addRoadPenalty(
-//                    DynamicPenalty.PvidRoadElementIdentifier.create(
-//                        roadElement.permanentLinkId,
-//                        geoCoordinate
-//                    ),
-//                    DrivingDirection.DIR_BOTH,
-//                    50
-//                )
-//            }
         }
 
         AlertDialog.Builder(activity)
-            .setView(addRestrictionsDialog)
-            .setTitle(R.string.caption_dialog_add_allowed_road)
-            .setPositiveButton("Done", positiveButtonClick)
-            .setNegativeButton("Remove", null)
+            .setView(addRoadPermissionsDialog)
+            .setTitle(dialogTitle)
+            .setPositiveButton("Done", dialogButtonClickListener)
+            .setNegativeButton("Remove", dialogButtonClickListener)
             .create()
             .show()
     }
 
-    fun showAllowedRoadOnMap(roadElement: RoadElement) {
+    private fun showChangedRoadStatusOnMap(pvidIdentifier: Long, roadElement: RoadElement) {
+        val mapPolyline: MapPolyline = MapPolyline(GeoPolyline(roadElement.geometry))
+            .setLineWidthDp(MAP_POLYLINE_WIDTH)
+
         when (roadPermission) {
-            RoadPermission.ROAD_ELEMENT -> {
-                /**
-                 *
-                 */
+            ALLOWED_ROAD_ELEMENT -> {
+                mapPolyline.lineColor = Color.GREEN
+                allowedRoadsList[roadElement] = mapPolyline
             }
-            RoadPermission.PVID -> {
-                /**
-                 *
-                 */
+            ALLOWED_PVID -> {
+                mapPolyline.lineColor = Color.GREEN
+                allowedPvidRoadsList[pvidIdentifier] = mapPolyline
+            }
+            RESTRICTED_ROAD -> {
+                restrictedRoadsList[pvidIdentifier] = mapPolyline
+                mapPolyline.lineColor = Color.RED
             }
         }
-        val mapPolyline: MapPolyline = MapPolyline(GeoPolyline(roadElement.geometry))
-            .setLineColor(Color.GREEN)
-        mapPolyline.setLineWidthDp(30)
-        m_map.addMapObject(mapPolyline)
+        map.addMapObject(mapPolyline)
     }
 
-    fun allowRoadsInRadius(geoCoordinate: GeoCoordinate, radius: Float): ArrayList<RoadElement> {
+    private fun allowRoadsInRadius(geoCoordinate: GeoCoordinate, radius: Float): ArrayList<RoadElement> {
         val geoBoundingBox = GeoBoundingBox(geoCoordinate, radius * 2, radius * 2)
         return RoadElement.getRoadElements(geoBoundingBox, "MAC") as ArrayList<RoadElement>
     }
 
-    fun changeDialogContextVisibility(view: View) {
+    private fun changeDialogContextVisibility(view: View) {
         val roadElementLayout: LinearLayout =
             view.findViewById(R.id.roadElementLayout)
         val pvidIdLayout: LinearLayout =
@@ -308,30 +385,25 @@ class MapFragmentView(activity: AppCompatActivity) {
             view.findViewById(R.id.pvidCenterLayout)
 
         when (roadPermission) {
-            RoadPermission.ROAD_ELEMENT -> {
+            ALLOWED_ROAD_ELEMENT -> {
                 roadElementLayout.visibility = VISIBLE
                 pvidIdLayout.visibility = GONE
                 pvidCenterLayout.visibility = GONE
             }
-            RoadPermission.PVID -> {
+            ALLOWED_PVID -> {
                 roadElementLayout.visibility = GONE
                 pvidIdLayout.visibility = VISIBLE
                 pvidCenterLayout.visibility = VISIBLE
             }
+            else -> {}
         }
-    }
-
-    fun onCreateOptionsMenu(menu: Menu): Boolean {
-        val inflater: MenuInflater = activity.menuInflater
-        inflater.inflate(R.menu.routing_menu, menu)
-        return true
     }
 
     fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.clearMap -> {
-                m_map.removeAllMapObjects()
-                userWaypoints.clear()
+                map.removeAllMapObjects()
+                userWaypointsList.clear()
                 isRouteReady = false
                 true
             }
@@ -339,24 +411,20 @@ class MapFragmentView(activity: AppCompatActivity) {
         }
     }
 
-    fun addOrRemoveAllowedRoad() {
+    private fun addOrRemoveAllowedRoad() {
         isRestrictionsActive = true
 
         changeButtonsAppointment()
     }
 
-    fun changeButtonsAppointment() {
+    private fun changeButtonsAppointment() {
         if (isRestrictionsActive) {
             buttonRoute.text = activity.getString(R.string.btn_caption_backToRoute)
-            buttonRestrictions.text = activity.getString(R.string.btn_caption_removeAllAllowedRoad)
+            buttonRestrictions.text = activity.getString(R.string.btn_caption_removeAllChangedRoads)
         } else {
             buttonRoute.text = activity.getString(R.string.btn_caption_calculateRoute)
-            buttonRestrictions.text = activity.getString(R.string.btn_caption_addOrRemAllowedRoad)
+            buttonRestrictions.text = activity.getString(R.string.btn_caption_addChangedRoad)
         }
     }
 
-}
-
-enum class RoadPermission {
-    ROAD_ELEMENT, PVID
 }

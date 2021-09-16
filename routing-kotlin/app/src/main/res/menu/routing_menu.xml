@@ -6,8 +6,4 @@
         app:showAsAction="always"
         android:icon="@drawable/ic_outline_clear_route"
         android:title="Clear map" />
-    <item
-        android:id="@+id/waypoints"
-        android:orderInCategory="2"
-        android:title="Waypoints" />
 </menu>

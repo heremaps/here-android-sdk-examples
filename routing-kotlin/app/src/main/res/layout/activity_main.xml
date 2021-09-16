@@ -29,6 +29,6 @@
             android:id="@+id/btnAllowedRoads"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/btn_caption_addOrRemAllowedRoad" />
+            android:text="@string/btn_caption_addChangedRoad" />
     </LinearLayout>
 </LinearLayout>
