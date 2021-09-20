@@ -347,7 +347,7 @@ class MapFragmentView(private val activity: AppCompatActivity) {
             dialogButtonClickListener
         )
     }
-
+    
     @SuppressLint("SetTextI18n")
     private fun setGeoCoordinatesDialog(view: View, geoCoordinate: GeoCoordinate) {
         (view.findViewById(R.id.waypointLatitude) as TextView).text =
