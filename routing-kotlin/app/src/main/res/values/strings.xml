@@ -28,4 +28,7 @@
     <string name="btn_caption_removeAllChangedRoads">Remove changed roads</string>
 
     <string name="error">\"Error occurred: \"</string>
+    <string name="button_done">Done</string>
+    <string name="button_cancel">Cancel</string>
+    <string name="button_remove">Remove</string>
 </resources>
