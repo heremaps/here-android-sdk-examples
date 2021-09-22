@@ -13,6 +13,7 @@ import android.view.View.VISIBLE
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.here.android.mpa.common.*
 import com.here.android.mpa.guidance.TruckRestrictionsChecker
 import com.here.android.mpa.mapping.*
@@ -48,18 +49,13 @@ class MapFragmentView(private val activity: AppCompatActivity) {
     private val allowedPvidRoadsList = HashMap<Long, MapObject>()
     private val restrictedRoadsList = HashMap<Long, MapObject>()
 
-    private val buttonRoute by lazy {
-        activity.findViewById<Button>(R.id.btnRoute)
-    }
-
-    private val buttonRestrictions by lazy {
-        activity.findViewById<Button>(R.id.btnAllowedRoads)
+    private val buttonCalculateRoute by lazy {
+        activity.findViewById<FloatingActionButton>(R.id.fab_calculate_route)
     }
 
     private var roadPermission = RoadPermission.ALLOWED_ROAD_ELEMENT
 
     private var isRouteReady = false
-    private var isRestrictionsActive = false
 
     init {
         initViews()
@@ -67,29 +63,14 @@ class MapFragmentView(private val activity: AppCompatActivity) {
     }
 
     private fun initViews() {
-        buttonRoute.setOnClickListener {
-            if (isRestrictionsActive) {
-                isRestrictionsActive = false
-                changeButtonsAppointment()
-            } else if (userWaypointsList.size >= 2) {
+        buttonCalculateRoute.setOnClickListener {
+            if (userWaypointsList.size >= MIN_ROUTE_WAYPOINTS_COUNT) {
                 calculateRoute(userWaypointsList)
-            }
-        }
-
-        buttonRestrictions.setOnClickListener {
-            when (isRestrictionsActive) {
-                true -> {
-                    map.removeMapObjects(allowedRoadsList)
-                    map.removeMapPvidObjects(allowedPvidRoadsList)
-                    map.removeMapPvidObjects(restrictedRoadsList)
-
-                    dynamicPenalty.clearAllRoadPenalties()
-                    dynamicPenalty.clearAllAllowedRoadElements()
-                }
-                false -> {
-                    isRestrictionsActive = true
-                    addOrRemoveAllowedRoad()
-                }
+            } else {
+                Toast.makeText(
+                    activity, activity.getString(R.string.calculate_route_toast),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         }
     }
@@ -126,7 +107,10 @@ class MapFragmentView(private val activity: AppCompatActivity) {
                         false
                     )
                 }
-                else -> Toast.makeText(activity, error.toString(), Toast.LENGTH_LONG).show()
+                else -> Toast.makeText(
+                    activity, activity.getString(R.string.error) +
+                            error.toString(), Toast.LENGTH_LONG
+                ).show()
             }
         }
     }
@@ -136,52 +120,47 @@ class MapFragmentView(private val activity: AppCompatActivity) {
 
     private fun createGestureListener(): MapGesture.OnGestureListener {
         return object : OnGestureListenerAdapter() {
-            override fun onTapEvent(p: PointF): Boolean {
-                if (isRouteReady) {
-                    return false
-                }
+            override fun onTapEvent(pointF: PointF): Boolean {
+                if (isRouteReady) return false
 
-                val geoCoordinate = map.pixelToGeo(p)!!
+                map.pixelToGeo(pointF)?.let { addWaypointDialog(it) }
+                return true
+            }
 
-                if (isRestrictionsActive) {
-                    addRoadsStatusDialog(geoCoordinate)
-                } else {
-                    addWaypointDialog(geoCoordinate)
-                }
+            override fun onLongPressEvent(pointF: PointF): Boolean {
+                if (isRouteReady) return false
 
-                return false
+                map.pixelToGeo(pointF)?.let { addRoadsStatusDialog(it) }
+                return true
             }
         }
     }
 
     private fun calculateRoute(geoCoordinates: ArrayList<GeoCoordinate>) {
-        if (geoCoordinates.size >= MIN_ROUTE_WAYPOINTS_COUNT) {
-            val routePlan = RoutePlan()
+        val routePlan = RoutePlan()
 
-            for (waypoint in geoCoordinates) {
-                routePlan.addWaypoint(RouteWaypoint(waypoint))
-            }
-
-            val routeOptions = RouteOptions()
-                .setTransportMode(RouteOptions.TransportMode.TRUCK)
-                .setRouteType(RouteOptions.Type.SHORTEST)
-                .setTruckTrailersCount(1)
-                .setTruckWidth(3F)
-                .setTruckHeight(4.2F)
-                .setTruckLength(6F)
-                .setTruckLimitedWeight(50F)
-                .setTruckWeightPerAxle(10F)
-
-            routePlan.routeOptions = routeOptions
-
-            CoreRouter().apply {
-                setDynamicPenalty(dynamicPenalty)
-                calculateRoute(routePlan, RouterListener())
-            }
-        } else {
-            Toast.makeText(activity, "Please add at least 2 waypoints", Toast.LENGTH_SHORT)
-                .show()
+        for (waypoint in geoCoordinates) {
+            routePlan.addWaypoint(RouteWaypoint(waypoint))
         }
+
+        routePlan.routeOptions = getTruckRouteOptions()
+
+        CoreRouter().apply {
+            setDynamicPenalty(dynamicPenalty)
+            calculateRoute(routePlan, RouterListener())
+        }
+    }
+
+    private fun getTruckRouteOptions(): RouteOptions {
+        return RouteOptions()
+            .setTransportMode(RouteOptions.TransportMode.TRUCK)
+            .setRouteType(RouteOptions.Type.SHORTEST)
+            .setTruckTrailersCount(1)
+            .setTruckWidth(3F)
+            .setTruckHeight(4.2F)
+            .setTruckLength(6F)
+            .setTruckLimitedWeight(50F)
+            .setTruckWeightPerAxle(10F)
     }
 
     inner class RouterListener : CoreRouter.Listener {
@@ -234,7 +213,9 @@ class MapFragmentView(private val activity: AppCompatActivity) {
         var dialogTitle = R.string.caption_dialog_add_allowed_road
 
         val addRoadPermissionsDialog: View
-        if (TruckRestrictionsChecker.getTruckRestrictions(roadElement).isEmpty()) {
+        if (TruckRestrictionsChecker.getTruckRestrictions(roadElement, getTruckRouteOptions())
+                .isEmpty()
+        ) {
             roadPermission = RoadPermission.RESTRICTED_ROAD
             addRoadPermissionsDialog = LayoutInflater.from(activity)
                 .inflate(R.layout.dialog_add_waypoint, null)
@@ -282,9 +263,10 @@ class MapFragmentView(private val activity: AppCompatActivity) {
                 when (roadPermission) {
                     RoadPermission.ALLOWED_ROAD_ELEMENT -> {
                         if ((addRoadPermissionsDialog.findViewById(R.id.applyInRadius) as CheckBox)
-                                .isChecked) {
+                                .isChecked
+                        ) {
                             val radiusValue =
-                                (addRoadPermissionsDialog.findViewById(R.id.valueApplyInRadius) 
+                                (addRoadPermissionsDialog.findViewById(R.id.valueApplyInRadius)
                                         as EditText)
                                     .text.toString().toFloat()
 
@@ -347,7 +329,7 @@ class MapFragmentView(private val activity: AppCompatActivity) {
             dialogButtonClickListener
         )
     }
-    
+
     @SuppressLint("SetTextI18n")
     private fun setGeoCoordinatesDialog(view: View, geoCoordinate: GeoCoordinate) {
         (view.findViewById(R.id.waypointLatitude) as TextView).text =
@@ -422,31 +404,21 @@ class MapFragmentView(private val activity: AppCompatActivity) {
     }
 
     fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.clearMap -> {
-                map.removeAllMapObjects()
-                userWaypointsList.clear()
-                isRouteReady = false
-                true
-            }
-            else -> false
-        }
-    }
+        return if (item.itemId == R.id.clearMap) {
+            map.removeMapObjects(allowedRoadsList)
+            map.removeMapPvidObjects(allowedPvidRoadsList)
+            map.removeMapPvidObjects(restrictedRoadsList)
 
-    private fun addOrRemoveAllowedRoad() {
-        isRestrictionsActive = true
+            dynamicPenalty.clearAllRoadPenalties()
+            dynamicPenalty.clearAllAllowedRoadElements()
 
-        changeButtonsAppointment()
-    }
+            userWaypointsList.clear()
 
-    private fun changeButtonsAppointment() {
-        if (isRestrictionsActive) {
-            buttonRoute.text = activity.getString(R.string.btn_caption_backToRoute)
-            buttonRestrictions.text = activity.getString(R.string.btn_caption_removeAllChangedRoads)
-        } else {
-            buttonRoute.text = activity.getString(R.string.btn_caption_calculateRoute)
-            buttonRestrictions.text = activity.getString(R.string.btn_caption_addChangedRoad)
-        }
+            map.removeAllMapObjects()
+            isRouteReady = false
+
+            true
+        } else false
     }
 
     private fun MapPolyline.setLineWidthDp(width: Int): MapPolyline {

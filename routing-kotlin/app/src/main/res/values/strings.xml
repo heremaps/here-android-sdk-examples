@@ -6,7 +6,6 @@
     <string name="credentials_app_code">GUkhoasO18lh5ZUHMIaxOg</string>
     <string name="credentials_app_license_key">NKjz8taBG2qvviobojfLgORLfGSO3MUamOK6cuaj+9HRlDSuH7I4QhlFGwD5kCRzwKbwaqcTUss/lACy5bk+e92oNIt/kLaKRfNw5XPNvRcIfEELiYoj3woDYvcHTjwAa7sCEGRsYamD/XOaeTYzx77Genesuo1iXyhY7+yKPqVfkX44kILZJYxJrh4THZdUtZUQJ3NXua8V0ZHAmeQa7ZzrM8Ry5OE5fHlOMYHSpltGzYiuuJP1SE8Y62mahIj4gZuD5zidyecrni8+toN5PxyIF1s86Dey2WJB6dPdS4L+YeqfXvsuIj+BqeSS78KpRLefcwE6PX0cO5bUpM3AvB3mmfCk6quxOy/tL1L6XV1uo0HnhPyYPwo/H5aB+XXMjmVSDmTV0C40A5VlyEM4267vRGpgQQ4pjew3z2c3jn02094GQrcjuOnFdgTDt2uNgRFnWUxGHKVEneRsDDuBnx+0BPEJcuOIKQAyG6SlFYJ9Vc25T5Qg6srZNmL8bizGqt/LOa1IZSXsggizoPCh4hvXKnSxV88zLrTxNP+PRdh6LDw6Fs0eG9JzJe7Qt/V35VylfY3ZRrmabMx9latVc+aOVdZ7eBp+B5G/BfY3bOiwvORq/4OpBm7UqZFaYkMq/qUJ5uc7jeo7eUY6iBJkIiEhxhJWRPCsPzMMkosXFs8=</string>
 
-
     <!--    Dialog captions-->
     <string name="caption_dialog_add_waypoint">Do you want to add this waypoint to the route?</string>
     <string name="caption_dialog_add_allowed_road">Add/remove allowed road</string>
@@ -21,14 +20,12 @@
     <string name="dialog_allowed_valueApplyInRadius">In meters</string>
     <string name="dialog_allowed_textApplyInRadius">50</string>
 
-    <!--Buttons-->
-    <string name="btn_caption_calculateRoute">Calculate Truck route</string>
-    <string name="btn_caption_addChangedRoad">Add changed roads</string>
-    <string name="btn_caption_backToRoute">Back</string>
-    <string name="btn_caption_removeAllChangedRoads">Remove changed roads</string>
-
-    <string name="error">\"Error occurred: \"</string>
+    <!--    MapFragment strings-->
+    <string name="error">Error occurred: </string>
     <string name="button_done">Done</string>
     <string name="button_cancel">Cancel</string>
     <string name="button_remove">Remove</string>
+
+    <string name="fab_description">FAB calculate route</string>
+    <string name="calculate_route_toast">Please add at least 2 waypoints</string>
 </resources>

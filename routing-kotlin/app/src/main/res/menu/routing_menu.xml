@@ -4,6 +4,6 @@
     <item
         android:id="@+id/clearMap"
         app:showAsAction="always"
-        android:icon="@drawable/ic_outline_clear_route"
+        android:icon="@drawable/ic_outline_clear"
         android:title="Clear map" />
 </menu>
