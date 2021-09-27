@@ -13,13 +13,20 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
 
-        <meta-data android:name="com.here.android.maps.appid" android:value="{SAMPLE_APP_ID}"/>
-        <meta-data android:name="com.here.android.maps.apptoken" android:value="{SAMPLE_APP_CODE}"/>
-        <meta-data android:name="com.here.android.maps.license.key" android:value="{SAMPLE_LICENSE}"/>
+        <!--Developers should put application credentials here.To obtain them, please register the application
+        at https://developer.here.com/develop/mobile-sdks-->
+        <meta-data
+            android:name="com.here.android.maps.appid"
+            android:value="{YOUR_APP_ID}" />
+        <meta-data
+            android:name="com.here.android.maps.apptoken"
+            android:value="{YOUR_APP_CODE}" />
+        <meta-data
+            android:name="com.here.android.maps.license.key"
+            android:value="{YOUR_LICENSE_KEY}" />
 
         <!--Developers should always provide custom values for each of {YOUR_LABEL_NAME}.
         Do not reuse HERE Mobile SDK defaults.-->
@@ -31,7 +38,8 @@
                 <action android:name="com.here.android.mpa.service.MapService.v3"></action>
             </intent-filter>
         </service>
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

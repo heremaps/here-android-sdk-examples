@@ -21,11 +21,11 @@
 
         <TextView
             android:id="@+id/textViewLocationInfo"
+            style="@style/Base.TextAppearance.AppCompat.Large"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/Base.TextAppearance.AppCompat.Large"
-            android:text="Waiting for position fix.."
-            android:padding="3dp"/>
+            android:padding="3dp"
+            android:text="Waiting for position fix.." />
     </RelativeLayout>
 
 </RelativeLayout>
