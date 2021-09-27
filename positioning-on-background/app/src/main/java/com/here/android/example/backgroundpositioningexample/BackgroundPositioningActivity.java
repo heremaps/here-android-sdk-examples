@@ -230,7 +230,8 @@ public class BackgroundPositioningActivity extends AppCompatActivity implements 
      */
     private void startForegroundService() {
         final Intent intent = new Intent(getApplicationContext(), BackgroundPositioningActivity.class);
-        final PendingIntent contentIntent = PendingIntent.getActivity(getApplicationContext(), 0, intent, 0);
+        final PendingIntent contentIntent = PendingIntent.getActivity(
+                getApplicationContext(), 0, intent, PendingIntent.FLAG_IMMUTABLE);
         PositioningService.start(getApplicationContext(), contentIntent);
         openBinder();
     }

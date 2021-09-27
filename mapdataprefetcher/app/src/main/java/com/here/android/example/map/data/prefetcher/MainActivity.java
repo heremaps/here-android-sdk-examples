@@ -114,7 +114,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        return m_mapFragmentView.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.map_menu, menu);
+        return true;
     }
 
     @Override

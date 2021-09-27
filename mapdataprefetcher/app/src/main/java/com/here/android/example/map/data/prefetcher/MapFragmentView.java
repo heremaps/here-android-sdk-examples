@@ -103,11 +103,6 @@ public class MapFragmentView {
         initMapFragment();
     }
 
-    public boolean onCreateOptionsMenu(Menu menu) {
-        m_activity.getMenuInflater().inflate(R.menu.map_menu, menu);
-        return true;
-    }
-
     public boolean onOptionsItemSelected(MenuItem item) {
         if (m_isRouteSimulationFinished) {
 

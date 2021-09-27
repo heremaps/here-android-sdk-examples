@@ -78,11 +78,8 @@ class MapFragmentView(private val activity: AppCompatActivity) {
     private fun addAppCredentials(): ApplicationContext =
         ApplicationContext(activity).apply {
             // Set application credentials
-            setAppIdCode(
-                activity.getString(R.string.credentials_app_id),
-                activity.getString(R.string.credentials_app_code)
-            )
-            setLicenseKey(activity.getString(R.string.credentials_app_license_key))
+            setAppIdCode("{YOUR_APP_ID}", "{YOUR_APP_CODE}")
+            setLicenseKey("{YOUR_LICENSE_KEY}")
         }
 
     private fun initMapFragment() {
