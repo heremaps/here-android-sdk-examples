@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/heremaps/here-android-sdk-examples.svg?branch=master)](https://travis-ci.org/heremaps/here-android-sdk-examples)
+
 # HERE Mobile SDK 3.x for Android example projects
 
 Copyright (c) 2011-2021 HERE Europe B.V.
