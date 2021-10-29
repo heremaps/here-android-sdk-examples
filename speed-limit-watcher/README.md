@@ -51,19 +51,6 @@ you should insert the credentials that you generated into the `<application>` ta
     <meta-data android:name="com.here.android.maps.license.key" android:value="{SAMPLE_LICENSE}"/>
 ```
 
-The last snippet that we will add to the `AndroidManifest.xml` file, is the definition of `MapService`.
-
-```xml
-    <service
-        android:name="com.here.android.mpa.service.MapService"
-        android:label="{YOUR_LABEL_NAME}"
-        android:exported="false">
-        <intent-filter>
-            <action android:name="com.here.android.mpa.service.MapService.v3"></action>
-        </intent-filter>
-    </service>
-```
-
 *Please read more about the service and and isolated or shared disk caches [here](https://developer.here.com/documentation/android-premium/dev_guide/topics/map-service.html)*
 
 ## Step 2. Initializing HERE Mobile SDK
