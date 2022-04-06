@@ -6,6 +6,12 @@ Copyright (c) 2011-2021 HERE Europe B.V.
 
 This repository holds a series of Java-based projects using the **HERE Mobile SDK 3.x for Android**. More information about the API can be found on the HERE Developer Portal's [Mobile SDKs](https://developer.here.com/develop/mobile-sdks) page.
 
+Note:
+This service is no longer being actively developed. We will only provide critical fixes for this service in future. Instead, use the new [HERE SDK 4.x](https://developer.here.com/documentation/android-sdk-navigate/4.10.5.0/dev_guide/index.html)
+HERE Premium SDK (3.x) is superseded by new 4.x SDK variants and the Premium SDK will be maintained until 31 December 2022 with only critical bug fixes and no feature development / enhancements.
+Current users of the HERE Premium SDK (3.x) are encouraged to migrate to Lite, Explore or Navigate HERE SDK (4.x) variants based on licensed use cases before 31 December 2022. Most of the Premium SDK features are already available in the new SDK variants.
+Onboarding of new customers for Premium SDK is not possible.
+
 This set of individual, use-case based projects is designed to be cloned by developers for their own use.
 
 **Note:** In order to be able to build the examples, you have to [sign up](https://developer.here.com/develop/mobile-sdks?create=Evaluation&keepState=true&step=account) for a *90-day Free Trial*. After signing in with a *HERE account*, follow these steps to download the *HERE Mobile SDK (Premium)*:
