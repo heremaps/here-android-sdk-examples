@@ -13,6 +13,7 @@ HERE Premium SDK (3.x) is superseded by new 4.x SDK variants and the Premium SDK
 Current users of the HERE Premium SDK (3.x) are encouraged to migrate to Lite, Explore or Navigate HERE SDK (4.x) variants based on licensed use cases before 31 December 2022. Most of the Premium SDK features are already available in the new SDK variants.
 Onboarding of new customers for Premium SDK is not possible.
 
+
 This set of individual, use-case based projects is designed to be cloned by developers for their own use.
 
 **Note:** In order to be able to build the examples, you have to [sign up](https://developer.here.com/develop/mobile-sdks?create=Evaluation&keepState=true&step=account) for a *90-day Free Trial*. After signing in with a *HERE account*, follow these steps to download the *HERE Mobile SDK (Premium)*:
