@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <!-- Map Fragment embedded with the map object -->
+    <fragment
+        android:id="@+id/mapfragment"
+        class="com.here.android.mpa.mapping.AndroidXMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <Button
+        android:id="@+id/calculateRoute"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|bottom"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="4dp"
+        android:text="Calculate route" />
+
+</FrameLayout>
