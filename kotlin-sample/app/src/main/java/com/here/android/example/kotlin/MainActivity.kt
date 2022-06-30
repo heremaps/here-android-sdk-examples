@@ -127,8 +127,8 @@ class MainActivity : FragmentActivity() {
 
         val context = ApplicationContext(this).apply {
             // Set application credentials
-            setAppIdCode("{YOUR_APP_ID}", "{YOUR_APP_CODE}")
-            setLicenseKey("{YOUR_LICENSE_KEY}")
+            setAppIdCode("POUX3glS2zTltGB1iRE5", "ZpB66cbwJBvukspcqaNg6A")
+            setLicenseKey("NGxqfSXzDp6VeATDlD0vR2l0d7WmB9qF/PodTE66DgJ9eQ9iWVcQsHheap/mf5QaYurRJrKUTtukRffE05dPlwTHmLjKlG3DzWEmD9J/j/BWqjItZVU4Ex8WyhECkIkQjq55V+0e5RQafZLIUkZo6htj/HNU4hrKCfFWEe3jYGA0mvAyykydwci2IGXPURAaF3HkULwbqCQYgpvriBb3cgUFzR3K57021IWuqnKz8uNMl2bWEhkmxXxVI5gFPqw/93tMgKMxB2QDzFepsIM6X2gWxXysKud1oSAKaHosc6doVrlGCCHzmHA2dNldF4sRzQTUONEyPqpodrRrLg4p58OOLlfnKMYk0qv+PEtiyzlV1kWJX2rTWqRnTID6aH7yg9Jg5ohW6f5BkoFH2mHA8Tv+KTTFEkIQ3aLRMJoQ3vuBI2TT5T8vCx7c00O8w5+1QaFHwHhwyiYBx9XlBrgJwiiGX2svwh2AyEPYQ38SmZzB15go4xfrxvkScsbFxH0jwDP27w2ri62giX4SPph0F5yO5/M2GMHfqQzW9LNDGAFy7MVQ4ehCVCTiSWW1O3bL87AHmsV0AjbHHFmBaJcARE4UeIXpDDpjqKeQP4VKuvRhV91wyvzSZQQnVABvZ2WXUQi4YJDzui2wKF+OjsQoLVyEiEw4ZUX4aU15Lmw3Big=")
         }
 
         mapFragment?.let { fragment ->
