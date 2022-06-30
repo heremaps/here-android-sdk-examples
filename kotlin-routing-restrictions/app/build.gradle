@@ -5,7 +5,7 @@ android {
     compileSdkVersion 31
 
     defaultConfig {
-        applicationId "com.here.android.example.kotlin_routing_restrictions"
+        applicationId "com.here.android.example.kotlin.routing.restrictions"
         minSdkVersion 19
 
         targetSdkVersion 31

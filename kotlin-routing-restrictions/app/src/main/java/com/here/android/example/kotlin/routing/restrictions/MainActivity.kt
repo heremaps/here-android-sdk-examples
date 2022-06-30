@@ -1,4 +1,4 @@
-package com.here.android.example.kotlin_routing_restrictions
+package com.here.android.example.kotlin.routing.restrictions
 
 import android.Manifest
 import android.content.Context
@@ -15,7 +15,6 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import com.here.android.mpa.common.*
 import com.here.android.mpa.mapping.*
-import com.here.android.mpa.mapping.Map
 import com.here.android.mpa.routing.*
 
 class MainActivity : FragmentActivity() {
