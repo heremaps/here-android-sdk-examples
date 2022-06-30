@@ -1,4 +1,4 @@
-package com.here.android.example.routing_kotlin
+package com.here.android.example.kotlin_routing_restrictions
 
 import android.Manifest
 import android.content.Context
@@ -339,7 +339,7 @@ class MainActivity : FragmentActivity() {
 
         when (item.itemId) {
             R.id.allowPVIDRoadElement -> {
-                changeDefaultRestrictions(item.isChecked, null, allowedPVID)
+                changeDefaultRestrictions(item.isChecked, pvidRoadElementIdentifier = allowedPVID)
 
                 if (item.isChecked)
                     m_coreRouter.dynamicPenalty.addAllowedPvidRoadElementIdentifier(allowedPVID)
