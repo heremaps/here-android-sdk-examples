@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -16,6 +17,7 @@ import androidx.fragment.app.FragmentActivity
 import com.here.android.mpa.common.*
 import com.here.android.mpa.mapping.*
 import com.here.android.mpa.routing.*
+import com.here.android.mpa.mapping.Map
 
 class MainActivity : FragmentActivity() {
 
@@ -44,6 +46,8 @@ class MainActivity : FragmentActivity() {
     private lateinit var allowedPVID: DynamicPenalty.PvidRoadElementIdentifier
     private lateinit var restrictedPVID: DynamicPenalty.PvidRoadElementIdentifier
     private lateinit var allowedRoadElement: RoadElement
+
+    private var isFirstRouteCalculation = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -124,8 +128,8 @@ class MainActivity : FragmentActivity() {
 
         val context = ApplicationContext(this).apply {
             // Set application credentials
-            setAppIdCode("{YOUR_APP_ID}", "{YOUR_APP_CODE}")
-            setLicenseKey("{YOUR_LICENSE_KEY}")
+            setAppIdCode("fnXEuO0V3kbNVrpxmaG8", "gtEjkuRCuiVVLKU-5BktJA")
+            setLicenseKey("S+5s8u4ms92/gq0dbbQNspK2wCVgb2Xk9D1+MzxoyYQ/TRbh3fr1RFDWdDrlvU5XTphKXhKjs9O04Dd6ZNwEUX7Wh8LFCJMsrWwyle64x57csisL8mlH5TU68L+YgjgzQDGbI1RIvTKndLlMuQveWlM1SZqT8WKDHRLfgAif2pSCixEGkljeCBxDanD9rHtrriq84ZD4xGPx40Wlnz0L0E3n2FrGJmUl1jkeMbyRLlzN1ZO9s94WEOlK/8ybpVK7kz8GrpnchoIey00OsFtCUeTYtGmD+vTmbYIhyVC1zPjCrUP1Ou3CRDhoN+EyJv8g11Xnv0lTQ7lBk97YRKJxP3Khk/CUbRVdwPwg5RxikdtBnduvEjgAORMaxoI7F2nAQqMRWNRHmqzpAgsQunB3mCeC/hybg9rGQl40U8d9Smc1jdGVeHbkMXwB5HfvCT+tuA2jUkvdzuCXpl3PXlhMGf7kaBtXfXGlvzo9sq8vc9zWW12WtUhJF9twjJDqLSghOBQkOiAwZ2WePo+IzfQX6KjDigokzwvxZJa0x0oM2aYxrMR4cHpLXY5YQyiB3JW+WvsJN6ubyR/MQtm7FnDoabYdZS0T+l7u2lSzae0mKDukTYqaPV52lV0KdIM4VYFARjh7u5wPFBv6F5OgJcxw7Gb9EanIW9Uul4QrOrAKn+4=")
         }
 
         mapFragment.let { fragment ->
@@ -198,6 +202,7 @@ class MainActivity : FragmentActivity() {
     private fun initCalculateRouteButton() {
         val calculateRouteButton: Button = findViewById(R.id.calculateRoute)
 
+        calculateRouteButton.visibility = View.VISIBLE
         calculateRouteButton.setOnClickListener {
             if (m_mapRoute != null) {
                 m_map!!.removeMapObject(m_mapRoute!!)
@@ -235,9 +240,6 @@ class MainActivity : FragmentActivity() {
 
         m_routePlan.addWaypoint(startPoint)
         m_routePlan.addWaypoint(destination)
-
-        setupRoadRestrictions()
-        changeDefaultRestrictions(true)
     }
 
     private fun calculateRoute(
@@ -261,15 +263,17 @@ class MainActivity : FragmentActivity() {
                         startMarker = MapMarker(startGeoCoordinate)
                         endMarker = MapMarker(endGeoCoordinate)
 
-                        m_map!!.addMapObject(startMarker)
-                        m_map!!.addMapObject(endMarker)
-                        m_map!!.addMapObject(m_mapRoute!!)
+                        m_map?.let {
+                            it.addMapObject(startMarker)
+                            it.addMapObject(endMarker)
+                            it.addMapObject(m_mapRoute!!)
 
-                        m_map!!.zoomTo(
-                            route.boundingBox!!,
-                            Map.Animation.NONE,
-                            Map.MOVE_PRESERVE_ORIENTATION
-                        )
+                            it.zoomTo(
+                                route.boundingBox!!,
+                                Map.Animation.NONE,
+                                Map.MOVE_PRESERVE_ORIENTATION
+                            )
+                        }
                     } else {
                         Toast.makeText(
                             this@MainActivity,
@@ -337,6 +341,14 @@ class MainActivity : FragmentActivity() {
         item.setChecked(!item.isChecked)
 
         when (item.itemId) {
+            R.id.addDefaultPenalties -> {
+                if (isFirstRouteCalculation) {
+                    setupRoadRestrictions()
+                    changeDefaultRestrictions(true)
+
+                    isFirstRouteCalculation = false
+                }
+            }
             R.id.allowPVIDRoadElement -> {
                 changeDefaultRestrictions(item.isChecked, pvidRoadElementIdentifier = allowedPVID)
 
