@@ -128,8 +128,8 @@ class MainActivity : FragmentActivity() {
 
         val context = ApplicationContext(this).apply {
             // Set application credentials
-            setAppIdCode("fnXEuO0V3kbNVrpxmaG8", "gtEjkuRCuiVVLKU-5BktJA")
-            setLicenseKey("S+5s8u4ms92/gq0dbbQNspK2wCVgb2Xk9D1+MzxoyYQ/TRbh3fr1RFDWdDrlvU5XTphKXhKjs9O04Dd6ZNwEUX7Wh8LFCJMsrWwyle64x57csisL8mlH5TU68L+YgjgzQDGbI1RIvTKndLlMuQveWlM1SZqT8WKDHRLfgAif2pSCixEGkljeCBxDanD9rHtrriq84ZD4xGPx40Wlnz0L0E3n2FrGJmUl1jkeMbyRLlzN1ZO9s94WEOlK/8ybpVK7kz8GrpnchoIey00OsFtCUeTYtGmD+vTmbYIhyVC1zPjCrUP1Ou3CRDhoN+EyJv8g11Xnv0lTQ7lBk97YRKJxP3Khk/CUbRVdwPwg5RxikdtBnduvEjgAORMaxoI7F2nAQqMRWNRHmqzpAgsQunB3mCeC/hybg9rGQl40U8d9Smc1jdGVeHbkMXwB5HfvCT+tuA2jUkvdzuCXpl3PXlhMGf7kaBtXfXGlvzo9sq8vc9zWW12WtUhJF9twjJDqLSghOBQkOiAwZ2WePo+IzfQX6KjDigokzwvxZJa0x0oM2aYxrMR4cHpLXY5YQyiB3JW+WvsJN6ubyR/MQtm7FnDoabYdZS0T+l7u2lSzae0mKDukTYqaPV52lV0KdIM4VYFARjh7u5wPFBv6F5OgJcxw7Gb9EanIW9Uul4QrOrAKn+4=")
+            setAppIdCode("{YOUR_APP_ID}", "{YOUR_APP_CODE}")
+            setLicenseKey("{YOUR_LICENSE_KEY}")
         }
 
         mapFragment.let { fragment ->
@@ -140,9 +140,9 @@ class MainActivity : FragmentActivity() {
 
                         m_map?.run {
                             // Set the map center to the Berlin region (no animation)
-                            setCenter(GeoCoordinate(52.518136, 13.393409, 0.0), Map.Animation.NONE)
+                            setCenter(GeoCoordinate(52.510756348557756, 13.38113432397731), Map.Animation.NONE)
                             // Set the zoom level to the average between min and max zoom level.
-                            setZoomLevel((maxZoomLevel + minZoomLevel) / 2);
+                            zoomLevel = 14.0
 
                             setupRoute()
                             initCalculateRouteButton()
@@ -160,9 +160,9 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun setupRoadRestrictions() {
-        val pvidAllowedCoordinate = GeoCoordinate(52.48249794909468, 13.349465302604271)
-        val roadElementAllowedCoordinate = GeoCoordinate(52.510583, 13.429202)
-        val pvidRestrictedCoordinate = GeoCoordinate(52.497405, 13.392355)
+        val pvidAllowedCoordinate = GeoCoordinate(52.50976757472477, 13.376763138824241)
+        val roadElementAllowedCoordinate = GeoCoordinate(52.50967105768706, 13.37891280127972)
+        val pvidRestrictedCoordinate = GeoCoordinate(52.511488759932575, 13.383899313444406)
 
         allowedPVID = DynamicPenalty.PvidRoadElementIdentifier
             .create(
@@ -232,8 +232,8 @@ class MainActivity : FragmentActivity() {
 
         m_routePlan.routeOptions = routeOptions
 
-        startGeoCoordinate = GeoCoordinate(52.484819, 13.344155)
-        endGeoCoordinate = GeoCoordinate(52.505024, 13.439699)
+        startGeoCoordinate = GeoCoordinate(52.50840783539561, 13.376705207378569)
+        endGeoCoordinate = GeoCoordinate(52.51278601743045, 13.385974921776945)
 
         val startPoint = RouteWaypoint(startGeoCoordinate)
         val destination = RouteWaypoint(endGeoCoordinate)
@@ -347,6 +347,7 @@ class MainActivity : FragmentActivity() {
                     changeDefaultRestrictions(true)
 
                     isFirstRouteCalculation = false
+                    item.isVisible = false
                 }
             }
             R.id.allowPVIDRoadElement -> {
