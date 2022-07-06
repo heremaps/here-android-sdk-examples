@@ -28,12 +28,12 @@
          at https://developer.here.com/develop/mobile-sdks-->
         <meta-data
             android:name="com.here.android.maps.appid"
-            android:value="j2p0mPkucLcFsqEcOXZE" />
+            android:value="{YOUR_APP_ID}" />
         <meta-data
             android:name="com.here.android.maps.apptoken"
-            android:value="j1ShCCRuy3hEux3Q9gwyAw" />
+            android:value="{YOUR_APP_CODE}" />
         <meta-data
             android:name="com.here.android.maps.license.key"
-            android:value="DGrMsmbuFuu+hxO6OzmYhegXeWSrLFAzM85uZ9GFhSeiuabXsU5Lar+VeK0hPp9BsX829OpmSpdbLL9UzQ9tot8MdxljRUCYRgoWXMpvsQJFvFcquTxh0qMAbghI+iC+Dxi3POUUXPoOIBCmEyNHsgO8d7mFe7/gI+fLMkFg/J3zMuq6OleBWJwGBXqMewUTfQY83sv0D8p82UK0yYdn/aTbwFgR531CGhFqpx48CHSXkwNXdyLe3zYrf/fR+8VNrG7eVD4dC1sjSSTcwmcW75Bv7OYBoFjXc4j3EftayqNzGsPHM1vmWDhDQAP8ICAbasxmcwvkiS78D2PUhTXkBmu7As4NnElVlAa5cUJZdlKzkgfJTfhlngxyGHhjblFpStHPDi2eKdQXM18GiZZ+vFnjtvu3ACbYF5Ljy6zdF3kKXhg6I+5UOtrIOeUaMX6jyd7wEZXfzFbDNfP9lTo5U8aA3+SCRdCYsF+3CPz2HYK2jSAXk35QQ6W4UykYPnKFQUFw6kJrRMgfTOIpWEs2nJW4E5d9cEsoRzk1XJ48ZaBIfybqAEHpAngQZEU5HDum+6ZnNz8Vj3obm3PjCD5a+jcQSdXXzMZs0Ij4Ugqvedq3qttG6IDyxM+i5wHuxSAIQTvBPdBzSz4P5R4LdHgutMwSUyAPuHqBWnmmV/4ihbA=" />
+            android:value="{YOUR_LICENSE_KEY}" />
     </application>
 </manifest>
