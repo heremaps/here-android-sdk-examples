@@ -20,4 +20,11 @@
         android:checked="false"
         android:orderInCategory="2"
         android:title="Restrict PVID road element" />
+
+    <item
+        android:id="@+id/addDefaultPenalties"
+        android:checkable="true"
+        android:checked="false"
+        android:orderInCategory="3"
+        android:title="Show penalties" />
 </menu>

@@ -17,6 +17,7 @@
         android:layout_gravity="start|bottom"
         android:layout_marginStart="4dp"
         android:layout_marginBottom="4dp"
+        android:visibility="gone"
         android:text="Calculate route" />
 
 </FrameLayout>

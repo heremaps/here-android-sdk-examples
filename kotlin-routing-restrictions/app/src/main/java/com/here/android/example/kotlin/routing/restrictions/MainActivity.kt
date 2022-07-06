@@ -8,6 +8,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Button
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
@@ -16,6 +17,7 @@ import androidx.fragment.app.FragmentActivity
 import com.here.android.mpa.common.*
 import com.here.android.mpa.mapping.*
 import com.here.android.mpa.routing.*
+import com.here.android.mpa.mapping.Map
 
 class MainActivity : FragmentActivity() {
 
@@ -44,6 +46,8 @@ class MainActivity : FragmentActivity() {
     private lateinit var allowedPVID: DynamicPenalty.PvidRoadElementIdentifier
     private lateinit var restrictedPVID: DynamicPenalty.PvidRoadElementIdentifier
     private lateinit var allowedRoadElement: RoadElement
+
+    private var isFirstRouteCalculation = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -136,9 +140,9 @@ class MainActivity : FragmentActivity() {
 
                         m_map?.run {
                             // Set the map center to the Berlin region (no animation)
-                            setCenter(GeoCoordinate(52.518136, 13.393409, 0.0), Map.Animation.NONE)
+                            setCenter(GeoCoordinate(52.510756348557756, 13.38113432397731), Map.Animation.NONE)
                             // Set the zoom level to the average between min and max zoom level.
-                            setZoomLevel((maxZoomLevel + minZoomLevel) / 2);
+                            zoomLevel = 14.0
 
                             setupRoute()
                             initCalculateRouteButton()
@@ -156,9 +160,9 @@ class MainActivity : FragmentActivity() {
     }
 
     private fun setupRoadRestrictions() {
-        val pvidAllowedCoordinate = GeoCoordinate(52.48249794909468, 13.349465302604271)
-        val roadElementAllowedCoordinate = GeoCoordinate(52.510583, 13.429202)
-        val pvidRestrictedCoordinate = GeoCoordinate(52.497405, 13.392355)
+        val pvidAllowedCoordinate = GeoCoordinate(52.50976757472477, 13.376763138824241)
+        val roadElementAllowedCoordinate = GeoCoordinate(52.50967105768706, 13.37891280127972)
+        val pvidRestrictedCoordinate = GeoCoordinate(52.511488759932575, 13.383899313444406)
 
         allowedPVID = DynamicPenalty.PvidRoadElementIdentifier
             .create(
@@ -198,6 +202,7 @@ class MainActivity : FragmentActivity() {
     private fun initCalculateRouteButton() {
         val calculateRouteButton: Button = findViewById(R.id.calculateRoute)
 
+        calculateRouteButton.visibility = View.VISIBLE
         calculateRouteButton.setOnClickListener {
             if (m_mapRoute != null) {
                 m_map!!.removeMapObject(m_mapRoute!!)
@@ -227,17 +232,14 @@ class MainActivity : FragmentActivity() {
 
         m_routePlan.routeOptions = routeOptions
 
-        startGeoCoordinate = GeoCoordinate(52.484819, 13.344155)
-        endGeoCoordinate = GeoCoordinate(52.505024, 13.439699)
+        startGeoCoordinate = GeoCoordinate(52.50840783539561, 13.376705207378569)
+        endGeoCoordinate = GeoCoordinate(52.51278601743045, 13.385974921776945)
 
         val startPoint = RouteWaypoint(startGeoCoordinate)
         val destination = RouteWaypoint(endGeoCoordinate)
 
         m_routePlan.addWaypoint(startPoint)
         m_routePlan.addWaypoint(destination)
-
-        setupRoadRestrictions()
-        changeDefaultRestrictions(true)
     }
 
     private fun calculateRoute(
@@ -261,15 +263,17 @@ class MainActivity : FragmentActivity() {
                         startMarker = MapMarker(startGeoCoordinate)
                         endMarker = MapMarker(endGeoCoordinate)
 
-                        m_map!!.addMapObject(startMarker)
-                        m_map!!.addMapObject(endMarker)
-                        m_map!!.addMapObject(m_mapRoute!!)
+                        m_map?.let {
+                            it.addMapObject(startMarker)
+                            it.addMapObject(endMarker)
+                            it.addMapObject(m_mapRoute!!)
 
-                        m_map!!.zoomTo(
-                            route.boundingBox!!,
-                            Map.Animation.NONE,
-                            Map.MOVE_PRESERVE_ORIENTATION
-                        )
+                            it.zoomTo(
+                                route.boundingBox!!,
+                                Map.Animation.NONE,
+                                Map.MOVE_PRESERVE_ORIENTATION
+                            )
+                        }
                     } else {
                         Toast.makeText(
                             this@MainActivity,
@@ -337,6 +341,15 @@ class MainActivity : FragmentActivity() {
         item.setChecked(!item.isChecked)
 
         when (item.itemId) {
+            R.id.addDefaultPenalties -> {
+                if (isFirstRouteCalculation) {
+                    setupRoadRestrictions()
+                    changeDefaultRestrictions(true)
+
+                    isFirstRouteCalculation = false
+                    item.isVisible = false
+                }
+            }
             R.id.allowPVIDRoadElement -> {
                 changeDefaultRestrictions(item.isChecked, pvidRoadElementIdentifier = allowedPVID)
 
