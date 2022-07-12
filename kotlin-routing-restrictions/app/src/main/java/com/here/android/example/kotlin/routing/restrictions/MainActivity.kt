@@ -332,13 +332,15 @@ class MainActivity : FragmentActivity() {
         m_map!!.addMapObject(m_mapPolyline[idInGeoCoordinatesList])
     }
 
+    private var optionsMenu: Menu? = null
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.options_menu, menu)
+        optionsMenu = menu
         return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        item.setChecked(!item.isChecked)
+        item.isChecked = !item.isChecked
 
         when (item.itemId) {
             R.id.addDefaultPenalties -> {
@@ -348,6 +350,12 @@ class MainActivity : FragmentActivity() {
 
                     isFirstRouteCalculation = false
                     item.isVisible = false
+
+                    optionsMenu?.let {
+                        it.findItem(R.id.allowPVIDRoadElement).isVisible = true
+                        it.findItem(R.id.allowRoadElement).isVisible = true
+                        it.findItem(R.id.restrictPVIDRoadElement).isVisible = true
+                    }
                 }
             }
             R.id.allowPVIDRoadElement -> {
