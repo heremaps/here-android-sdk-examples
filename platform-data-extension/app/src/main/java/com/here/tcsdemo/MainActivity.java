@@ -18,6 +18,7 @@ package com.here.tcsdemo;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -62,7 +63,10 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_CODE_ASK_PERMISSIONS: {
                 for (int index = 0; index < permissions.length; index++) {
-                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
+                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED &&
+                            !(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                            permissions[index].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                    ) {
                         /*
                          * If the user turned down the permission request in the past and chose the
                          * Don't ask again option in the permission request system dialog.

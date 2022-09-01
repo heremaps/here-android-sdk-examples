@@ -87,7 +87,10 @@ class MainActivity : FragmentActivity() {
         when (requestCode) {
             REQUEST_CODE_ASK_PERMISSIONS -> {
                 for (index in RUNTIME_PERMISSIONS.indices) {
-                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
+                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED &&
+                            !(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                            permissions[index] == Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                    ) {
                         var notGrantedMessage = "Required permission ${permissions[index]} not granted."
 
                         /**
