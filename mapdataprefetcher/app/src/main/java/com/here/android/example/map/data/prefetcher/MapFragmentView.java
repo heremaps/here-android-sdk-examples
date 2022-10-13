@@ -441,6 +441,8 @@ public class MapFragmentView {
     }
 
     void onDestroy() {
-        m_mapDataPrefetcher.clearMapDataCache();
+        if (m_mapDataPrefetcher != null) {
+            m_mapDataPrefetcher.clearMapDataCache();
+        }
     }
 }

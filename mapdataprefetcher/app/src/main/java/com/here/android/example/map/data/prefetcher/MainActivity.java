@@ -79,7 +79,10 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case REQUEST_CODE_ASK_PERMISSIONS: {
                 for (int index = 0; index < permissions.length; index++) {
-                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED) {
+                    if (grantResults[index] != PackageManager.PERMISSION_GRANTED &&
+                            !(Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
+                            permissions[index].equals(Manifest.permission.WRITE_EXTERNAL_STORAGE))
+                    ) {
 
                         /*
                          * If the user turned down the permission request in the past and chose the
@@ -110,10 +113,14 @@ public class MainActivity extends AppCompatActivity {
         // All permission requests are being handled. Create map fragment view. Please note
         // the HERE Mobile SDK requires all permissions defined above to operate properly.
         m_mapFragmentView = new MapFragmentView(this);
+        invalidateOptionsMenu();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        if (m_mapFragmentView == null) {
+            return false;
+        }
         return m_mapFragmentView.onCreateOptionsMenu(menu);
     }
 
