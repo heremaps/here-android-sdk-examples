@@ -39,13 +39,13 @@
          at https://developer.here.com/develop/mobile-sdks-->
         <meta-data
             android:name="com.here.android.maps.appid"
-            android:value="{YOUR_APP_ID}" />
+            android:value="${hereAppId}" />
         <meta-data
             android:name="com.here.android.maps.apptoken"
-            android:value="{YOUR_APP_CODE}" />
+            android:value="${hereAppToken}" />
         <meta-data
             android:name="com.here.android.maps.license.key"
-            android:value="{YOUR_LICENSE_KEY}" />
+            android:value="${hereKey}" />
         <!--
             Embed the HERE Positioning Service.
             For more information, see the HERE Mobile SDK Developer's Guide
