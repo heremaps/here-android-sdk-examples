@@ -16,17 +16,16 @@
 
 package com.here.android.example.basicpositioningsolution;
 
+import static com.here.android.example.basicpositioningsolution.HereHelperKt.getArrowBitmap;
+
 import android.Manifest;
-import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.Build;
-import androidx.annotation.NonNull;
-import androidx.core.app.ActivityCompat;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -34,17 +33,25 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.GeoPosition;
+import com.here.android.mpa.common.Image;
 import com.here.android.mpa.common.LocationDataSourceHERE;
 import com.here.android.mpa.common.OnEngineInitListener;
 import com.here.android.mpa.common.PositioningManager;
-import com.here.android.mpa.mapping.Map;
+import com.here.android.mpa.guidance.MapMatcherMode;
+import com.here.android.mpa.guidance.NavigationManager;
 import com.here.android.mpa.mapping.AndroidXMapFragment;
+import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapState;
+import com.here.android.mpa.mapping.PositionIndicator;
 import com.here.android.positioning.StatusListener;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.Locale;
 
@@ -81,9 +88,18 @@ public class BasicPositioningActivity extends AppCompatActivity implements Posit
     // text view instance for showing location information
     private TextView mLocationInfo;
 
+    private MapViewModel mapViewModel;
+    private Bitmap arrowBitmap;
+    private Image positionImage;
+    private PositionIndicator positionIndicator;
+    private NavigationManager navigationManager;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        arrowBitmap = getArrowBitmap(this);
+        mapViewModel = new ViewModelProvider(this).get(MapViewModel.class);
 
         if (hasPermissions(this, RUNTIME_PERMISSIONS)) {
             initializeMapsAndPositioning();
@@ -136,6 +152,7 @@ public class BasicPositioningActivity extends AppCompatActivity implements Posit
 
     @Override
     public void onPositionUpdated(final PositioningManager.LocationMethod locationMethod, final GeoPosition geoPosition, final boolean mapMatched) {
+        mapViewModel.onHeading(geoPosition.getHeading());
         final GeoCoordinate coordinate = geoPosition.getCoordinate();
         if (mTransforming) {
             mPendingUpdate = new Runnable() {
@@ -225,6 +242,17 @@ public class BasicPositioningActivity extends AppCompatActivity implements Posit
         return (AndroidXMapFragment)getSupportFragmentManager().findFragmentById(R.id.mapfragment);
     }
 
+    public void onArrowCallback(ArrowState arrowState) {
+        Log.d("ArrowState", "Rotating: " + (arrowState.angle) + ", Tilt: " +  arrowState.tilt);
+            if (arrowBitmap != null) {
+                if (arrowState.angle == 0f && arrowState.tilt == 0f) {
+                    positionImage.setBitmap(arrowBitmap);
+                } else {
+                    HereHelperKt.rotateAndSkewImage(positionImage, arrowBitmap, arrowState.angle, arrowState.tilt);
+                }
+            }
+        positionIndicator.setMarker(positionImage);
+    }
     /**
      * Initializes HERE Maps and HERE Positioning. Called after permission check.
      */
@@ -239,9 +267,20 @@ public class BasicPositioningActivity extends AppCompatActivity implements Posit
             public void onEngineInitializationCompleted(OnEngineInitListener.Error error) {
                 if (error == OnEngineInitListener.Error.NONE) {
                     map = mapFragment.getMap();
+                    mapViewModel.addMap(map);
+                    mapViewModel.setArrowCallback(arrowState -> {
+                        onArrowCallback(arrowState);
+                        return null;
+                    });
+                    positionImage = new Image();
+                    positionImage.setBitmap(arrowBitmap);
                     map.setCenter(new GeoCoordinate(61.497961, 23.763606, 0.0), Map.Animation.NONE);
                     map.setZoomLevel(map.getMaxZoomLevel() - 1);
                     map.addTransformListener(BasicPositioningActivity.this);
+                    mapFragment.getMapGesture().addOnGestureListener(new MapGestureListener((userAction) -> {
+                        mapViewModel.onUserAction(userAction);
+                        return null;
+                    }), 0, false);
                     mPositioningManager = PositioningManager.getInstance();
                     mHereLocation = LocationDataSourceHERE.getInstance(
                             new StatusListener() {
@@ -305,12 +344,20 @@ public class BasicPositioningActivity extends AppCompatActivity implements Posit
                         Toast.makeText(BasicPositioningActivity.this, "LocationDataSourceHERE.getInstance(): failed, exiting", Toast.LENGTH_LONG).show();
                         finish();
                     }
+
+                    // Need this to get heading
+                    navigationManager = NavigationManager.getInstance();
+                    navigationManager.startTracking(MapMatcherMode.CAR);
+
                     mPositioningManager.setDataSource(mHereLocation);
                     mPositioningManager.addListener(new WeakReference<PositioningManager.OnPositionChangedListener>(
                             BasicPositioningActivity.this));
                     // start position updates, accepting GPS, network or indoor positions
                     if (mPositioningManager.start(PositioningManager.LocationMethod.GPS_NETWORK_INDOOR)) {
-                        mapFragment.getPositionIndicator().setVisible(true);
+                        positionIndicator = mapFragment.getPositionIndicator();
+                        positionIndicator.setVisible(true);
+                        positionIndicator.setSmoothPositionChange(true);
+                        positionIndicator.setMarker(positionImage);
                     } else {
                         Toast.makeText(BasicPositioningActivity.this, "PositioningManager.start: failed, exiting", Toast.LENGTH_LONG).show();
                         finish();
