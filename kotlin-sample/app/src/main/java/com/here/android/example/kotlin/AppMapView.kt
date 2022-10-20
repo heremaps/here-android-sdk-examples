@@ -2,7 +2,6 @@ package com.here.android.example.kotlin
 
 import android.graphics.PointF
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.widget.Toast
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
@@ -11,74 +10,28 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.here.android.mpa.common.*
-import com.here.android.mpa.guidance.NavigationManager
 import com.here.android.mpa.mapping.*
-import com.here.android.mpa.mapping.Map
 import com.here.android.mpa.mapping.MapGesture.OnGestureListener.OnGestureListenerAdapter
-import com.here.android.mpa.routing.*
-import kotlin.collections.ArrayList
-import kotlin.collections.List
-
-enum class ButtonTitles(val text: String) {
-    CREATE_ROUTE("Create route"),
-    SIMULATE("Simulate"),
-    FINISH_SIMULATION("Finish simulation")
-}
 
 class AppMapView : AppCompatActivity() {
-
-    var mapView: MapView? = null
-    private lateinit var map: Map
-    private var route: Route? = null
-    private lateinit var geoBoundingBox: GeoBoundingBox
-    private var navigationManager: NavigationManager? = null
-
-    var buttonTitles = ButtonTitles.CREATE_ROUTE
-    private var listOfGeoCoordinates: ArrayList<GeoCoordinate> = ArrayList()
-    private val listOfMapMarkers: ArrayList<MapMarker> = ArrayList()
-    private var isRouteCalculated = true
-
-    private val mapViewModel by lazy { ViewModelProvider(this)[MapViewModel::class.java] }
+    val mapViewModel by lazy { ViewModelProvider(this)[MapViewModel::class.java] }
+    private var mapView: MapView? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (mapViewModel.getGeoCoordinatesList().size > 0) {
-            listOfGeoCoordinates = mapViewModel.getGeoCoordinatesList()
-        }
-
         setContent {
             ShowMap(this)
         }
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle) {
-        super.onRestoreInstanceState(savedInstanceState)
-    }
-
-    private fun setupInitialMap() {
-        map.run {
-            // Set the map center to the Berlin region (no animation)
-            setCenter(GeoCoordinate(52.500556, 13.398889, 0.0), Map.Animation.NONE)
-            // Set the zoom level to the average between min and max zoom level.
-            zoomLevel = (maxZoomLevel + minZoomLevel) / 2;
-            tilt = 0.0f
-        }
-    }
-
-    private fun addMapMarker(geoCoordinate: GeoCoordinate) {
-        MapMarker(geoCoordinate).also {
-            listOfMapMarkers.add(it)
-            map.addMapObject(it)
-        }
-
     }
 
     fun initMap(mapView: MapView) {
@@ -92,23 +45,22 @@ class AppMapView : AppCompatActivity() {
         MapEngine.getInstance().init(context) { error ->
             if (error == OnEngineInitListener.Error.NONE) {
                 /* get the map object */
-                map = Map()
-                mapView.map = map
+                mapViewModel.getCurrentMap().also { mapView.map = it }
+
 
                 mapView.mapGesture?.addOnGestureListener(mapGestureListener, 0, false)
-                if (listOfGeoCoordinates.size > 0) {
-                    for (geoCoordinate in listOfGeoCoordinates) {
-                        addMapMarker(geoCoordinate)
+                if (mapViewModel.getGeoCoordinatesList().size > 0) {
+                    for (geoCoordinate in mapViewModel.getGeoCoordinatesList()) {
+                        mapViewModel.addMapMarker(geoCoordinate)
                     }
                 }
 
-                if (mapViewModel.getNavigationManager() != null) {
-                    startSimulation()
+                mapViewModel.getRoute()?.let {
+                    mapViewModel.getCurrentMap().addMapObject(MapRoute(it))
                 }
 
-                mapViewModel.getRoute()?.let {
-                    route = it
-                    map.addMapObject(MapRoute(route!!))
+                if (mapViewModel.getNavigationManager() != null) {
+                    mapViewModel.startSimulation()
                 }
             } else {
                 Toast.makeText(this, "Error: ${error!!}", Toast.LENGTH_LONG)
@@ -120,155 +72,71 @@ class AppMapView : AppCompatActivity() {
     private val mapGestureListener: MapGesture.OnGestureListener =
         object : OnGestureListenerAdapter() {
             override fun onLongPressEvent(point: PointF): Boolean {
-                if (isRouteCalculated) {
-                    val geoCoordinate = map.pixelToGeo(point)
-                    geoCoordinate?.let {
-                        listOfGeoCoordinates.add(it)
-                        mapViewModel.addGeoCoordinate(it)
-                        addMapMarker(it)
-                    }
-                }
+                mapViewModel.addMapObj(point)
 
                 return true
             }
         }
 
     private fun createRoute(): Boolean {
-        if (listOfGeoCoordinates.size >= 2) {
-            val coreRouter = CoreRouter()
-            val routePlan = RoutePlan()
-            var routeOptions = RouteOptions().apply {
-                transportMode = RouteOptions.TransportMode.CAR
-                routeType = RouteOptions.Type.FASTEST
-                routeCount = 1
-            }
-
-            routePlan.apply {
-                routeOptions = routeOptions
-                for (waypoint in listOfGeoCoordinates) addWaypoint(RouteWaypoint(waypoint))
-            }
-
-
-            coreRouter.calculateRoute(
-                routePlan,
-                object : Router.Listener<List<RouteResult?>?, RoutingError?> {
-                    override fun onProgress(p0: Int) {
-//                        The calculation progress can be retrieved in this callback.
+        return if (mapViewModel.getGeoCoordinatesList().size >= 2) {
+            val routeCalculationResultObserver = Observer<RouteCalculationStatus> { result ->
+                val message = when (result) {
+                    is RouteCalculationStatus.Successful -> getString(R.string.route_calc_success)
+                    is RouteCalculationStatus.Error -> {
+                        if (result.error == null)
+                            getString(R.string.route_calc_invalid)
+                        else
+                            getString(R.string.route_calc_error) + result.error
                     }
+                }
 
-                    override fun onCalculateRouteFinished(
-                        routeResults: List<RouteResult?>,
-                        routingError: RoutingError
-                    ) {
-                        if (routingError == RoutingError.NONE) {
-                            route = routeResults[0]?.route.also {
-                                it?.let {
-                                    mapViewModel.setRoute(it)
-                                    val mapRoute = MapRoute(it)
+                Toast.makeText(this, message, Toast.LENGTH_LONG)
+                    .show()
+            }
+            mapViewModel.routeCalculationResultMessage.observe(this, routeCalculationResultObserver)
 
-                                    map.addMapObject(mapRoute)
+            mapViewModel.createRoute()
 
-                                    geoBoundingBox = it.boundingBox!!
-                                    map.zoomTo(
-                                        geoBoundingBox, Map.Animation.NONE,
-                                        Map.MOVE_PRESERVE_ORIENTATION
-                                    )
-                                } ?: kotlin.run {
-                                    Toast.makeText(
-                                        this@AppMapView,
-                                        "Error:route results returned is not valid",
-                                        Toast.LENGTH_LONG
-                                    ).show()
-                                }
-                            }
-                        } else {
-                            Toast.makeText(
-                                this@AppMapView,
-                                "Error: route calculation returned error code: $routingError",
-                                Toast.LENGTH_LONG
-                            ).show()
-                        }
-                    }
-                })
-            return true
+            true
         } else {
-            Toast.makeText(this, "Please choose minimum 2 waypoints", Toast.LENGTH_LONG)
+            Toast.makeText(this, getString(R.string.min_points_count), Toast.LENGTH_LONG)
                 .show()
-            return false
+            false
         }
     }
 
-    private fun startSimulation() {
-        map.positionIndicator.isVisible = true
+    fun onClick(buttonStatus: ButtonStatus?): String {
+        var canCreateRoute = false
 
-        navigationManager =
-            if (mapViewModel.getNavigationManager() != null) {
-                mapViewModel.getNavigationManager().also {navigationManager ->
-                    navigationManager!!.setMap(map)
-                    navigationManager.resume()
-                }
+        val buttonTitle = when (buttonStatus) {
+            is ButtonStatus.CreateRoute -> {
+                canCreateRoute = createRoute()
+                if (canCreateRoute) {
+                    getString(R.string.simulate)
+                } else
+                    getString(R.string.create_route)
             }
-            else {
-                NavigationManager.getInstance().also {navigationManager ->
-                    mapViewModel.setNavigationManager(navigationManager)
-                    navigationManager.setMap(map)
-                    navigationManager.mapUpdateMode = NavigationManager.MapUpdateMode.ROADVIEW_NOZOOM
-                    route?.let { navigationManager.simulate(it, 40) }
-                }
+            is ButtonStatus.SimulateRouting -> {
+                mapViewModel.startSimulation()
+                getString(R.string.finish_simulation)
             }
-
-        map.tilt = 30f
-        map.zoomLevel = map.maxZoomLevel / 1.1
-    }
-
-    fun onClick(title: String): String {
-        if (buttonTitles.text != title) {
-            buttonTitles = when(title) {
-                ButtonTitles.CREATE_ROUTE.text -> ButtonTitles.CREATE_ROUTE
-                ButtonTitles.SIMULATE.text -> ButtonTitles.SIMULATE
-                ButtonTitles.FINISH_SIMULATION.text -> ButtonTitles.FINISH_SIMULATION
-                else -> ButtonTitles.CREATE_ROUTE
+            is ButtonStatus.FinishRoutingSimulation -> {
+                mapViewModel.clearMapData()
+                getString(R.string.create_route)
             }
-        }
-        buttonTitles = when (buttonTitles) {
-            ButtonTitles.CREATE_ROUTE -> {
-                if (createRoute()) ButtonTitles.SIMULATE else ButtonTitles.CREATE_ROUTE
-            }
-            ButtonTitles.SIMULATE -> {
-                startSimulation()
-                ButtonTitles.FINISH_SIMULATION
-            }
-            ButtonTitles.FINISH_SIMULATION -> {
-                clearMapData()
-                ButtonTitles.CREATE_ROUTE
-            }
+            else -> getString(R.string.create_route)
         }
 
-        isRouteCalculated = buttonTitles == ButtonTitles.CREATE_ROUTE
-
-        return buttonTitles.text
-    }
-
-    private fun clearMapData() {
-        map.removeAllMapObjects()
-        map.positionIndicator.isVisible = false
-
-        navigationManager!!.stop()
-        mapViewModel.also {
-            it.clearGeoCoordinatesList()
-            it.setRoute(null)
-            it.setNavigationManager(null)
-        }
-
-        setupInitialMap()
-
-        listOfGeoCoordinates.clear()
-        listOfMapMarkers.clear()
+        mapViewModel.changeButtonStatus(canCreateRoute)
+        return buttonTitle
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        navigationManager!!.pause()
+        if (mapViewModel.getCurrentMap().allMapObjects.size != 0) {
+            mapViewModel.getNavigationManager()?.pause()
+        }
     }
 }
 
@@ -277,7 +145,12 @@ fun ShowMap(activity: AppMapView) {
     ConstraintLayout(modifier = Modifier.fillMaxSize()) {
         val (map, button) = createRefs()
 
-        AndroidView(factory = { MapView(activity.applicationContext, activity.findViewById(R.id.compose_view)) }, modifier = Modifier.constrainAs(map) {
+        AndroidView(factory = {
+            MapView(
+                activity.applicationContext,
+                activity.findViewById(R.id.compose_view)
+            )
+        }, modifier = Modifier.constrainAs(map) {
             start.linkTo(parent.start)
             top.linkTo(parent.top)
             end.linkTo(parent.end)
@@ -287,10 +160,13 @@ fun ShowMap(activity: AppMapView) {
         }
 
         var title by rememberSaveable {
-            mutableStateOf(activity.buttonTitles.text)
+            mutableStateOf(activity.getString(R.string.create_route))
         }
 
-        Button(onClick = { title = activity.onClick(title) },
+        val buttonStatusObserver by
+        activity.mapViewModel.buttonStatus.observeAsState(initial = ButtonStatus.CreateRoute)
+
+        Button(onClick = { title = activity.onClick(buttonStatusObserver) },
             modifier = Modifier
                 .padding(0.dp, 0.dp, 10.dp, 10.dp)
                 .constrainAs(button) {
