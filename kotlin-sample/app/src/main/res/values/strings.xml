@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Kotlin Map Sample</string>
+
+    <string name="create_route">Create route</string>
+    <string name="simulate">Simulate</string>
+    <string name="finish_simulation">Finish simulation</string>
+
+    <string name="route_calc_success">"Route successfully calculated"</string>
+    <string name="route_calc_invalid">"Error: route results returned is not valid"</string>
+    <string name="route_calc_error">"Error: route calculation returned error code: "</string>
+    <string name="min_points_count">Please choose minimum 2 waypoints</string>
+
 </resources>

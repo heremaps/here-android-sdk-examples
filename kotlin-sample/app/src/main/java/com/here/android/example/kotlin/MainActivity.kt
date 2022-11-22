@@ -17,23 +17,14 @@
 package com.here.android.example.kotlin
 
 import android.Manifest
-import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
 
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
-
-import com.here.android.mpa.common.ApplicationContext
-import com.here.android.mpa.common.GeoCoordinate
-import com.here.android.mpa.common.OnEngineInitListener
-import com.here.android.mpa.common.Version
-import com.here.android.mpa.mapping.AndroidXMapFragment
-import com.here.android.mpa.mapping.Map
-import java.io.File
 
 /**
  * Main activity which launches map view and handles Android run-time requesting permission.
@@ -48,11 +39,9 @@ class MainActivity : FragmentActivity() {
         Manifest.permission.ACCESS_WIFI_STATE,
         Manifest.permission.ACCESS_NETWORK_STATE)
 
-    private var m_map: Map? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.fragment_map)
 
         requestPermissions()
     }
@@ -62,13 +51,9 @@ class MainActivity : FragmentActivity() {
             ActivityCompat.requestPermissions(this,
                 RUNTIME_PERMISSIONS, REQUEST_CODE_ASK_PERMISSIONS)
         } else {
-            initMapFragmentView()
+            showMap()
         }
     }
-
-    // Checks whether permission represented by this string is granted
-    private fun String.permissionGranted(ctx: Context) =
-        ContextCompat.checkSelfPermission(ctx, this) == PackageManager.PERMISSION_GRANTED
 
     private fun hasPermissions(): Boolean {
         /**
@@ -79,7 +64,7 @@ class MainActivity : FragmentActivity() {
             return true
         }
 
-        return RUNTIME_PERMISSIONS.count { !it.permissionGranted(this) } == 0
+        return RUNTIME_PERMISSIONS.isEmpty()
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
@@ -101,7 +86,7 @@ class MainActivity : FragmentActivity() {
                             notGrantedMessage += "Please go to settings and turn on for sample app."
                         }
 
-                        Toast.makeText(this, notGrantedMessage, Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, notGrantedMessage, Toast.LENGTH_LONG).show()
                     }
                 }
 
@@ -109,7 +94,7 @@ class MainActivity : FragmentActivity() {
                  * All permission requests are being handled. Create map fragment view. Please note
                  * the HERE Mobile SDK requires all permissions defined above to operate properly.
                  */
-                initMapFragmentView()
+                showMap()
             }
             else -> {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -117,52 +102,7 @@ class MainActivity : FragmentActivity() {
         }
     }
 
-    private fun initMapFragmentView() {
-
-        // This will use external storage to save map cache data, it is also possible to set
-        // private app's path
-        val path = File(getExternalFilesDir(null), ".here-map-data")
-                .getAbsolutePath()
-        // This method will throw IllegalArgumentException if provided path is not writable
-        com.here.android.mpa.common.MapSettings.setDiskCacheRootPath(path)
-
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.mapfragment) as AndroidXMapFragment?
-
-        val context = ApplicationContext(this).apply {
-            // Set application credentials
-            setAppIdCode("{YOUR_APP_ID}", "{YOUR_APP_CODE}")
-            setLicenseKey("{YOUR_LICENSE_KEY}")
-        }
-
-        mapFragment?.let { fragment ->
-            /**
-             * Initialize the AndroidXMapFragment, results will be given via the called back.
-             */
-            fragment.init(context) { error ->
-                when (error) {
-                    // If no error returned from map fragment initialization
-                    OnEngineInitListener.Error.NONE -> {
-                        // Get the map object
-                        m_map = fragment.map
-
-                        // Configure map
-                        m_map?.run {
-                            // Set the map center to the Berlin region (no animation)
-                            setCenter(GeoCoordinate(52.500556, 13.398889, 0.0), Map.Animation.NONE)
-                            // Set the zoom level to the average between min and max zoom level.
-                            setZoomLevel((maxZoomLevel + minZoomLevel) / 2);
-                        }
-
-                        Toast.makeText(this, "Map Engine initialized successfully!", Toast.LENGTH_LONG).show();
-                    }
-                    // If error occurred during engine initialization
-                    else -> {
-                        val errorMessage = "Error: ${error}, SDK Version: ${Version.getSdkVersion()}"
-
-                        Toast.makeText(this, errorMessage, Toast.LENGTH_LONG).show();
-                    }
-                }
-            }
-        }
+    private fun showMap() {
+        startActivity(Intent(this, AppMapView::class.java))
     }
 }
