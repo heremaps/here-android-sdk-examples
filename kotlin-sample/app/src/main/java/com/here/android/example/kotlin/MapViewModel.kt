@@ -144,7 +144,6 @@ class MapViewModel : ViewModel() {
                 navigationManager.mapUpdateMode = NavigationManager.MapUpdateMode.ROADVIEW_NOZOOM
                 route?.let { navigationManager.simulate(it, 40) }
             } else {
-                navigationManager.mapUpdateMode = navigationManager.mapUpdateMode
                 navigationManager.resume()
             }
         }
@@ -156,7 +155,10 @@ class MapViewModel : ViewModel() {
             removeAllMapObjects()
         }
 
-        navigationManager?.stop()
+        navigationManager?.apply {
+            stop()
+            mapUpdateMode = NavigationManager.MapUpdateMode.NONE
+        }
         navigationManager = null
         route = null
 
