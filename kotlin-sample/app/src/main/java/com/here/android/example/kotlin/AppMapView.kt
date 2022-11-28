@@ -47,13 +47,14 @@ class AppMapView : AppCompatActivity() {
                 /* get the map object */
                 mapViewModel.getCurrentMap().also { mapView.map = it }
 
-
                 mapView.mapGesture?.addOnGestureListener(mapGestureListener, 0, false)
                 if (mapViewModel.getGeoCoordinatesList().size > 0) {
                     for (geoCoordinate in mapViewModel.getGeoCoordinatesList()) {
                         mapViewModel.addMapMarker(geoCoordinate)
                     }
                 }
+
+                mapView.onResume()
 
                 mapViewModel.getRoute()?.let {
                     mapViewModel.getCurrentMap().addMapObject(MapRoute(it))
