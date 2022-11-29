@@ -17,4 +17,11 @@
         android:layout_height="wrap_content"
         android:text="Create Route"
         android:id="@+id/button" />
+
+    <TextView
+        android:id="@+id/trafficReport"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textStyle="bold"
+        android:layout_alignParentBottom="true"/>
 </RelativeLayout>

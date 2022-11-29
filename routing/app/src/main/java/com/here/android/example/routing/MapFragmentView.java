@@ -18,14 +18,19 @@ package com.here.android.example.routing;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.arrival.vehiclenavigation.R;
+import com.here.android.example.routing.traffic.RouteTrafficInfo;
+import com.here.android.example.routing.traffic.TrafficRepository;
 import com.here.android.mpa.common.GeoCoordinate;
 import com.here.android.mpa.common.GeoPolygon;
 import com.here.android.mpa.common.OnEngineInitListener;
@@ -33,6 +38,8 @@ import com.here.android.mpa.common.RoadElement;
 import com.here.android.mpa.mapping.AndroidXMapFragment;
 import com.here.android.mpa.mapping.Map;
 import com.here.android.mpa.mapping.MapRoute;
+import com.here.android.mpa.mapping.MapTrafficLayer;
+import com.here.android.mpa.mapping.TrafficEvent;
 import com.here.android.mpa.routing.CoreRouter;
 import com.here.android.mpa.routing.DrivingDirection;
 import com.here.android.mpa.routing.DynamicPenalty;
@@ -45,11 +52,17 @@ import com.here.android.mpa.routing.Router;
 import com.here.android.mpa.routing.RoutingError;
 import com.here.android.mpa.routing.RoutingZone;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
+
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * This class encapsulates the properties and functionality of the Map view.A route calculation from
@@ -64,8 +77,10 @@ public class MapFragmentView {
     private AppCompatActivity m_activity;
     private Map m_map;
     private MapRoute m_mapRoute;
+    private TextView m_trafficReport;
     private boolean m_isExcludeRoutingZones;
     private boolean m_addAvoidedAreas;
+    private NumberFormat decimalFormat = DecimalFormat.getInstance();
 
     public MapFragmentView(AppCompatActivity activity) {
         m_activity = activity;
@@ -74,6 +89,8 @@ public class MapFragmentView {
          * We use a button in this example to control the route calculation
          */
         initCreateRouteButton();
+        m_trafficReport = m_activity.findViewById(R.id.trafficReport);
+        decimalFormat.setMaximumFractionDigits(2);
     }
 
     private AndroidXMapFragment getMapFragment() {
@@ -93,6 +110,11 @@ public class MapFragmentView {
                     if (error == Error.NONE) {
                         /* get the map object */
                         m_map = m_mapFragment.getMap();
+                        m_map.getMapTrafficLayer().setEnabled(MapTrafficLayer.RenderLayer.FLOW, true);
+                        m_map.getMapTrafficLayer().setEnabled(MapTrafficLayer.RenderLayer.INCIDENT, true);
+                        m_map.getMapTrafficLayer().setEnabled(MapTrafficLayer.RenderLayer.ONROUTE, true);
+
+                        m_map.setTrafficInfoVisible(true);
 
                         /*
                          * Set the map center to the south of Berlin.
@@ -187,9 +209,9 @@ public class MapFragmentView {
 
         /* Define waypoints for the route */
         /* START: South of Berlin */
-        RouteWaypoint startPoint = new RouteWaypoint(new GeoCoordinate(52.406425, 13.193975));
+        RouteWaypoint startPoint = new RouteWaypoint(new GeoCoordinate(52.505326, 13.368087));
         /* END: North of Berlin */
-        RouteWaypoint destination = new RouteWaypoint(new GeoCoordinate(52.638623, 13.441998));
+        RouteWaypoint destination = new RouteWaypoint(new GeoCoordinate(52.491863, 13.377296));
 
         /* Add both waypoints to the route plan */
         routePlan.addWaypoint(startPoint);
@@ -218,6 +240,8 @@ public class MapFragmentView {
                             } else {
                                 /* Create a MapRoute so that it can be placed on the map */
                                 m_mapRoute = new MapRoute(route);
+                                m_mapRoute.setTrafficEnabled(true);
+                                loadTrafficForRoute(route);
 
                                 /* Show the maneuver number on top of the route */
                                 m_mapRoute.setManeuverNumberVisible(true);
@@ -239,6 +263,34 @@ public class MapFragmentView {
                         }
                     }
                 });
+    }
+
+    public void loadTrafficForRoute(Route route) {
+        TrafficRepository.INSTANCE.loadTrafficForRoute(m_activity, route, new Function1<List<? extends RouteTrafficInfo>, Unit>() {
+            @Override
+            public Unit invoke(List<? extends RouteTrafficInfo> routeTrafficInfos) {
+                Log.d("MapFragmentView", "loadTrafficForRoute " + routeTrafficInfos.toString());
+
+                StringBuilder builder = new StringBuilder();
+                Iterator<? extends RouteTrafficInfo> i = routeTrafficInfos.iterator();
+                while (i.hasNext()) {
+                    RouteTrafficInfo v = i.next();
+                    if(v.getTrafficSeverity() == TrafficEvent.Severity.NORMAL) continue;
+                    builder.append("s:");
+                    builder.append(decimalFormat.format(v.getStartPercent()));
+                    builder.append(" e:");
+                    builder.append(decimalFormat.format(v.getEndPercent()));
+                    builder.append(" l:");
+                    builder.append(decimalFormat.format(v.getEndPercent() - v.getStartPercent()));
+                    builder.append(" level: ");
+                    builder.append(v.getTrafficSeverity());
+                    builder.append("\n");
+                }
+                m_trafficReport.setText(builder);
+                Log.d("MapFragmentView", "loadTrafficForRoute " + builder.toString());
+                return Unit.INSTANCE;
+            }
+        });
     }
 
     public boolean onOptionsItemSelected(MenuItem item) {
